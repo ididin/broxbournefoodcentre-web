@@ -55,11 +55,11 @@ export default function ProductCard({ product }: { product: Product }) {
                 </h3>
                 <p className="text-2xl font-extrabold text-emerald-600 mt-2">£{product.price.toFixed(2)}</p>
 
-                <div className="mt-auto pt-5 flex items-center gap-3">
-                    <div className="flex bg-slate-50 rounded-lg border border-slate-200 p-1">
+                <div className="mt-auto pt-4 flex flex-col gap-2">
+                    <div className="flex justify-between items-center bg-slate-50 rounded-lg border border-slate-200 p-1">
                         <button
                             onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                            className="px-3 py-1 text-slate-600 hover:bg-white hover:shadow-sm rounded transition-all"
+                            className="w-8 h-8 flex items-center justify-center text-slate-600 hover:bg-white hover:shadow-sm rounded transition-all"
                             disabled={product.stockOut}
                         >
                             -
@@ -69,12 +69,12 @@ export default function ProductCard({ product }: { product: Product }) {
                             min="1"
                             value={quantity}
                             onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                            className="w-10 text-center bg-transparent appearance-none focus:outline-none font-semibold text-slate-800"
+                            className="w-12 text-center bg-transparent appearance-none focus:outline-none font-semibold text-slate-800"
                             disabled={product.stockOut}
                         />
                         <button
                             onClick={() => setQuantity(quantity + 1)}
-                            className="px-3 py-1 text-slate-600 hover:bg-white hover:shadow-sm rounded transition-all"
+                            className="w-8 h-8 flex items-center justify-center text-slate-600 hover:bg-white hover:shadow-sm rounded transition-all"
                             disabled={product.stockOut}
                         >
                             +
@@ -83,12 +83,12 @@ export default function ProductCard({ product }: { product: Product }) {
                     <button
                         onClick={handleAddToCart}
                         disabled={product.stockOut}
-                        className={`flex-1 py-3 px-4 rounded-xl font-bold transition-all shadow-sm active:scale-95 ${product.stockOut
+                        className={`w-full py-2.5 px-4 rounded-xl font-bold transition-all shadow-sm active:scale-95 ${product.stockOut
                             ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
                             : 'bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-emerald-500/25 hover:shadow-lg'
                             }`}
                     >
-                        Add
+                        Add to Cart
                     </button>
                 </div>
             </div>
