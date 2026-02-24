@@ -67,23 +67,28 @@ export default function Home() {
 
       <section className="bg-white py-16" id="categories">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-          <h2 className="text-3xl font-bold text-gray-900 tracking-tight mb-8">Shop by Category</h2>
+          <div className="flex flex-col md:flex-row justify-between items-end mb-10 gap-4">
+            <div>
+              <h2 className="text-3xl font-extrabold text-slate-900 tracking-tight">Shop by Category</h2>
+              <p className="text-slate-500 mt-2 text-lg">Browse our wide selection of fresh products.</p>
+            </div>
+          </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {CATEGORIES.map((category) => (
               <Link
                 href={`/shop?category=${category.slug}`}
                 key={category.name}
-                className="group relative h-64 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all block"
+                className="group relative h-72 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 block"
               >
                 <Image
                   src={category.image}
                   alt={category.name}
                   fill
-                  className="object-cover group-hover:scale-105 transition-transform duration-500"
+                  className="object-cover group-hover:scale-110 group-hover:rotate-1 transition-transform duration-700 ease-out"
                 />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent flex items-end p-6">
-                  <h3 className="text-2xl font-bold text-white group-hover:translate-x-2 transition-transform">
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent flex items-end p-8">
+                  <h3 className="text-2xl font-bold text-white group-hover:-translate-y-2 transition-transform duration-300">
                     {category.name}
                   </h3>
                 </div>
@@ -93,24 +98,24 @@ export default function Home() {
         </div>
       </section>
 
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-        <div className="bg-black text-white rounded-3xl p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-8">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mb-12">
+        <div className="bg-gradient-to-br from-emerald-600 to-teal-700 text-white rounded-[2rem] p-10 md:p-16 flex flex-col md:flex-row items-center justify-between gap-12 shadow-xl shadow-emerald-500/10">
           <div className="max-w-xl">
-            <h2 className="text-3xl md:text-4xl font-bold mb-4">Fast Delivery in Broxbourne</h2>
-            <p className="text-gray-300 text-lg mb-8">
-              We deliver your favorite groceries and house essentials within 24 hours right to your doorstep.
+            <h2 className="text-4xl md:text-5xl font-extrabold mb-6 leading-tight">Fast Delivery in Broxbourne</h2>
+            <p className="text-emerald-50 text-lg md:text-xl mb-10 leading-relaxed font-medium">
+              We deliver your favorite groceries and house essentials within 24 hours right to your doorstep. Guaranteed freshness.
             </p>
             <Link
               href="/shop"
-              className="inline-block bg-white text-black font-bold py-3 px-8 rounded-full hover:bg-gray-100 transition-colors"
+              className="inline-block bg-white text-emerald-700 font-extrabold py-4 px-10 rounded-full hover:bg-emerald-50 hover:scale-105 transition-all shadow-lg"
             >
-              Start Shopping
+              Start Shopping Now
             </Link>
           </div>
-          <div className="relative w-full md:w-1/2 aspect-video rounded-2xl overflow-hidden">
+          <div className="relative w-full md:w-1/2 aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500 max-w-md">
             <Image
               src="https://images.unsplash.com/photo-1615469363071-7eb9273c8d35?auto=format&fit=crop&q=80&w=800"
-              alt="Delivery"
+              alt="Fast Grocery Delivery"
               fill
               className="object-cover"
             />
