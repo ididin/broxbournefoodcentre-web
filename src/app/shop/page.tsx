@@ -82,8 +82,8 @@ export default function Shop() {
                             <button
                                 onClick={() => handleCategoryClick('All')}
                                 className={`w-full text-left px-4 py-3 rounded-xl font-bold transition-all ${selectedCategory === 'All'
-                                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm'
-                                        : 'text-slate-600 hover:bg-slate-50'
+                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm'
+                                    : 'text-slate-600 hover:bg-slate-50'
                                     }`}
                             >
                                 All Products
@@ -94,8 +94,8 @@ export default function Shop() {
                                 <button
                                     onClick={() => handleCategoryClick(cat.name)}
                                     className={`w-full text-left px-4 py-3 rounded-xl font-bold transition-all ${selectedCategory === cat.name
-                                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm'
-                                            : 'text-slate-600 hover:bg-slate-50'
+                                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm'
+                                        : 'text-slate-600 hover:bg-slate-50'
                                         }`}
                                 >
                                     {cat.name}
@@ -108,8 +108,8 @@ export default function Shop() {
                                                 <button
                                                     onClick={() => setSelectedSubcategory(sub)}
                                                     className={`w-full text-left px-3 py-2 rounded-lg text-sm font-semibold transition-all ${selectedSubcategory === sub
-                                                            ? 'text-emerald-700 bg-emerald-50 shadow-sm'
-                                                            : 'text-slate-500 hover:text-emerald-600 hover:bg-slate-50'
+                                                        ? 'text-emerald-700 bg-emerald-50 shadow-sm'
+                                                        : 'text-slate-500 hover:text-emerald-600 hover:bg-slate-50'
                                                         }`}
                                                 >
                                                     {sub}
@@ -127,8 +127,8 @@ export default function Shop() {
             {/* Main Content Area */}
             <main className="flex-1 p-4 sm:p-6 lg:p-8">
                 {/* Search Header */}
-                <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col sm:flex-row justify-between gap-4 mb-8 sticky top-24 z-40">
-                    <div className="relative w-full sm:max-w-md">
+                <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col justify-between gap-4 mb-6">
+                    <div className="relative w-full">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-emerald-600" />
                         <input
                             type="text"
@@ -146,8 +146,8 @@ export default function Shop() {
                         <button
                             onClick={() => setSelectedSubcategory(null)}
                             className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all ${selectedSubcategory === null
-                                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
-                                    : 'bg-white text-slate-600 border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
+                                ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
+                                : 'bg-white text-slate-600 border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
                                 }`}
                         >
                             All {selectedCategory}
@@ -157,8 +157,8 @@ export default function Shop() {
                                 key={sub}
                                 onClick={() => setSelectedSubcategory(sub)}
                                 className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all ${selectedSubcategory === sub
-                                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
-                                        : 'bg-white text-slate-600 border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
+                                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
+                                    : 'bg-white text-slate-600 border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
                                     }`}
                             >
                                 {sub}
@@ -189,7 +189,7 @@ export default function Shop() {
                         </button>
                     </div>
                 ) : (
-                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-3 sm:gap-4 lg:gap-5">
+                    <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-5">
                         {filteredProducts.map((product) => (
                             <ProductCard key={product.id} product={product} />
                         ))}
