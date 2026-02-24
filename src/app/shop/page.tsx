@@ -8,31 +8,37 @@ const CATEGORIES = [
     {
         id: 'c1',
         name: 'Produce',
+        icon: '🍎',
         subcategories: ['Fruit', 'Vegetables', 'Salads'],
     },
     {
         id: 'c2',
         name: 'Dairy & Eggs',
+        icon: '🥛',
         subcategories: ['Milk', 'Cheese', 'Eggs', 'Yogurt'],
     },
     {
         id: 'c3',
         name: 'Bakery',
+        icon: '🥖',
         subcategories: ['Bread', 'Pastries', 'Bagels'],
     },
     {
         id: 'c4',
         name: 'Beverages',
+        icon: '🥤',
         subcategories: ['Water', 'Juice', 'Soda', 'Coffee'],
     },
     {
         id: 'c5',
         name: 'Pantry',
+        icon: '🥫',
         subcategories: ['Oils', 'Spices', 'Canned Goods'],
     },
     {
         id: 'c6',
         name: 'Meat & Seafood',
+        icon: '🥩',
         subcategories: ['Chicken', 'Beef', 'Fish'],
     }
 ];

@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { useCartStore } from '@/store/useCartStore';
-import { useState } from 'react';
+import { Plus, Minus, Trash2 } from 'lucide-react';
 
 interface Product {
     id: string;
@@ -14,83 +14,112 @@ interface Product {
 
 export default function ProductCard({ product }: { product: Product }) {
     const addItem = useCartStore((state) => state.addItem);
-    const [quantity, setQuantity] = useState(1);
+    const removeItem = useCartStore((state) => state.removeItem);
+    const updateQuantity = useCartStore((state) => state.updateQuantity);
 
-    const handleAddToCart = () => {
-        addItem({
-            id: product.id,
-            name: product.name,
-            price: product.price,
-            quantity,
-            imageUrl: product.imageUrl || undefined,
-        });
-        // Optional: show a toast notification
+    const cartItem = useCartStore((state) => state.items.find((i) => i.id === product.id));
+    const quantityInCart = cartItem?.quantity || 0;
+
+    const handleAdd = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (product.stockOut) return;
+
+        if (quantityInCart === 0) {
+            addItem({
+                id: product.id,
+                name: product.name,
+                price: product.price,
+                quantity: 1,
+                imageUrl: product.imageUrl || undefined,
+            });
+        } else {
+            updateQuantity(product.id, quantityInCart + 1);
+        }
     };
 
+    const handleRemove = (e: React.MouseEvent) => {
+        e.preventDefault();
+        e.stopPropagation();
+        if (quantityInCart > 1) {
+            updateQuantity(product.id, quantityInCart - 1);
+        } else {
+            removeItem(product.id);
+        }
+    };
+
+    // Extract weight from name (e.g. "Bananas (1kg)" -> match "1kg", clean name -> "Bananas")
+    const match = product.name.match(/\((.*?)\)/);
+    const weight = match ? match[1] : '';
+    const cleanName = product.name.replace(/\(.*?\)/g, '').trim();
+
     return (
-        <div className="group border border-transparent hover:border-emerald-100 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl hover:-translate-y-1 transition-all duration-400 bg-white flex flex-col h-full">
-            <div className="relative aspect-square bg-slate-50 overflow-hidden">
+        <div className="group flex flex-col h-full bg-white relative">
+            <div className="relative aspect-square bg-white rounded-2xl border border-gray-100 p-4 shadow-sm group-hover:border-emerald-200 transition-colors">
                 {product.imageUrl ? (
                     <Image
                         src={product.imageUrl}
-                        alt={product.name}
+                        alt={cleanName}
                         fill
-                        className="object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
+                        className="object-contain p-4 group-hover:scale-105 transition-transform duration-500 ease-out"
                     />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center text-slate-300">
                         No image
                     </div>
                 )}
+
+                {/* Top Right Add Button Container */}
+                <div className="absolute top-2 right-2 z-10 flex flex-col items-end shadow-md rounded-lg overflow-hidden bg-white/90 backdrop-blur-sm border border-emerald-100/50">
+                    {quantityInCart > 0 ? (
+                        <div className="flex flex-col items-center bg-white shadow-sm overflow-hidden w-8 border border-emerald-100/50">
+                            <button
+                                onClick={handleAdd}
+                                className="w-8 h-8 flex items-center justify-center text-emerald-600 hover:bg-emerald-50 transition-colors border-b border-emerald-50"
+                            >
+                                <Plus className="w-4 h-4" />
+                            </button>
+                            <span className="w-8 h-8 flex items-center justify-center text-sm font-bold bg-emerald-600 text-white shadow-inner">
+                                {quantityInCart}
+                            </span>
+                            <button
+                                onClick={handleRemove}
+                                className="w-8 h-8 flex items-center justify-center text-emerald-600 hover:bg-emerald-50 transition-colors border-t border-emerald-50"
+                            >
+                                {quantityInCart === 1 ? <Trash2 className="w-4 h-4" /> : <Minus className="w-4 h-4" />}
+                            </button>
+                        </div>
+                    ) : (
+                        <button
+                            onClick={handleAdd}
+                            disabled={product.stockOut}
+                            className={`w-8 h-8 flex items-center justify-center transition-all ${product.stockOut
+                                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                                    : 'bg-white text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700'
+                                }`}
+                        >
+                            <Plus className="w-6 h-6 stroke-[2.5px]" />
+                        </button>
+                    )}
+                </div>
+
                 {product.stockOut && (
-                    <div className="absolute top-3 right-3 bg-red-500/90 backdrop-blur-sm text-white text-xs font-bold px-3 py-1.5 rounded-full shadow-sm">
-                        Out of Stock
+                    <div className="absolute inset-0 bg-white/60 flex flex-col items-center justify-center backdrop-blur-[1.5px] rounded-2xl">
+                        <span className="bg-red-500 text-white text-xs font-bold px-3 py-1 rounded-full shadow-sm">
+                            Out of Stock
+                        </span>
                     </div>
                 )}
             </div>
 
-            <div className="p-4 flex flex-col flex-1">
-                <h3 className="text-base font-bold text-slate-800 line-clamp-2 min-h-[48px] group-hover:text-emerald-700 transition-colors">
-                    {product.name}
+            <div className="pt-3 px-1 flex flex-col">
+                <p className="text-emerald-600 font-extrabold text-[1.15rem] leading-none">£{product.price.toFixed(2)}</p>
+                <h3 className="text-[13px] font-bold text-slate-800 line-clamp-2 mt-1.5 leading-tight">
+                    {cleanName}
                 </h3>
-                <p className="text-xl font-extrabold text-emerald-600 mt-1">£{product.price.toFixed(2)}</p>
-
-                <div className="mt-auto pt-3 flex flex-col gap-2">
-                    <div className="flex justify-between items-center bg-slate-50 rounded-lg border border-slate-200 p-1">
-                        <button
-                            onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                            className="w-7 h-7 flex items-center justify-center text-slate-600 hover:bg-white hover:shadow-sm rounded transition-all"
-                            disabled={product.stockOut}
-                        >
-                            -
-                        </button>
-                        <input
-                            type="number"
-                            min="1"
-                            value={quantity}
-                            onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
-                            className="w-10 text-center text-sm bg-transparent appearance-none focus:outline-none font-semibold text-slate-800"
-                            disabled={product.stockOut}
-                        />
-                        <button
-                            onClick={() => setQuantity(quantity + 1)}
-                            className="w-7 h-7 flex items-center justify-center text-slate-600 hover:bg-white hover:shadow-sm rounded transition-all"
-                            disabled={product.stockOut}
-                        >
-                            +
-                        </button>
-                    </div>
-                    <button
-                        onClick={handleAddToCart}
-                        disabled={product.stockOut}
-                        className={`w-full py-2 px-3 rounded-lg text-sm font-bold transition-all shadow-sm active:scale-95 ${product.stockOut
-                            ? 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                            : 'bg-emerald-500 text-white hover:bg-emerald-600 hover:shadow-emerald-500/25 hover:shadow-lg'
-                            }`}
-                    >
-                        Add to Cart
-                    </button>
-                </div>
+                {weight && (
+                    <p className="text-slate-400 text-xs font-semibold mt-1">{weight}</p>
+                )}
             </div>
         </div>
     );
