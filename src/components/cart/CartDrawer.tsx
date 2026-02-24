@@ -81,15 +81,32 @@ export default function CartDrawer() {
                 </div>
 
                 {items.length > 0 && (
-                    <div className="border-t p-6 bg-gray-50">
-                        <div className="flex justify-between text-lg font-bold mb-4">
+                    <div className="border-t p-6 bg-slate-50 flex flex-col gap-4">
+                        <div className="flex justify-between text-lg font-extrabold text-slate-900">
                             <span>Total</span>
                             <span>£{getTotalPrice().toFixed(2)}</span>
                         </div>
+
+                        {getTotalPrice() < 50 ? (
+                            <div className="text-sm text-amber-700 bg-amber-50 border border-amber-200 p-3 rounded-lg text-center font-medium shadow-sm">
+                                Minimum order amount is £50.<br />
+                                Please add £{(50 - getTotalPrice()).toFixed(2)} more to checkout.
+                            </div>
+                        ) : null}
+
                         <Link
-                            href="/checkout"
-                            onClick={closeCart}
-                            className="w-full flex justify-center py-3 bg-black text-white rounded-xl font-bold hover:bg-gray-900 transition-colors"
+                            href={getTotalPrice() >= 50 ? "/checkout" : "#"}
+                            onClick={(e) => {
+                                if (getTotalPrice() < 50) {
+                                    e.preventDefault();
+                                } else {
+                                    closeCart();
+                                }
+                            }}
+                            className={`w-full flex justify-center py-3.5 rounded-xl font-bold transition-all shadow-sm ${getTotalPrice() >= 50
+                                    ? 'bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/20 active:scale-95'
+                                    : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                                }`}
                         >
                             Proceed to Checkout
                         </Link>
