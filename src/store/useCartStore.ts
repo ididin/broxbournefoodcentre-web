@@ -39,8 +39,8 @@ export const useCartStore = create<CartStore>()(
                 } else {
                     set({ items: [...currentItems, item] });
                 }
-                // Auto open cart on add
-                set({ isCartOpen: true });
+                // Auto open cart on add: Disabled globally per user request
+                // set({ isCartOpen: true });
             },
             removeItem: (id) => {
                 set({ items: get().items.filter((item) => item.id !== id) });
