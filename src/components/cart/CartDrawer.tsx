@@ -30,48 +30,54 @@ export default function CartDrawer() {
 
                 <div className="flex-1 overflow-y-auto p-6">
                     {items.length === 0 ? (
-                        <div className="h-full flex flex-col items-center justify-center text-gray-500">
-                            <ShoppingCart className="h-16 w-16 mb-4 opacity-20" />
-                            <p className="text-lg">Your cart is empty</p>
+                        <div className="h-full flex flex-col items-center justify-center text-slate-500">
+                            <div className="h-24 w-24 bg-emerald-50 rounded-full flex items-center justify-center mb-6">
+                                <ShoppingCart className="h-10 w-10 text-emerald-500" />
+                            </div>
+                            <p className="text-xl font-bold text-slate-800">Your cart is empty</p>
+                            <p className="text-slate-500 mt-2 text-center">Looks like you haven't added anything to your cart yet.</p>
                             <button
                                 onClick={closeCart}
-                                className="mt-6 px-6 py-2 bg-black text-white rounded-full font-medium hover:bg-gray-800 transition-colors"
+                                className="mt-8 px-8 py-3 bg-emerald-600 text-white rounded-xl font-bold border-2 border-emerald-600 hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/20 active:scale-95 transition-all w-full"
                             >
-                                Continue Shopping
+                                Start Shopping
                             </button>
                         </div>
                     ) : (
                         <div className="space-y-6">
                             {items.map((item) => (
-                                <div key={item.id} className="flex gap-4">
-                                    <div className="h-24 w-24 bg-gray-100 rounded-md overflow-hidden flex-shrink-0 relative">
+                                <div key={item.id} className="flex gap-4 bg-white p-3 rounded-2xl border border-gray-100 shadow-sm hover:border-emerald-200 transition-colors group">
+                                    <div className="h-24 w-24 bg-slate-50 rounded-xl overflow-hidden flex-shrink-0 relative border border-gray-100">
                                         {item.imageUrl && (
-                                            <Image src={item.imageUrl} alt={item.name} fill className="object-cover" />
+                                            <Image src={item.imageUrl} alt={item.name} fill className="object-cover group-hover:scale-110 transition-transform duration-500" />
                                         )}
                                     </div>
-                                    <div className="flex-1 flex flex-col">
+                                    <div className="flex-1 flex flex-col pt-1">
                                         <div className="flex justify-between">
-                                            <h3 className="font-medium text-gray-900 line-clamp-2">{item.name}</h3>
+                                            <h3 className="font-bold text-slate-800 line-clamp-2 pr-2">{item.name}</h3>
                                             <button
                                                 onClick={() => removeItem(item.id)}
-                                                className="text-gray-400 hover:text-red-500 transition-colors"
+                                                className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-lg transition-all"
                                             >
                                                 <Trash2 className="h-4 w-4" />
                                             </button>
                                         </div>
-                                        <p className="text-black font-bold mt-1">£{item.price.toFixed(2)}</p>
-                                        <div className="mt-auto flex items-center gap-3">
-                                            <div className="flex items-center border rounded-md">
+                                        <p className="text-emerald-600 font-extrabold mt-1 text-lg">£{item.price.toFixed(2)}</p>
+                                        <div className="mt-auto flex items-center justify-between">
+                                            <div className="flex items-center bg-slate-50 rounded-lg p-1 border border-slate-200">
                                                 <button
-                                                    className="px-2 py-1 text-gray-600 hover:bg-gray-50"
+                                                    className="px-2 py-1 text-slate-600 hover:bg-white rounded shadow-sm hover:text-emerald-600 transition-all font-bold"
                                                     onClick={() => updateQuantity(item.id, item.quantity - 1)}
                                                 >-</button>
-                                                <span className="w-8 text-center text-sm">{item.quantity}</span>
+                                                <span className="w-8 text-center text-sm font-bold text-slate-800">{item.quantity}</span>
                                                 <button
-                                                    className="px-2 py-1 text-gray-600 hover:bg-gray-50"
+                                                    className="px-2 py-1 text-slate-600 hover:bg-white rounded shadow-sm hover:text-emerald-600 transition-all font-bold"
                                                     onClick={() => updateQuantity(item.id, item.quantity + 1)}
                                                 >+</button>
                                             </div>
+                                            <p className="text-xs font-bold text-slate-400 bg-slate-100 px-2.5 py-1 rounded-lg">
+                                                £{(item.price * item.quantity).toFixed(2)}
+                                            </p>
                                         </div>
                                     </div>
                                 </div>
@@ -104,8 +110,8 @@ export default function CartDrawer() {
                                 }
                             }}
                             className={`w-full flex justify-center py-3.5 rounded-xl font-bold transition-all shadow-sm ${getTotalPrice() >= 50
-                                    ? 'bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/20 active:scale-95'
-                                    : 'bg-slate-200 text-slate-400 cursor-not-allowed'
+                                ? 'bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/20 active:scale-95'
+                                : 'bg-slate-200 text-slate-400 cursor-not-allowed'
                                 }`}
                         >
                             Proceed to Checkout
