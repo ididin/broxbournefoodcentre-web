@@ -55,13 +55,13 @@ export default function ProductCard({ product }: { product: Product }) {
 
     return (
         <div className="group flex flex-col h-full bg-white relative">
-            <div className="relative aspect-square bg-white rounded-2xl border border-gray-100 p-4 shadow-sm group-hover:border-emerald-200 transition-colors">
+            <div className="relative aspect-square bg-slate-50 rounded-2xl border border-gray-100 shadow-sm overflow-hidden group-hover:border-emerald-200 transition-colors">
                 {product.imageUrl ? (
                     <Image
                         src={product.imageUrl}
                         alt={cleanName}
                         fill
-                        className="object-contain p-4 group-hover:scale-105 transition-transform duration-500 ease-out"
+                        className="object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                     />
                 ) : (
                     <div className="w-full h-full flex items-center justify-center text-slate-300">
@@ -94,8 +94,8 @@ export default function ProductCard({ product }: { product: Product }) {
                             onClick={handleAdd}
                             disabled={product.stockOut}
                             className={`w-8 h-8 flex items-center justify-center transition-all ${product.stockOut
-                                    ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                    : 'bg-white text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700'
+                                ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
+                                : 'bg-white text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700'
                                 }`}
                         >
                             <Plus className="w-6 h-6 stroke-[2.5px]" />
@@ -112,13 +112,16 @@ export default function ProductCard({ product }: { product: Product }) {
                 )}
             </div>
 
-            <div className="pt-3 px-1 flex flex-col">
-                <p className="text-emerald-600 font-extrabold text-[1.15rem] leading-none">£{product.price.toFixed(2)}</p>
-                <h3 className="text-[13px] font-bold text-slate-800 line-clamp-2 mt-1.5 leading-tight">
+            <div className="pt-2 px-1 flex flex-col mt-1">
+                <p className="text-emerald-600 font-extrabold text-lg flex items-baseline gap-[1px]">
+                    <span className="text-xs font-bold leading-none">£</span>
+                    <span>{product.price.toFixed(2)}</span>
+                </p>
+                <h3 className="text-sm font-semibold text-slate-800 line-clamp-2 mt-1 leading-[1.3]">
                     {cleanName}
                 </h3>
                 {weight && (
-                    <p className="text-slate-400 text-xs font-semibold mt-1">{weight}</p>
+                    <p className="text-slate-400 text-[11px] font-semibold mt-1">{weight}</p>
                 )}
             </div>
         </div>
