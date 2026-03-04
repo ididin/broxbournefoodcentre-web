@@ -39,10 +39,10 @@ export async function POST(req: Request) {
 
         const itemSales: Record<string, { name: string, quantity: number, revenue: number }> = {};
 
-        orders.forEach(order => {
+        orders.forEach((order: any) => {
             let orderHasMatch = false;
 
-            order.orderItems.forEach(item => {
+            order.orderItems.forEach((item: any) => {
                 const p = item.product;
 
                 // Apply filters

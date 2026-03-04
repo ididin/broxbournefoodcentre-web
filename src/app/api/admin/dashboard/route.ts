@@ -28,7 +28,7 @@ export async function GET() {
             })
         ]);
 
-        const totalRevenue = allOrders.reduce((sum, order) => sum + order.totalAmount, 0);
+        const totalRevenue = allOrders.reduce((sum: number, order: any) => sum + order.totalAmount, 0);
 
         return NextResponse.json({
             stats: [
@@ -37,7 +37,7 @@ export async function GET() {
                 { label: 'Total Products', value: totalProducts.toString(), type: 'products' },
                 { label: 'Registered Users', value: totalUsers.toString(), type: 'users' },
             ],
-            recentActivity: recentOrders.map(order => ({
+            recentActivity: recentOrders.map((order: any) => ({
                 id: order.id,
                 title: `New Order #${order.id}`,
                 subtitle: `Placed on ${new Date(order.createdAt).toLocaleDateString()} by ${order.user ? order.user.name : order.guestEmail}`,

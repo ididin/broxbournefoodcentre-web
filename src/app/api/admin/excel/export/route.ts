@@ -9,7 +9,7 @@ export async function GET() {
             orderBy: { storeOrder: 'asc' }
         });
 
-        const data = products.map(p => ({
+        const data = products.map((p: any) => ({
             id: p.id,
             name: p.name,
             description: p.description || '',
