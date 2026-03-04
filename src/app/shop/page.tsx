@@ -1,84 +1,81 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ProductCard from '@/components/ui/ProductCard';
-import { Search } from 'lucide-react';
+import { Search, Loader2 } from 'lucide-react';
 import { useCartStore } from '@/store/useCartStore';
 import CartSidebar from '@/components/cart/CartSidebar';
 
-const CATEGORIES = [
-    {
-        id: 'c1',
-        name: 'Produce',
-        icon: '🍎',
-        subcategories: ['Fruit', 'Vegetables', 'Salads'],
-    },
-    {
-        id: 'c2',
-        name: 'Dairy & Eggs',
-        icon: '🥛',
-        subcategories: ['Milk', 'Cheese', 'Eggs', 'Yogurt'],
-    },
-    {
-        id: 'c3',
-        name: 'Bakery',
-        icon: '🥖',
-        subcategories: ['Bread', 'Pastries', 'Bagels'],
-    },
-    {
-        id: 'c4',
-        name: 'Beverages',
-        icon: '🥤',
-        subcategories: ['Water', 'Juice', 'Soda', 'Coffee'],
-    },
-    {
-        id: 'c5',
-        name: 'Pantry',
-        icon: '🥫',
-        subcategories: ['Oils', 'Spices', 'Canned Goods'],
-    },
-    {
-        id: 'c6',
-        name: 'Meat & Seafood',
-        icon: '🥩',
-        subcategories: ['Chicken', 'Beef', 'Fish'],
-    }
-];
-
-const MOCK_PRODUCTS = [
-    { id: 'p1', name: 'Fresh Organic Bananas (1kg)', price: 1.50, imageUrl: 'https://images.unsplash.com/photo-1571501715200-afcb8cc6e927?auto=format&fit=crop&q=80&w=500', stockOut: false, category: 'Produce', subcategory: 'Fruit' },
-    { id: 'p2', name: 'Whole Milk (2L)', price: 1.25, imageUrl: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&q=80&w=500', stockOut: false, category: 'Dairy & Eggs', subcategory: 'Milk' },
-    { id: 'p3', name: 'Farm Fresh Eggs (12 pk)', price: 2.10, imageUrl: 'https://images.unsplash.com/photo-1582722872421-5a50e5fdcf91?auto=format&fit=crop&q=80&w=500', stockOut: false, category: 'Dairy & Eggs', subcategory: 'Eggs' },
-    { id: 'p4', name: 'Sourdough Bread', price: 3.50, imageUrl: 'https://images.unsplash.com/photo-1589367920969-ab8e050eb0e9?auto=format&fit=crop&q=80&w=500', stockOut: false, category: 'Bakery', subcategory: 'Bread' },
-    { id: 'p5', name: 'Premium Ground Coffee', price: 6.99, imageUrl: 'https://images.unsplash.com/photo-1559525839-b184a4d698c7?auto=format&fit=crop&q=80&w=500', stockOut: false, category: 'Beverages', subcategory: 'Coffee' },
-    { id: 'p6', name: 'Olive Oil Extra Virgin', price: 5.49, imageUrl: 'https://images.unsplash.com/photo-1474979266404-7eaacbcd87c5?auto=format&fit=crop&q=80&w=500', stockOut: false, category: 'Pantry', subcategory: 'Oils' },
-    { id: 'p7', name: 'Sparkling Mineral Water', price: 0.99, imageUrl: 'https://images.unsplash.com/photo-1560624052-449f5ddf0c31?auto=format&fit=crop&q=80&w=500', stockOut: false, category: 'Beverages', subcategory: 'Water' },
-    { id: 'p8', name: 'Free Range Chicken Breast', price: 4.80, imageUrl: 'https://images.unsplash.com/photo-1604503468506-a8da13d82791?auto=format&fit=crop&q=80&w=500', stockOut: false, category: 'Meat & Seafood', subcategory: 'Chicken' },
-    { id: 'p9', name: 'Fresh Apples (1kg)', price: 2.50, imageUrl: 'https://images.unsplash.com/photo-1610832958506-aa56368176cf?auto=format&fit=crop&q=80&w=500', stockOut: false, category: 'Produce', subcategory: 'Fruit' },
-    { id: 'p10', name: 'Cheddar Cheese (250g)', price: 3.20, imageUrl: 'https://images.unsplash.com/photo-1618164422027-55739bc4e240?auto=format&fit=crop&q=80&w=500', stockOut: false, category: 'Dairy & Eggs', subcategory: 'Cheese' },
-    { id: 'p11', name: 'Fresh Tomatoes', price: 1.80, imageUrl: 'https://images.unsplash.com/photo-1592924357228-91a4daadcfea?auto=format&fit=crop&q=80&w=500', stockOut: false, category: 'Produce', subcategory: 'Vegetables' },
-    { id: 'p12', name: 'Orange Juice (1L)', price: 2.50, imageUrl: 'https://images.unsplash.com/photo-1622483767028-3f66f32aef97?auto=format&fit=crop&q=80&w=500', stockOut: false, category: 'Beverages', subcategory: 'Juice' },
-];
-
 export default function Shop() {
     const { items } = useCartStore();
+    const [categories, setCategories] = useState<any[]>([]);
+    const [products, setProducts] = useState<any[]>([]);
+    const [loading, setLoading] = useState(true);
+
     const [selectedCategory, setSelectedCategory] = useState<string>('All');
     const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
 
-    const filteredProducts = MOCK_PRODUCTS.filter((product) => {
-        const matchCategory = selectedCategory === 'All' || product.category === selectedCategory;
-        const matchSubcategory = !selectedSubcategory || product.subcategory === selectedSubcategory;
+    useEffect(() => {
+        Promise.all([
+            fetch('/api/admin/categories').then(res => res.json()),
+            fetch('/api/admin/products').then(res => res.json())
+        ]).then(([cats, prods]) => {
+            // Reformat categories into parent-child structure for UI
+            const topLevel = cats.filter((c: any) => !c.parentId);
+            const formattedCats = topLevel.map((parent: any) => ({
+                id: parent.id,
+                name: parent.name,
+                subcategories: cats.filter((c: any) => c.parentId === parent.id).map((c: any) => c.name)
+            }));
+
+            setCategories(formattedCats);
+            setProducts(prods);
+            setLoading(false);
+        }).catch(err => {
+            console.error('Failed to load shop data', err);
+            setLoading(false);
+        });
+    }, []);
+
+    const filteredProducts = products.filter((product) => {
+        // Handle relation and fallback string
+        const pCat = product.categoryRef ? product.categoryRef.name : product.category;
+
+        // Find if selectedCategory is a parent of pCat
+        let isInCategoryOrSub = false;
+        if (selectedCategory === 'All') {
+            isInCategoryOrSub = true;
+        } else if (pCat === selectedCategory) {
+            isInCategoryOrSub = true;
+        } else {
+            // check if pCat is a subcategory of selectedCategory
+            const parentCatObj = categories.find(c => c.name === selectedCategory);
+            if (parentCatObj && parentCatObj.subcategories.includes(pCat)) {
+                isInCategoryOrSub = true;
+            }
+        }
+
+        const matchSubcategory = !selectedSubcategory || pCat === selectedSubcategory;
         const matchSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
-        return matchCategory && matchSubcategory && matchSearch;
+
+        return isInCategoryOrSub && matchSubcategory && matchSearch;
     });
 
-    const activeSubcategories = CATEGORIES.find(c => c.name === selectedCategory)?.subcategories || [];
+    const activeSubcategories = categories.find(c => c.name === selectedCategory)?.subcategories || [];
 
     const handleCategoryClick = (categoryName: string) => {
         setSelectedCategory(categoryName);
-        setSelectedSubcategory(null); // Reset subcategory when changing main category
+        setSelectedSubcategory(null);
     };
+
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center min-h-screen bg-[#f8f9fa]">
+                <Loader2 className="h-10 w-10 animate-spin text-emerald-600" />
+            </div>
+        );
+    }
 
     return (
         <div className="flex min-h-screen bg-[#f8f9fa]">
@@ -98,7 +95,7 @@ export default function Shop() {
                                 All Products
                             </button>
                         </li>
-                        {CATEGORIES.map((cat) => (
+                        {categories.map((cat) => (
                             <li key={cat.id}>
                                 <button
                                     onClick={() => handleCategoryClick(cat.name)}
@@ -112,7 +109,7 @@ export default function Shop() {
                                 {/* Subcategories Accordion */}
                                 {selectedCategory === cat.name && cat.subcategories.length > 0 && (
                                     <ul className="mt-2 ml-4 space-y-1 border-l-2 border-emerald-100 pl-4 py-2">
-                                        {cat.subcategories.map(sub => (
+                                        {cat.subcategories.map((sub: string) => (
                                             <li key={sub}>
                                                 <button
                                                     onClick={() => setSelectedSubcategory(sub)}
@@ -161,7 +158,7 @@ export default function Shop() {
                         >
                             All {selectedCategory}
                         </button>
-                        {activeSubcategories.map(sub => (
+                        {activeSubcategories.map((sub: string) => (
                             <button
                                 key={sub}
                                 onClick={() => setSelectedSubcategory(sub)}
@@ -176,7 +173,7 @@ export default function Shop() {
                     </div>
                 )}
 
-                {/* Products Grid - Getir Style (6 col on large screens) */}
+                {/* Products Grid */}
                 <h1 className="text-2xl font-extrabold text-slate-900 mb-6">
                     {selectedSubcategory ? `${selectedSubcategory} (${filteredProducts.length})`
                         : selectedCategory !== 'All' ? `${selectedCategory} (${filteredProducts.length})`
@@ -199,8 +196,8 @@ export default function Shop() {
                     </div>
                 ) : (
                     <div className={`grid gap-3 sm:gap-4 lg:gap-5 ${items.length > 0
-                            ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4'
-                            : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
+                        ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4'
+                        : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
                         }`}>
                         {filteredProducts.map((product) => (
                             <ProductCard key={product.id} product={product} />

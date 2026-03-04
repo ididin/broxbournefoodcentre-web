@@ -16,8 +16,26 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     <Link href="/admin/products" className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
                         <Package className="h-5 w-5" /> Products
                     </Link>
+                    <Link href="/admin/categories" className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                        <Package className="h-5 w-5" /> Categories
+                    </Link>
                     <Link href="/admin/orders" className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
                         <ShoppingBag className="h-5 w-5" /> Orders
+                    </Link>
+                    <Link href="/admin/users" className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                        <Settings className="h-5 w-5" /> Users
+                    </Link>
+                    <Link href="/admin/messages" className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                        <Settings className="h-5 w-5" /> Messages
+                    </Link>
+                    <Link href="/admin/media" className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                        <Settings className="h-5 w-5" /> Media
+                    </Link>
+                    <Link href="/admin/reports" className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                        <Settings className="h-5 w-5" /> Reports
+                    </Link>
+                    <Link href="/admin/excel" className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                        <Settings className="h-5 w-5" /> Excel İşlemleri
                     </Link>
                 </nav>
             </aside>
