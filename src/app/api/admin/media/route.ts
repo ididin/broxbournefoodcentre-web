@@ -1,18 +1,13 @@
 import { NextResponse } from 'next/server';
-import { writeFile, readdir, unlink } from 'fs/promises';
-import { join } from 'path';
-
-const uploadDir = join(process.cwd(), 'public', 'uploads');
+import { put, list, del } from '@vercel/blob';
 
 export async function GET() {
     try {
-        const files = await readdir(uploadDir);
-        // Only return image files
-        const images = files.filter(f => /\.(jpg|jpeg|png|webp|gif)$/i.test(f));
-        const urls = images.map(file => `/uploads/${file}`);
-        return NextResponse.json(urls);
+        const { blobs } = await list();
+        // Return structured blob data for the UI
+        return NextResponse.json(blobs.map((b: any) => b.url));
     } catch (error) {
-        // If directory doesn't exist, return empty
+        console.error(error);
         return NextResponse.json([]);
     }
 }
@@ -29,33 +24,27 @@ export async function POST(req: Request) {
         const uploadedUrls = [];
 
         for (const file of files) {
-            const bytes = await file.arrayBuffer();
-            const buffer = Buffer.from(bytes);
-
-            // Generate unique filename to prevent overwrites, or just use original
-            const filename = `${Date.now()}-${file.name.replace(/\s+/g, '-')}`;
-            const filepath = join(uploadDir, filename);
-
-            await writeFile(filepath, buffer);
-            uploadedUrls.push(`/uploads/${filename}`);
+            // Upload to Vercel Blob
+            const blob = await put(file.name, file, {
+                access: 'public',
+            });
+            uploadedUrls.push(blob.url);
         }
 
         return NextResponse.json({ success: true, urls: uploadedUrls });
     } catch (error) {
         console.error(error);
-        return NextResponse.json({ error: 'Failed to upload files' }, { status: 500 });
+        return NextResponse.json({ error: 'Failed to upload files to Vercel Blob' }, { status: 500 });
     }
 }
 
 export async function DELETE(req: Request) {
     try {
         const { url } = await req.json();
-        const filename = url.replace('/uploads/', '');
-        const filepath = join(uploadDir, filename);
-
-        await unlink(filepath);
+        await del(url);
         return NextResponse.json({ success: true });
     } catch (error) {
-        return NextResponse.json({ error: 'Failed to delete file' }, { status: 500 });
+        console.error(error);
+        return NextResponse.json({ error: 'Failed to delete file from Vercel Blob' }, { status: 500 });
     }
 }

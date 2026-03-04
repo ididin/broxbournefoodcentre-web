@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useEffect } from 'react';
-import { Download, Upload, Plus, Edit, Trash2, X } from 'lucide-react';
+import { useState, useEffect, useRef } from 'react';
+import { Download, Upload, Plus, Edit, Trash2, X, Loader2, FileSpreadsheet } from 'lucide-react';
 import Image from 'next/image';
 
 type Category = {
@@ -28,6 +28,11 @@ export default function AdminProductsPage() {
     const [categories, setCategories] = useState<Category[]>([]);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
+    const [isUploading, setIsUploading] = useState(false);
+    const [isImporting, setIsImporting] = useState(false);
+
+    const fileInputRef = useRef<HTMLInputElement>(null);
+    const excelInputRef = useRef<HTMLInputElement>(null);
 
     const [formData, setFormData] = useState({
         id: '', name: '', description: '', price: 0, imageUrl: '', category: '', categoryId: '', brand: '', stockOut: false, storeOrder: 0
@@ -113,15 +118,84 @@ export default function AdminProductsPage() {
         fetchProducts();
     };
 
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsUploading(true);
+        const uploadFormData = new FormData();
+        uploadFormData.append('files', file);
+
+        try {
+            const res = await fetch('/api/admin/media', {
+                method: 'POST',
+                body: uploadFormData
+            });
+            const data = await res.json();
+            if (data.success && data.urls.length > 0) {
+                setFormData(prev => ({ ...prev, imageUrl: data.urls[0] }));
+            }
+        } catch (error) {
+            console.error('Upload failed', error);
+            alert('Upload failed');
+        } finally {
+            setIsUploading(false);
+        }
+    };
+
+    const handleExcelImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        setIsImporting(true);
+        const uploadFormData = new FormData();
+        uploadFormData.append('file', file);
+
+        try {
+            const res = await fetch('/api/admin/excel/import', {
+                method: 'POST',
+                body: uploadFormData
+            });
+            const data = await res.json();
+            if (data.error) {
+                alert('Import error: ' + data.error);
+            } else {
+                alert(`Import successful! ${data.processed} products processed.`);
+                fetchProducts();
+            }
+        } catch (error) {
+            console.error('Import failed', error);
+            alert('Import failed');
+        } finally {
+            setIsImporting(false);
+            if (excelInputRef.current) excelInputRef.current.value = '';
+        }
+    };
+
     return (
         <div className="max-w-6xl mx-auto space-y-6">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Products Management</h1>
-                    <p className="text-gray-500 text-sm mt-1">Manage product details and stock status.</p>
+                    <p className="text-gray-500 text-sm mt-1">Manage product details, stock, and bulk operations.</p>
                 </div>
 
                 <div className="flex items-center gap-3">
+                    <input
+                        type="file"
+                        ref={excelInputRef}
+                        onChange={handleExcelImport}
+                        accept=".xlsx, .xls"
+                        className="hidden"
+                    />
+                    <button
+                        onClick={() => excelInputRef.current?.click()}
+                        disabled={isImporting}
+                        className="flex items-center gap-2 px-4 py-2 border border-gray-300 bg-white text-gray-700 rounded-lg shadow-sm text-sm font-medium hover:bg-gray-50 disabled:opacity-50"
+                    >
+                        {isImporting ? <Loader2 className="h-4 w-4 animate-spin" /> : <FileSpreadsheet className="h-4 w-4" />}
+                        Bulk Import
+                    </button>
                     <button onClick={openCreateModal} className="flex items-center gap-2 px-4 py-2 bg-black text-white rounded-lg shadow-sm text-sm font-medium hover:bg-gray-900">
                         <Plus className="h-4 w-4" /> Add Product
                     </button>
@@ -146,7 +220,7 @@ export default function AdminProductsPage() {
                             {products.map((product) => (
                                 <tr key={product.id} className="hover:bg-gray-50 transition-colors">
                                     <td className="px-6 py-4">
-                                        <div className="h-10 w-10 bg-gray-100 rounded-lg overflow-hidden relative">
+                                        <div className="h-10 w-10 bg-gray-100 rounded-lg overflow-hidden relative border border-gray-100">
                                             {product.imageUrl ? <Image src={product.imageUrl} alt={product.name} fill className="object-cover" /> : null}
                                         </div>
                                     </td>
@@ -191,7 +265,7 @@ export default function AdminProductsPage() {
                         </div>
                         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="md:col-span-2">
-                                <label className="block text-sm font-medium mb-1">Product Name</label>
+                                <label className="block text-sm font-medium mb-1 capitalize">Product Name</label>
                                 <input required type="text" className="w-full px-3 py-2 border rounded-md" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
                             </div>
                             <div className="md:col-span-2">
@@ -216,18 +290,53 @@ export default function AdminProductsPage() {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-sm font-medium mb-1">Legacy Category String</label>
-                                <input type="text" className="w-full px-3 py-2 border rounded-md text-gray-500 bg-gray-50" value={formData.category} readOnly placeholder="Auto-filled from Linked Category" />
-                            </div>
-                            <div className="md:col-span-2">
-                                <label className="block text-sm font-medium mb-1">Image URL</label>
-                                <input type="text" className="w-full px-3 py-2 border rounded-md" value={formData.imageUrl} onChange={e => setFormData({ ...formData, imageUrl: e.target.value })} />
-                            </div>
-                            <div>
                                 <label className="block text-sm font-medium mb-1">Store Order</label>
                                 <input type="number" className="w-full px-3 py-2 border rounded-md" value={formData.storeOrder} onChange={e => setFormData({ ...formData, storeOrder: Number(e.target.value) })} />
                             </div>
-                            <div className="flex items-center pt-6">
+
+                            <div className="md:col-span-2">
+                                <label className="block text-sm font-medium mb-1">Product Image</label>
+                                <div className="flex items-start gap-4">
+                                    <div className="h-20 w-20 bg-gray-100 rounded-lg overflow-hidden relative border border-gray-200 flex-shrink-0">
+                                        {formData.imageUrl ? (
+                                            <Image src={formData.imageUrl} alt="Preview" fill className="object-cover" />
+                                        ) : (
+                                            <div className="h-full w-full flex items-center justify-center text-gray-400">
+                                                <Plus className="h-6 w-6" />
+                                            </div>
+                                        )}
+                                    </div>
+                                    <div className="flex-1 space-y-2">
+                                        <input
+                                            type="text"
+                                            className="w-full px-3 py-2 border rounded-md text-sm"
+                                            placeholder="Image URL"
+                                            value={formData.imageUrl}
+                                            onChange={e => setFormData({ ...formData, imageUrl: e.target.value })}
+                                        />
+                                        <div className="flex items-center gap-2">
+                                            <input
+                                                type="file"
+                                                ref={fileInputRef}
+                                                onChange={handleImageUpload}
+                                                accept="image/*"
+                                                className="hidden"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => fileInputRef.current?.click()}
+                                                disabled={isUploading}
+                                                className="flex items-center gap-2 px-3 py-1.5 bg-gray-100 text-gray-700 rounded-md text-sm font-medium hover:bg-gray-200 disabled:opacity-50"
+                                            >
+                                                {isUploading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Upload className="h-4 w-4" />}
+                                                Upload from Computer
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div className="flex items-center pt-2">
                                 <label className="flex items-center gap-2 cursor-pointer">
                                     <input type="checkbox" className="w-5 h-5" checked={formData.stockOut} onChange={e => setFormData({ ...formData, stockOut: e.target.checked })} />
                                     <span className="font-medium text-red-600">Mark as Out of Stock</span>
