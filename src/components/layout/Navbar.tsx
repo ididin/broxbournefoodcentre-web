@@ -10,7 +10,7 @@ export default function Navbar() {
     return (
         <>
             <div className="bg-emerald-600 text-white text-xs sm:text-sm font-semibold py-2.5 px-4 text-center tracking-wide">
-                📍 Delivery to: EN10 & EN11 | 🚀 Delivered within 24 hours | 💷 Minimum Order: £50
+                📍 Delivery to: EN10, EN11, EN8 & EN9 | 🚀 Delivered within 24 hours | 💷 Free Delivery £50+ (Under £50: £6.99 fee)
             </div>
             <nav className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-sm transition-all duration-300">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

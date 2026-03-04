@@ -135,11 +135,11 @@ export default function CheckoutPage() {
                             </div>
                             <div className="flex justify-between text-gray-600">
                                 <span>Delivery</span>
-                                <span>Free</span>
+                                <span>{getTotalPrice() >= 50 ? 'Free' : '£6.99'}</span>
                             </div>
                             <div className="flex justify-between text-2xl font-bold mt-4 pt-4 border-t">
                                 <span>Total</span>
-                                <span>£{getTotalPrice().toFixed(2)}</span>
+                                <span>£{(getTotalPrice() + (getTotalPrice() >= 50 ? 0 : 6.99)).toFixed(2)}</span>
                             </div>
                         </div>
                     </div>

@@ -95,24 +95,19 @@ export default function CartDrawer() {
 
                         {getTotalPrice() < 50 ? (
                             <div className="text-sm text-amber-700 bg-amber-50 border border-amber-200 p-3 rounded-lg text-center font-medium shadow-sm">
-                                Minimum order amount is £50.<br />
-                                Please add £{(50 - getTotalPrice()).toFixed(2)} more to checkout.
+                                Add £{(50 - getTotalPrice()).toFixed(2)} more for Free Delivery.<br />
+                                Otherwise £6.99 delivery fee applies.
                             </div>
-                        ) : null}
+                        ) : (
+                            <div className="text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 p-3 rounded-lg text-center font-medium shadow-sm">
+                                You qualify for Free Delivery!
+                            </div>
+                        )}
 
                         <Link
-                            href={getTotalPrice() >= 50 ? "/checkout" : "#"}
-                            onClick={(e) => {
-                                if (getTotalPrice() < 50) {
-                                    e.preventDefault();
-                                } else {
-                                    closeCart();
-                                }
-                            }}
-                            className={`w-full flex justify-center py-3.5 rounded-xl font-bold transition-all shadow-sm ${getTotalPrice() >= 50
-                                ? 'bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/20 active:scale-95'
-                                : 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                                }`}
+                            href="/checkout"
+                            onClick={closeCart}
+                            className={`w-full flex justify-center py-3.5 rounded-xl font-bold transition-all shadow-sm bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/20 active:scale-95`}
                         >
                             Proceed to Checkout
                         </Link>

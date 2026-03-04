@@ -72,19 +72,17 @@ export default function CartSidebar() {
 
                 {getTotalPrice() < 50 ? (
                     <div className="text-xs text-amber-700 bg-amber-50 border border-amber-200 p-2.5 rounded-lg text-center font-bold">
-                        Minimum order £50. Add £{(50 - getTotalPrice()).toFixed(2)} more.
+                        Add £{(50 - getTotalPrice()).toFixed(2)} more for Free Delivery. Otherwise £6.99 delivery fee applies.
                     </div>
-                ) : null}
+                ) : (
+                    <div className="text-xs text-emerald-700 bg-emerald-50 border border-emerald-200 p-2.5 rounded-lg text-center font-bold">
+                        You qualify for Free Delivery!
+                    </div>
+                )}
 
                 <Link
-                    href={getTotalPrice() >= 50 ? "/checkout" : "#"}
-                    onClick={(e) => {
-                        if (getTotalPrice() < 50) e.preventDefault();
-                    }}
-                    className={`w-full flex items-center justify-between py-4 px-6 rounded-xl font-bold transition-all shadow-sm ${getTotalPrice() >= 50
-                        ? 'bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/20 active:scale-95'
-                        : 'bg-slate-200 text-slate-400 cursor-not-allowed'
-                        }`}
+                    href={'/checkout'}
+                    className={`w-full flex items-center justify-between py-4 px-6 rounded-xl font-bold transition-all shadow-sm bg-emerald-600 text-white hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/20 active:scale-95`}
                 >
                     <span>Proceed to Checkout</span>
                     <span>→</span>
