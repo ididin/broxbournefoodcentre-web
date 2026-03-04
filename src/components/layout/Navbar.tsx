@@ -22,8 +22,17 @@ export default function Navbar() {
                         </div>
 
                         <div className="flex items-center space-x-8">
+                            <Link href="/" className="text-slate-600 hover:text-emerald-600 font-semibold transition-colors">
+                                Home Page
+                            </Link>
                             <Link href="/shop" className="text-slate-600 hover:text-emerald-600 font-semibold transition-colors">
                                 Shop
+                            </Link>
+                            <Link href="/about" className="text-slate-600 hover:text-emerald-600 font-semibold transition-colors">
+                                About Us
+                            </Link>
+                            <Link href="/contact" className="text-slate-600 hover:text-emerald-600 font-semibold transition-colors">
+                                Contact
                             </Link>
 
                             <button onClick={() => useCartStore.getState().openCart()} className="text-slate-600 hover:text-emerald-600 relative transition-colors group">

@@ -58,9 +58,11 @@ export default function Home() {
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="flex overflow-x-auto gap-6 pb-6 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
           {MOCK_BEST_SELLERS.map((product) => (
-            <ProductCard key={product.id} product={product} />
+            <div key={product.id} className="min-w-[280px] w-[85vw] sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] flex-shrink-0 snap-start">
+              <ProductCard product={product} />
+            </div>
           ))}
         </div>
       </section>

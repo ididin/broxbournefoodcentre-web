@@ -14,6 +14,7 @@ export const metadata: Metadata = {
 };
 
 import Navbar from "@/components/layout/Navbar";
+import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/cart/CartDrawer";
 
 export default function RootLayout({
@@ -24,11 +25,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${jakarta.variable} font-sans antialiased bg-[#fcfcfc] text-slate-800 selection:bg-emerald-500 selection:text-white`}
+        className={`${jakarta.variable} font-sans antialiased bg-[#fcfcfc] text-slate-800 selection:bg-emerald-500 selection:text-white flex flex-col min-h-screen`}
       >
         <Navbar />
         <CartDrawer />
-        <main className="min-h-screen pt-16">{children}</main>
+        <main className="flex-grow">{children}</main>
+        <Footer />
       </body>
     </html>
   );
