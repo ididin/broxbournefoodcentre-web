@@ -27,6 +27,7 @@ export async function POST(req: Request) {
             // Upload to Vercel Blob
             const blob = await put(file.name, file, {
                 access: 'public',
+                contentType: file.type ? file.type : undefined, // Ensure valid MIME type or fallback to auto-inference
             });
             uploadedUrls.push(blob.url);
         }
