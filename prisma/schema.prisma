@@ -30,6 +30,7 @@ model Category {
   parentId    String?
   parent      Category?  @relation("SubCategories", fields: [parentId], references: [id])
   children    Category[] @relation("SubCategories")
+  imageUrl    String?
   storeOrder  Int        @default(0)
   products    Product[]
   createdAt   DateTime   @default(now())
@@ -57,6 +58,7 @@ model Product {
   categoryRef Category? @relation(fields: [categoryId], references: [id])
   brand       String?
   stockOut    Boolean  @default(false)
+  isBestSeller Boolean @default(false)
   storeOrder  Int      @default(0)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt

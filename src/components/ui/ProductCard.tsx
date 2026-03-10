@@ -7,6 +7,7 @@ import { Plus, Minus, Trash2 } from 'lucide-react';
 interface Product {
     id: string;
     name: string;
+    category: string;
     price: number;
     imageUrl?: string | null;
     stockOut: boolean;

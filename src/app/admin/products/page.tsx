@@ -19,6 +19,7 @@ type Product = {
     categoryId: string | null;
     brand: string | null;
     stockOut: boolean;
+    isBestSeller: boolean;
     storeOrder: number;
     categoryRef?: Category | null;
 };
@@ -35,7 +36,7 @@ export default function AdminProductsPage() {
     const excelInputRef = useRef<HTMLInputElement>(null);
 
     const [formData, setFormData] = useState({
-        id: '', name: '', description: '', price: 0, imageUrl: '', category: '', categoryId: '', brand: '', stockOut: false, storeOrder: 0
+        id: '', name: '', description: '', price: 0, imageUrl: '', category: '', categoryId: '', brand: '', stockOut: false, isBestSeller: false, storeOrder: 0
     });
 
     useEffect(() => {
@@ -87,6 +88,7 @@ export default function AdminProductsPage() {
             categoryId: prod.categoryId || '',
             brand: prod.brand || '',
             stockOut: prod.stockOut,
+            isBestSeller: prod.isBestSeller || false,
             storeOrder: prod.storeOrder
         });
         setIsEditing(true);
@@ -104,7 +106,7 @@ export default function AdminProductsPage() {
     };
 
     const openCreateModal = () => {
-        setFormData({ id: '', name: '', description: '', price: 0, imageUrl: '', category: '', categoryId: '', brand: '', stockOut: false, storeOrder: 0 });
+        setFormData({ id: '', name: '', description: '', price: 0, imageUrl: '', category: '', categoryId: '', brand: '', stockOut: false, isBestSeller: false, storeOrder: 0 });
         setIsEditing(false);
         setIsModalOpen(true);
     };
@@ -212,6 +214,7 @@ export default function AdminProductsPage() {
                                 <th className="px-6 py-4 font-semibold">Category</th>
                                 <th className="px-6 py-4 font-semibold">Price</th>
                                 <th className="px-6 py-4 font-semibold">Store Order</th>
+                                <th className="px-6 py-4 font-semibold text-center">Best Seller</th>
                                 <th className="px-6 py-4 font-semibold text-center">Stock Status</th>
                                 <th className="px-6 py-4 font-semibold text-right">Actions</th>
                             </tr>
@@ -227,7 +230,14 @@ export default function AdminProductsPage() {
                                     <td className="px-6 py-4 font-medium text-gray-900">{product.name}</td>
                                     <td className="px-6 py-4 text-gray-600">{product.categoryRef ? product.categoryRef.name : product.category}</td>
                                     <td className="px-6 py-4 text-gray-900 font-medium">£{product.price.toFixed(2)}</td>
-                                    <td className="px-6 py-4 text-gray-600">{product.storeOrder}</td>
+                                    <td className="px-6 py-4 text-600">{product.storeOrder}</td>
+                                    <td className="px-6 py-4 text-center">
+                                        {product.isBestSeller ? (
+                                            <span className="bg-yellow-100 text-yellow-800 text-xs font-medium px-2.5 py-0.5 rounded border border-yellow-300">Yes</span>
+                                        ) : (
+                                            <span className="text-gray-400">-</span>
+                                        )}
+                                    </td>
                                     <td className="px-6 py-4 text-center">
                                         <button
                                             onClick={() => toggleStock(product)}
@@ -336,10 +346,14 @@ export default function AdminProductsPage() {
                                 </div>
                             </div>
 
-                            <div className="flex items-center pt-2">
+                            <div className="flex items-center pt-2 space-x-6">
                                 <label className="flex items-center gap-2 cursor-pointer">
                                     <input type="checkbox" className="w-5 h-5" checked={formData.stockOut} onChange={e => setFormData({ ...formData, stockOut: e.target.checked })} />
                                     <span className="font-medium text-red-600">Mark as Out of Stock</span>
+                                </label>
+                                <label className="flex items-center gap-2 cursor-pointer">
+                                    <input type="checkbox" className="w-5 h-5 accent-yellow-500" checked={formData.isBestSeller} onChange={e => setFormData({ ...formData, isBestSeller: e.target.checked })} />
+                                    <span className="font-medium text-yellow-700">Best Seller</span>
                                 </label>
                             </div>
 

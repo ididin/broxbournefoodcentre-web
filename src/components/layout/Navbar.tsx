@@ -1,11 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { ShoppingCart, User } from 'lucide-react';
+import { useState } from 'react';
+import { ShoppingCart, User, Menu, X } from 'lucide-react';
 import { useCartStore } from '@/store/useCartStore';
 
 export default function Navbar() {
     const totalItems = useCartStore((state) => state.getTotalItems());
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
     return (
         <>
@@ -21,15 +23,16 @@ export default function Navbar() {
                             </Link>
                         </div>
 
-                        <div className="flex items-center space-x-8">
+                        {/* Desktop Navigation */}
+                        <div className="hidden md:flex items-center space-x-8">
                             <Link href="/" className="text-slate-600 hover:text-emerald-600 font-semibold transition-colors">
                                 Home Page
                             </Link>
                             <Link href="/shop" className="text-slate-600 hover:text-emerald-600 font-semibold transition-colors">
                                 Shop
                             </Link>
-                            <Link href="/about" className="text-slate-600 hover:text-emerald-600 font-semibold transition-colors">
-                                About Us
+                            <Link href="/services" className="text-slate-600 hover:text-emerald-600 font-semibold transition-colors">
+                                Services
                             </Link>
                             <Link href="/contact" className="text-slate-600 hover:text-emerald-600 font-semibold transition-colors">
                                 Contact
@@ -47,8 +50,36 @@ export default function Navbar() {
                                 <User className="h-6 w-6 hover:scale-110 transition-transform" />
                             </Link>
                         </div>
+
+                        {/* Mobile Actions & Toggle */}
+                        <div className="flex md:hidden items-center space-x-4">
+                            <button onClick={() => useCartStore.getState().openCart()} className="text-slate-600 relative transition-colors">
+                                <ShoppingCart className="h-6 w-6" />
+                                {totalItems > 0 && (
+                                    <span className="absolute -top-2 -right-2 bg-emerald-500 text-white text-[10px] font-bold rounded-full h-5 w-5 flex items-center justify-center shadow-sm">
+                                        {totalItems}
+                                    </span>
+                                )}
+                            </button>
+                            <Link href="/login" className="text-slate-600 transition-colors">
+                                <User className="h-6 w-6" />
+                            </Link>
+                            <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-slate-600 p-1">
+                                {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
+                            </button>
+                        </div>
                     </div>
                 </div>
+
+                {/* Mobile Menu Dropdown */}
+                {isMobileMenuOpen && (
+                    <div className="md:hidden bg-white border-b border-gray-100 px-4 py-4 space-y-4 shadow-lg absolute w-full">
+                        <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="block text-slate-600 font-semibold">Home Page</Link>
+                        <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="block text-slate-600 font-semibold">Shop</Link>
+                        <Link href="/services" onClick={() => setIsMobileMenuOpen(false)} className="block text-slate-600 font-semibold">Services</Link>
+                        <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="block text-slate-600 font-semibold">Contact</Link>
+                    </div>
+                )}
             </nav>
         </>
     );

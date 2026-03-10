@@ -2,50 +2,23 @@ import Slider from '@/components/ui/Slider';
 import ProductCard from '@/components/ui/ProductCard';
 import Link from 'next/link';
 import Image from 'next/image';
+import { prisma } from '@/lib/prisma';
 
-const MOCK_BEST_SELLERS = [
-  {
-    id: 'prod-1',
-    name: 'Fresh Organic Bananas (1kg)',
-    price: 1.50,
-    imageUrl: 'https://images.unsplash.com/photo-1571501715200-afcb8cc6e927?auto=format&fit=crop&q=80&w=500',
-    stockOut: false,
-    category: 'Produce',
-  },
-  {
-    id: 'prod-2',
-    name: 'Whole Milk (2L)',
-    price: 1.25,
-    imageUrl: 'https://images.unsplash.com/photo-1550583724-b2692b85b150?auto=format&fit=crop&q=80&w=500',
-    stockOut: false,
-    category: 'Dairy',
-  },
-  {
-    id: 'prod-3',
-    name: 'Farm Fresh Eggs (12 pk)',
-    price: 2.10,
-    imageUrl: 'https://images.unsplash.com/photo-1582722872421-5a50e5fdcf91?auto=format&fit=crop&q=80&w=500',
-    stockOut: false,
-    category: 'Dairy',
-  },
-  {
-    id: 'prod-4',
-    name: 'Sourdough Bread',
-    price: 3.50,
-    imageUrl: 'https://images.unsplash.com/photo-1589367920969-ab8e050eb0e9?auto=format&fit=crop&q=80&w=500',
-    stockOut: false,
-    category: 'Bakery',
-  },
-];
+export const dynamic = 'force-dynamic';
 
-const CATEGORIES = [
-  { name: 'Fresh Produce', image: 'https://images.unsplash.com/photo-1518843875459-f738682238a6?auto=format&fit=crop&q=80&w=400', slug: 'produce' },
-  { name: 'Dairy & Eggs', image: 'https://images.unsplash.com/photo-1628088062854-d1870b4553da?auto=format&fit=crop&q=80&w=400', slug: 'dairy' },
-  { name: 'Bakery', image: 'https://images.unsplash.com/photo-1509440159596-0249088772ff?auto=format&fit=crop&q=80&w=400', slug: 'bakery' },
-  { name: 'Meat & Seafood', image: 'https://images.unsplash.com/photo-1607623814075-e51df1bdc82f?auto=format&fit=crop&q=80&w=400', slug: 'meat' },
-];
+export default async function Home() {
+  const categories = await prisma.category.findMany({
+    where: { parentId: null },
+    orderBy: { storeOrder: 'asc' },
+    take: 8
+  });
 
-export default function Home() {
+  const bestSellers = await prisma.product.findMany({
+    where: { isBestSeller: true, stockOut: false },
+    orderBy: { storeOrder: 'asc' },
+    take: 8,
+    include: { categoryRef: true }
+  });
   return (
     <div className="flex flex-col gap-16 pb-16">
       <Slider />
@@ -59,11 +32,18 @@ export default function Home() {
         </div>
 
         <div className="flex overflow-x-auto gap-6 pb-6 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {MOCK_BEST_SELLERS.map((product) => (
-            <div key={product.id} className="min-w-[280px] w-[85vw] sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] flex-shrink-0 snap-start">
-              <ProductCard product={product} />
-            </div>
-          ))}
+          {bestSellers.length > 0 ? (
+            bestSellers.map((product) => (
+              <div key={product.id} className="min-w-[280px] w-[85vw] sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] flex-shrink-0 snap-start">
+                <ProductCard product={{
+                  ...product,
+                  category: product.categoryRef?.name || product.category
+                }} />
+              </div>
+            ))
+          ) : (
+            <p className="text-gray-500 italic">No best sellers available yet.</p>
+          )}
         </div>
       </section>
 
@@ -77,18 +57,24 @@ export default function Home() {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-            {CATEGORIES.map((category) => (
+            {categories.map((category) => (
               <Link
                 href={`/shop?category=${category.slug}`}
-                key={category.name}
-                className="group relative h-72 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 block"
+                key={category.id}
+                className="group relative h-72 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 block bg-emerald-50"
               >
-                <Image
-                  src={category.image}
-                  alt={category.name}
-                  fill
-                  className="object-cover group-hover:scale-110 group-hover:rotate-1 transition-transform duration-700 ease-out"
-                />
+                {category.imageUrl ? (
+                  <Image
+                    src={category.imageUrl}
+                    alt={category.name}
+                    fill
+                    className="object-cover group-hover:scale-110 group-hover:rotate-1 transition-transform duration-700 ease-out"
+                  />
+                ) : (
+                  <div className="absolute inset-0 bg-emerald-100 flex items-center justify-center text-emerald-800 font-bold text-xl">
+                    {category.name}
+                  </div>
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-900/90 via-slate-900/20 to-transparent flex items-end p-8">
                   <h3 className="text-2xl font-bold text-white group-hover:-translate-y-2 transition-transform duration-300">
                     {category.name}
@@ -96,6 +82,9 @@ export default function Home() {
                 </div>
               </Link>
             ))}
+            {categories.length === 0 && (
+              <p className="col-span-full text-gray-500 italic">Categories are being updated...</p>
+            )}
           </div>
         </div>
       </section>

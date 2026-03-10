@@ -15,12 +15,13 @@ export async function GET() {
 
 export async function POST(req: Request) {
     try {
-        const { name, slug, parentId, storeOrder } = await req.json();
+        const { name, slug, parentId, imageUrl, storeOrder } = await req.json();
         const newCategory = await prisma.category.create({
             data: {
                 name,
                 slug,
                 parentId: parentId || null,
+                imageUrl: imageUrl || null,
                 storeOrder: storeOrder || 0
             }
         });
@@ -32,13 +33,14 @@ export async function POST(req: Request) {
 
 export async function PUT(req: Request) {
     try {
-        const { id, name, slug, parentId, storeOrder } = await req.json();
+        const { id, name, slug, parentId, imageUrl, storeOrder } = await req.json();
         const updatedCategory = await prisma.category.update({
             where: { id },
             data: {
                 name,
                 slug,
                 parentId: parentId || null,
+                imageUrl: imageUrl !== undefined ? imageUrl : undefined,
                 storeOrder: storeOrder !== undefined ? storeOrder : undefined
             }
         });

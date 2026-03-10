@@ -18,7 +18,7 @@ export async function GET() {
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { name, description, price, imageUrl, category, categoryId, brand, stockOut, storeOrder } = body;
+        const { name, description, price, imageUrl, category, categoryId, brand, stockOut, isBestSeller, storeOrder } = body;
         const newProduct = await prisma.product.create({
             data: {
                 name,
@@ -29,6 +29,7 @@ export async function POST(req: Request) {
                 categoryId,
                 brand,
                 stockOut: stockOut || false,
+                isBestSeller: isBestSeller || false,
                 storeOrder: storeOrder || 0
             }
         });
@@ -41,7 +42,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
     try {
         const body = await req.json();
-        const { id, name, description, price, imageUrl, category, categoryId, brand, stockOut, storeOrder } = body;
+        const { id, name, description, price, imageUrl, category, categoryId, brand, stockOut, isBestSeller, storeOrder } = body;
         const updatedProduct = await prisma.product.update({
             where: { id },
             data: {
@@ -53,6 +54,7 @@ export async function PUT(req: Request) {
                 categoryId,
                 brand,
                 stockOut: stockOut !== undefined ? stockOut : undefined,
+                isBestSeller: isBestSeller !== undefined ? isBestSeller : undefined,
                 storeOrder: storeOrder !== undefined ? storeOrder : undefined
             }
         });
