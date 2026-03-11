@@ -26,7 +26,7 @@ export async function POST(req: Request) {
                 price: Number(price),
                 imageUrl,
                 category,
-                categoryId,
+                categoryId: categoryId === '' ? null : categoryId,
                 brand,
                 stockOut: stockOut || false,
                 isBestSeller: isBestSeller || false,
@@ -43,20 +43,22 @@ export async function PUT(req: Request) {
     try {
         const body = await req.json();
         const { id, name, description, price, imageUrl, category, categoryId, brand, stockOut, isBestSeller, storeOrder } = body;
+
+        const updateData: any = {};
+        if (name !== undefined) updateData.name = name;
+        if (description !== undefined) updateData.description = description;
+        if (price !== undefined) updateData.price = Number(price);
+        if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
+        if (category !== undefined) updateData.category = category;
+        if (categoryId !== undefined) updateData.categoryId = categoryId === '' ? null : categoryId;
+        if (brand !== undefined) updateData.brand = brand;
+        if (stockOut !== undefined) updateData.stockOut = stockOut;
+        if (isBestSeller !== undefined) updateData.isBestSeller = isBestSeller;
+        if (storeOrder !== undefined) updateData.storeOrder = storeOrder;
+
         const updatedProduct = await prisma.product.update({
             where: { id },
-            data: {
-                name,
-                description,
-                price: Number(price),
-                imageUrl,
-                category,
-                categoryId,
-                brand,
-                stockOut: stockOut !== undefined ? stockOut : undefined,
-                isBestSeller: isBestSeller !== undefined ? isBestSeller : undefined,
-                storeOrder: storeOrder !== undefined ? storeOrder : undefined
-            }
+            data: updateData
         });
         return NextResponse.json(updatedProduct);
     } catch (error) {
