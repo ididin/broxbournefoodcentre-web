@@ -1,5 +1,6 @@
 import Slider from '@/components/ui/Slider';
 import ProductCard from '@/components/ui/ProductCard';
+import BestSellersSlider from '@/components/ui/BestSellersSlider';
 import Link from 'next/link';
 import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
@@ -23,7 +24,7 @@ export default async function Home() {
     <div className="flex flex-col gap-16 pb-16">
       <Slider />
 
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full mt-4">
+      <section className="max-w-7xl flex-1 px-4 sm:px-6 lg:px-8 w-full mt-4 mx-auto relative overflow-hidden">
         <div className="flex justify-between items-end mb-8">
           <h2 className="text-3xl font-bold text-gray-900 tracking-tight">Best Selling Products</h2>
           <Link href="/shop" className="text-black font-semibold hover:underline">
@@ -31,20 +32,7 @@ export default async function Home() {
           </Link>
         </div>
 
-        <div className="flex overflow-x-auto gap-6 pb-6 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
-          {bestSellers.length > 0 ? (
-            bestSellers.map((product) => (
-              <div key={product.id} className="min-w-[280px] w-[85vw] sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] flex-shrink-0 snap-start">
-                <ProductCard product={{
-                  ...product,
-                  category: product.categoryRef?.name || product.category
-                }} />
-              </div>
-            ))
-          ) : (
-            <p className="text-gray-500 italic">No best sellers available yet.</p>
-          )}
-        </div>
+        <BestSellersSlider products={bestSellers} />
       </section>
 
       <section className="bg-white py-16" id="categories">

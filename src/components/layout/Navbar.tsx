@@ -2,12 +2,14 @@
 
 import Link from 'next/link';
 import { useState } from 'react';
-import { ShoppingCart, User, Menu, X } from 'lucide-react';
+import { ShoppingCart, User, Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
 import { useCartStore } from '@/store/useCartStore';
+import { useSession, signOut } from 'next-auth/react';
 
 export default function Navbar() {
     const totalItems = useCartStore((state) => state.getTotalItems());
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    const { data: session } = useSession();
 
     return (
         <>
@@ -46,9 +48,21 @@ export default function Navbar() {
                                     </span>
                                 )}
                             </button>
-                            <Link href="/login" className="text-slate-600 hover:text-emerald-600 transition-colors">
-                                <User className="h-6 w-6 hover:scale-110 transition-transform" />
-                            </Link>
+
+                            {session ? (
+                                <div className="flex items-center space-x-4">
+                                    <Link href={session.user.role === 'ADMIN' ? '/admin/dashboard' : '/dashboard'} className="text-slate-600 hover:text-emerald-600 transition-colors flex items-center gap-1">
+                                        <LayoutDashboard className="h-5 w-5" />
+                                    </Link>
+                                    <button onClick={() => signOut()} className="text-slate-600 hover:text-red-600 transition-colors">
+                                        <LogOut className="h-5 w-5 hover:scale-110 transition-transform" />
+                                    </button>
+                                </div>
+                            ) : (
+                                <Link href="/login" className="text-slate-600 hover:text-emerald-600 transition-colors">
+                                    <User className="h-6 w-6 hover:scale-110 transition-transform" />
+                                </Link>
+                            )}
                         </div>
 
                         {/* Mobile Actions & Toggle */}
@@ -61,9 +75,17 @@ export default function Navbar() {
                                     </span>
                                 )}
                             </button>
-                            <Link href="/login" className="text-slate-600 transition-colors">
-                                <User className="h-6 w-6" />
-                            </Link>
+
+                            {session ? (
+                                <button onClick={() => signOut()} className="text-slate-600 transition-colors">
+                                    <LogOut className="h-6 w-6" />
+                                </button>
+                            ) : (
+                                <Link href="/login" className="text-slate-600 transition-colors">
+                                    <User className="h-6 w-6" />
+                                </Link>
+                            )}
+
                             <button onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)} className="text-slate-600 p-1">
                                 {isMobileMenuOpen ? <X className="h-6 w-6" /> : <Menu className="h-6 w-6" />}
                             </button>
@@ -78,6 +100,11 @@ export default function Navbar() {
                         <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="block text-slate-600 font-semibold">Shop</Link>
                         <Link href="/services" onClick={() => setIsMobileMenuOpen(false)} className="block text-slate-600 font-semibold">Services</Link>
                         <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="block text-slate-600 font-semibold">Contact</Link>
+                        {session && (
+                            <Link href={session.user.role === 'ADMIN' ? '/admin/dashboard' : '/dashboard'} onClick={() => setIsMobileMenuOpen(false)} className="block text-emerald-600 font-semibold border-t pt-2">
+                                Dashboard ({session.user.name})
+                            </Link>
+                        )}
                     </div>
                 )}
             </nav>

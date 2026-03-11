@@ -1,5 +1,7 @@
 import { NextAuthOptions } from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
+import { prisma } from "@/lib/prisma";
+import bcrypt from "bcryptjs";
 
 export const authOptions: NextAuthOptions = {
   providers: [
@@ -14,16 +16,21 @@ export const authOptions: NextAuthOptions = {
           return null;
         }
 
-        // MOCK AUTHENTICATION since Prisma is not connected yet
-        if (credentials.email === "admin@example.com" && credentials.password === "password") {
-          return { id: "1", email: "admin@example.com", name: "Admin User", role: "ADMIN" };
+        const user = await prisma.user.findUnique({
+          where: { email: credentials.email }
+        });
+
+        if (!user) {
+          return null;
         }
 
-        if (credentials.email === "user@example.com" && credentials.password === "password") {
-          return { id: "2", email: "user@example.com", name: "Test User", role: "CUSTOMER" };
+        const isPasswordValid = await bcrypt.compare(credentials.password, user.password);
+
+        if (!isPasswordValid) {
+          return null;
         }
 
-        return null;
+        return { id: user.id, email: user.email, name: user.name, role: user.role };
       }
     })
   ],

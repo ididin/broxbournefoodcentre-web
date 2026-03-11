@@ -16,6 +16,7 @@ export const metadata: Metadata = {
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/cart/CartDrawer";
+import { NextAuthProvider } from "@/providers/NextAuthProvider";
 
 export default function RootLayout({
   children,
@@ -27,10 +28,12 @@ export default function RootLayout({
       <body
         className={`${jakarta.variable} font-sans antialiased bg-[#fcfcfc] text-slate-800 selection:bg-emerald-500 selection:text-white flex flex-col min-h-screen`}
       >
-        <Navbar />
-        <CartDrawer />
-        <main className="flex-grow">{children}</main>
-        <Footer />
+        <NextAuthProvider>
+          <Navbar />
+          <CartDrawer />
+          <main className="flex-grow">{children}</main>
+          <Footer />
+        </NextAuthProvider>
       </body>
     </html>
   );

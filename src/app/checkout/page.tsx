@@ -5,6 +5,8 @@ import { useCartStore } from '@/store/useCartStore';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
+const SERVED_POSTAL_CODES = ['EN8', 'EN9', 'EN10', 'EN11'];
+
 export default function CheckoutPage() {
     const { items, getTotalPrice, clearCart } = useCartStore();
     const router = useRouter();
@@ -12,23 +14,55 @@ export default function CheckoutPage() {
         name: '',
         email: '',
         phone: '',
-        address: '',
+        addressLine: '',
+        postalCode: '',
         deliveryTime: '',
         paymentMethod: 'CASH', // or CREDIT_CARD
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
+
+        if (!formData.postalCode) {
+            alert('Please select a valid postal code.');
+            return;
+        }
+
         setIsSubmitting(true);
 
-        // Simulate API call for order creation
-        setTimeout(() => {
+        const subtotal = getTotalPrice();
+        const deliveryFee = subtotal >= 50 ? 0 : 6.99;
+        const totalAmount = subtotal + deliveryFee;
+        const fullAddress = `${formData.addressLine}, ${formData.postalCode}, Broxbourne, London`;
+
+        try {
+            const res = await fetch('/api/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    guestEmail: formData.email,
+                    deliveryAddress: fullAddress,
+                    deliveryTimePref: formData.deliveryTime,
+                    paymentMethod: formData.paymentMethod,
+                    totalAmount: totalAmount,
+                    items: items
+                })
+            });
+
+            if (res.ok) {
+                setIsSuccess(true);
+                clearCart();
+            } else {
+                alert('Order could not be placed. Please try again.');
+            }
+        } catch (error) {
+            console.error('Checkout error:', error);
+            alert('A network error occurred.');
+        } finally {
             setIsSubmitting(false);
-            setIsSuccess(true);
-            clearCart();
-        }, 1500);
+        }
     };
 
     if (isSuccess) {
@@ -38,7 +72,7 @@ export default function CheckoutPage() {
                     <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
                 </div>
                 <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-emerald-800 mb-4">Order Confirmed!</h1>
-                <p className="text-xl text-gray-600 mb-8">Thank you for your order, {formData.name}. We will deliver it within 24 hours.</p>
+                <p className="text-xl text-gray-600 mb-8">Thank you for your order, {formData.name}. We will deliver it to {formData.postalCode} within 24 hours.</p>
                 <button onClick={() => router.push('/')} className="bg-black text-white px-8 py-3 rounded-xl font-bold hover:bg-gray-800 transition">Return to Home</button>
             </div>
         );
@@ -80,10 +114,23 @@ export default function CheckoutPage() {
 
                         <div className="pt-4">
                             <h2 className="text-xl font-bold border-b pb-2 mb-4">Delivery Details</h2>
-                            <div>
-                                <label className="block text-sm font-medium text-gray-700 mb-1">Full Delivery Address</label>
-                                <textarea required rows={3} className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-black outline-none" value={formData.address} onChange={e => setFormData({ ...formData, address: e.target.value })} />
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                                <div className="md:col-span-2">
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Street Address</label>
+                                    <input required type="text" placeholder="House number and street name" className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-black outline-none" value={formData.addressLine} onChange={e => setFormData({ ...formData, addressLine: e.target.value })} />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
+                                    <select required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-black outline-none bg-white" value={formData.postalCode} onChange={e => setFormData({ ...formData, postalCode: e.target.value })}>
+                                        <option value="" disabled>Select code</option>
+                                        {SERVED_POSTAL_CODES.map(code => (
+                                            <option key={code} value={code}>{code}</option>
+                                        ))}
+                                    </select>
+                                    <p className="text-xs text-emerald-600 mt-1">We only deliver to these areas.</p>
+                                </div>
                             </div>
+
                             <div className="mt-4">
                                 <label className="block text-sm font-medium text-gray-700 mb-1">Preferred Delivery Time (Optional)</label>
                                 <input type="time" className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-black outline-none" value={formData.deliveryTime} onChange={e => setFormData({ ...formData, deliveryTime: e.target.value })} />
@@ -104,7 +151,7 @@ export default function CheckoutPage() {
                             </div>
                         </div>
 
-                        <button disabled={isSubmitting} type="submit" className="w-full py-4 mt-8 bg-black text-white rounded-xl font-bold text-lg hover:bg-gray-900 transition flex justify-center items-center">
+                        <button disabled={isSubmitting} type="submit" className="w-full py-4 mt-8 bg-black text-white rounded-xl font-bold text-lg hover:bg-gray-900 transition flex justify-center items-center disabled:opacity-50">
                             {isSubmitting ? <span className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></span> : 'Place Order'}
                         </button>
                     </form>
