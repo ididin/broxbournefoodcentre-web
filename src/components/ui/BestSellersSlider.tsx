@@ -38,7 +38,7 @@ export default function BestSellersSlider({ products }: { products: any[] }) {
                 className="flex overflow-x-auto gap-6 pb-6 pt-2 snap-x snap-mandatory [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden scroll-smooth px-1"
             >
                 {products.map((product) => (
-                    <div key={product.id} className="min-w-[280px] w-[85vw] sm:w-[calc(50%-12px)] lg:w-[calc(25%-18px)] flex-shrink-0 snap-start">
+                    <div key={product.id} className="min-w-[180px] w-[60vw] sm:w-[calc(33.33%-16px)] md:w-[calc(25%-18px)] lg:w-[calc(16.666%-20px)] flex-shrink-0 snap-start">
                         <ProductCard product={{
                             ...product,
                             category: product.categoryRef?.name || product.category

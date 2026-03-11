@@ -11,7 +11,7 @@ export default async function Home() {
   const categories = await prisma.category.findMany({
     where: { parentId: null },
     orderBy: { storeOrder: 'asc' },
-    take: 8
+    take: 12
   });
 
   const bestSellers = await prisma.product.findMany({
@@ -44,12 +44,12 @@ export default async function Home() {
             </div>
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
             {categories.map((category) => (
               <Link
                 href={`/shop?category=${category.slug}`}
                 key={category.id}
-                className="group relative h-72 rounded-3xl overflow-hidden shadow-sm hover:shadow-2xl transition-all duration-500 block bg-emerald-50"
+                className="group relative h-40 sm:h-48 md:h-56 rounded-2xl md:rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-500 block bg-emerald-50"
               >
                 {category.imageUrl ? (
                   <Image
