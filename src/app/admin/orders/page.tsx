@@ -94,14 +94,16 @@ export default function AdminOrdersPage() {
                         <thead>
                             <tr>
                                 <th>Item</th>
+                                <th class="right">Unit</th>
                                 <th class="right">Qty</th>
-                                <th class="right">Price</th>
+                                <th class="right">Total</th>
                             </tr>
                         </thead>
                         <tbody>
                             ${selectedOrder.orderItems.map(item => `
                                 <tr>
                                     <td>${item.product.name}</td>
+                                    <td class="right">£${item.priceAtBuy.toFixed(2)}</td>
                                     <td class="right">${item.quantity}</td>
                                     <td class="right">£${(item.quantity * item.priceAtBuy).toFixed(2)}</td>
                                 </tr>

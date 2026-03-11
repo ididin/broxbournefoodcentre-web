@@ -78,7 +78,7 @@ export default function Shop() {
     }
 
     return (
-        <div className="flex min-h-screen bg-[#f8f9fa]">
+        <div className="flex min-h-screen bg-[#f8f9fa] overflow-x-hidden">
             {/* Left Sidebar - Categories (Sticky) */}
             <aside className="hidden lg:block w-72 bg-white border-r border-gray-200 sticky top-20 h-[calc(100vh-5rem)] overflow-y-auto custom-scrollbar">
                 <div className="p-6">
@@ -131,7 +131,7 @@ export default function Shop() {
             </aside>
 
             {/* Main Content Area */}
-            <main className="flex-1 p-4 sm:p-6 lg:p-8">
+            <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8">
                 {/* Mobile Main Categories Row */}
                 <div className="flex lg:hidden gap-3 mb-4 overflow-x-auto pb-2 custom-scrollbar snap-x">
                     <button

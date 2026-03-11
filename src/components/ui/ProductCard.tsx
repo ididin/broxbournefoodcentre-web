@@ -113,7 +113,7 @@ export default function ProductCard({ product }: { product: Product }) {
                 )}
             </div>
 
-            <div className="p-2 sm:p-4 flex flex-col flex-1 pb-16 sm:pb-20">
+            <div className="p-2 sm:p-4 flex flex-col flex-1 pb-3 sm:pb-4">
                 <span className="text-[10px] sm:text-xs font-bold text-emerald-600 mb-1 sm:mb-2 uppercase tracking-wider">{product.category}</span>
                 <h3 className="text-sm sm:text-base font-bold text-slate-800 leading-snug mb-1">
                     {cleanName}
