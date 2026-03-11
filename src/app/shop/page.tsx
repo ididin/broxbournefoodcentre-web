@@ -132,6 +132,31 @@ export default function Shop() {
 
             {/* Main Content Area */}
             <main className="flex-1 p-4 sm:p-6 lg:p-8">
+                {/* Mobile Main Categories Row */}
+                <div className="flex lg:hidden gap-3 mb-4 overflow-x-auto pb-2 custom-scrollbar snap-x">
+                    <button
+                        onClick={() => handleCategoryClick('All')}
+                        className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all flex-shrink-0 snap-start ${selectedCategory === 'All'
+                            ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
+                            : 'bg-white text-slate-600 border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
+                            }`}
+                    >
+                        All Products
+                    </button>
+                    {categories.map((cat) => (
+                        <button
+                            key={cat.id}
+                            onClick={() => handleCategoryClick(cat.name)}
+                            className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all flex-shrink-0 snap-start ${selectedCategory === cat.name
+                                ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
+                                : 'bg-white text-slate-600 border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
+                                }`}
+                        >
+                            {cat.name}
+                        </button>
+                    ))}
+                </div>
+
                 {/* Search Header */}
                 <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col justify-between gap-4 mb-6">
                     <div className="relative w-full">

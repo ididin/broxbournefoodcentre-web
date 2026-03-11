@@ -73,19 +73,19 @@ export default function ProductCard({ product }: { product: Product }) {
                 {/* Top Right Add Button Container */}
                 <div className="absolute top-2 right-2 z-10 flex flex-col items-end shadow-md rounded-lg overflow-hidden bg-white/90 backdrop-blur-sm border border-emerald-100/50">
                     {quantityInCart > 0 ? (
-                        <div className="flex flex-col items-center bg-white shadow-sm overflow-hidden w-8 border border-emerald-100/50">
+                        <div className="flex flex-col items-center bg-white shadow-sm overflow-hidden w-10 lg:w-8 border border-emerald-100/50">
                             <button
                                 onClick={handleAdd}
-                                className="w-8 h-8 flex items-center justify-center text-emerald-600 hover:bg-emerald-50 transition-colors border-b border-emerald-50"
+                                className="w-10 h-10 lg:w-8 lg:h-8 flex items-center justify-center text-emerald-600 hover:bg-emerald-50 transition-colors border-b border-emerald-50 active:bg-emerald-100"
                             >
                                 <Plus className="w-4 h-4" />
                             </button>
-                            <span className="w-8 h-8 flex items-center justify-center text-sm font-bold bg-emerald-600 text-white shadow-inner">
+                            <span className="w-10 h-10 lg:w-8 lg:h-8 flex items-center justify-center text-base lg:text-sm font-bold bg-emerald-600 text-white shadow-inner">
                                 {quantityInCart}
                             </span>
                             <button
                                 onClick={handleRemove}
-                                className="w-8 h-8 flex items-center justify-center text-emerald-600 hover:bg-emerald-50 transition-colors border-t border-emerald-50"
+                                className="w-10 h-10 lg:w-8 lg:h-8 flex items-center justify-center text-emerald-600 hover:bg-emerald-50 transition-colors border-t border-emerald-50 active:bg-emerald-100"
                             >
                                 {quantityInCart === 1 ? <Trash2 className="w-4 h-4" /> : <Minus className="w-4 h-4" />}
                             </button>
@@ -94,9 +94,9 @@ export default function ProductCard({ product }: { product: Product }) {
                         <button
                             onClick={handleAdd}
                             disabled={product.stockOut}
-                            className={`w-8 h-8 flex items-center justify-center transition-all ${product.stockOut
+                            className={`w-10 h-10 lg:w-8 lg:h-8 flex items-center justify-center transition-all ${product.stockOut
                                 ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
-                                : 'bg-white text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700'
+                                : 'bg-white text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 active:bg-emerald-100'
                                 }`}
                         >
                             <Plus className="w-6 h-6 stroke-[2.5px]" />
