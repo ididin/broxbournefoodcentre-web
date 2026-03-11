@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Eye, X } from 'lucide-react';
+import { Eye, X, Printer } from 'lucide-react';
 
 type Order = {
     id: string;
@@ -44,9 +44,88 @@ export default function AdminOrdersPage() {
         });
 
         if (!res.ok) {
-            // Revert on failure
             fetchOrders();
         }
+    };
+
+    const handlePrint = () => {
+        if (!selectedOrder) return;
+
+        const printWindow = window.open('', '_blank');
+        if (!printWindow) return;
+
+        printWindow.document.write(`
+            <html>
+                <head>
+                    <title>Order Receipt - ${selectedOrder.id}</title>
+                    <style>
+                        body { font-family: monospace; padding: 20px; color: #000; }
+                        .header { text-align: center; border-bottom: 2px dashed #000; padding-bottom: 15px; margin-bottom: 20px; }
+                        .header h1 { margin: 0; font-size: 24px; }
+                        .header p { margin: 5px 0 0 0; font-size: 14px; }
+                        .section { margin-bottom: 20px; }
+                        .strong { font-weight: bold; }
+                        table { width: 100%; border-collapse: collapse; margin-bottom: 20px; }
+                        th, td { text-align: left; padding: 8px 0; border-bottom: 1px solid #ddd; }
+                        th.right, td.right { text-align: right; }
+                        .totals { border-top: 2px dashed #000; padding-top: 15px; text-align: right; font-size: 18px; }
+                        .footer { text-align: center; margin-top: 40px; font-size: 12px; }
+                        @media print {
+                            body { width: 80mm; padding: 0; margin: 0 auto; }
+                            @page { margin: 0; }
+                        }
+                    </style>
+                </head>
+                <body>
+                    <div class="header">
+                        <h1>BROXBOURNE FOOD CENTRE</h1>
+                        <p>Order ID: ${selectedOrder.id}</p>
+                        <p>Date: ${new Date(selectedOrder.createdAt).toLocaleString()}</p>
+                    </div>
+                    
+                    <div class="section">
+                        <p><span class="strong">Customer:</span> ${selectedOrder.user ? selectedOrder.user.name : 'Guest'}</p>
+                        <p><span class="strong">Phone/Email:</span> ${selectedOrder.user ? selectedOrder.user.email : selectedOrder.guestEmail}</p>
+                        <p><span class="strong">Address:</span> ${selectedOrder.deliveryAddress}</p>
+                        <p><span class="strong">Payment:</span> ${selectedOrder.paymentMethod.replace(/_/g, ' ')}</p>
+                    </div>
+
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Item</th>
+                                <th class="right">Qty</th>
+                                <th class="right">Price</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            ${selectedOrder.orderItems.map(item => `
+                                <tr>
+                                    <td>${item.product.name}</td>
+                                    <td class="right">${item.quantity}</td>
+                                    <td class="right">£${(item.quantity * item.priceAtBuy).toFixed(2)}</td>
+                                </tr>
+                            `).join('')}
+                        </tbody>
+                    </table>
+
+                    <div class="totals">
+                        <span class="strong">TOTAL: £${selectedOrder.totalAmount.toFixed(2)}</span>
+                    </div>
+
+                    <div class="footer">
+                        <p>Thank you for shopping with us!</p>
+                    </div>
+                </body>
+            </html>
+        `);
+
+        printWindow.document.close();
+
+        // Wait for styles to load then print
+        setTimeout(() => {
+            printWindow.print();
+        }, 250);
     };
 
     return (
@@ -88,10 +167,10 @@ export default function AdminOrdersPage() {
                                             value={order.status}
                                             onChange={(e) => updateStatus(order.id, e.target.value)}
                                             className={`text-xs font-bold border-none rounded-lg focus:ring-2 focus:ring-black px-3 py-1 cursor-pointer outline-none ${order.status === 'PENDING' ? 'bg-yellow-100 text-yellow-800' :
-                                                    order.status === 'PROCESSING' ? 'bg-blue-100 text-blue-800' :
-                                                        order.status === 'SHIPPED' ? 'bg-purple-100 text-purple-800' :
-                                                            order.status === 'DELIVERED' ? 'bg-green-100 text-green-800' :
-                                                                'bg-red-100 text-red-800'
+                                                order.status === 'PROCESSING' ? 'bg-blue-100 text-blue-800' :
+                                                    order.status === 'SHIPPED' ? 'bg-purple-100 text-purple-800' :
+                                                        order.status === 'DELIVERED' ? 'bg-green-100 text-green-800' :
+                                                            'bg-red-100 text-red-800'
                                                 }`}
                                         >
                                             {STATUSES.map(s => <option key={s} value={s}>{s}</option>)}
@@ -123,7 +202,13 @@ export default function AdminOrdersPage() {
                                 <h2 className="text-xl font-bold">Order Details</h2>
                                 <p className="text-sm text-gray-500">{selectedOrder.id}</p>
                             </div>
-                            <button onClick={() => setSelectedOrder(null)} className="p-2 hover:bg-gray-100 rounded-full"><X className="h-5 w-5" /></button>
+                            <div className="flex gap-2">
+                                <button onClick={handlePrint} className="flex items-center gap-2 px-4 py-2 bg-slate-900 text-white hover:bg-slate-800 rounded-lg text-sm font-bold transition-colors">
+                                    <Printer className="h-4 w-4" />
+                                    <span>Print</span>
+                                </button>
+                                <button onClick={() => setSelectedOrder(null)} className="p-2 hover:bg-gray-100 rounded-full"><X className="h-5 w-5" /></button>
+                            </div>
                         </div>
 
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">

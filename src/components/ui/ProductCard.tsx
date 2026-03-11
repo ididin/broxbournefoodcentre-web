@@ -113,18 +113,27 @@ export default function ProductCard({ product }: { product: Product }) {
                 )}
             </div>
 
-            <div className="pt-2 px-1 flex flex-col mt-1">
-                <p className="text-emerald-600 font-extrabold text-lg flex items-baseline gap-[1px]">
-                    <span className="text-xs font-bold leading-none">£</span>
-                    <span>{product.price.toFixed(2)}</span>
-                </p>
-                <h3 className="text-sm font-semibold text-slate-800 line-clamp-2 mt-1 leading-[1.3]">
+            <div className="p-2 sm:p-4 flex flex-col flex-1 pb-16 sm:pb-20">
+                <span className="text-[10px] sm:text-xs font-bold text-emerald-600 mb-1 sm:mb-2 uppercase tracking-wider">{product.category}</span>
+                <h3 className="text-sm sm:text-base font-bold text-slate-800 leading-snug mb-1">
                     {cleanName}
                 </h3>
                 {weight && (
-                    <p className="text-slate-400 text-[11px] font-semibold mt-1">{weight}</p>
+                    <p className="text-xs text-slate-500 mb-1 sm:mb-2 font-medium">{weight}</p>
+                )}
+
+                <div className="mt-auto pt-2 flex items-center justify-between border-t border-gray-100">
+                    <div className="flex flex-col">
+                        <span className="text-base sm:text-xl font-black text-slate-900">£{product.price.toFixed(2)}</span>
+                    </div>
+                </div>
+
+                {product.stockOut && (
+                    <span className="mt-2 text-[10px] sm:text-xs font-bold text-red-500 bg-red-50 px-2 py-1 rounded-full w-fit">OutOfStock</span>
                 )}
             </div>
+
+            {/* Mobile Bottom Add Button Container (Optional depending on design, currently using top-right corner approach, so keeping bottom area clear) */}
         </div>
     );
 }

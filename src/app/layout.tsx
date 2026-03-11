@@ -17,6 +17,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/cart/CartDrawer";
 import { NextAuthProvider } from "@/providers/NextAuthProvider";
+import FloatingCart from "@/components/cart/FloatingCart";
 
 export default function RootLayout({
   children,
@@ -31,6 +32,7 @@ export default function RootLayout({
         <NextAuthProvider>
           <Navbar />
           <CartDrawer />
+          <FloatingCart />
           <main className="flex-grow">{children}</main>
           <Footer />
         </NextAuthProvider>
