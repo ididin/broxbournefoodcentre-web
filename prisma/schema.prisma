@@ -106,3 +106,24 @@ model OrderItem {
 
   @@unique([orderId, productId])
 }
+
+model Slide {
+  id        String   @id @default(cuid())
+  image     String
+  title     String
+  subtitle  String?
+  btnText   String   @default("Shop Now")
+  href      String   @default("/shop")
+  order     Int      @default(0)
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+}
+
+model PromoBanner {
+  id      String @id @default(cuid())
+  heading String
+  subtext String
+  btnText String
+  btnHref String
+  image   String
+}

@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { Package, ShoppingBag, LayoutDashboard, Settings } from 'lucide-react';
+import { Package, ShoppingBag, LayoutDashboard, Settings, Layers, Image } from 'lucide-react';
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
     return (
@@ -36,6 +36,12 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                     </Link>
                     <Link href="/admin/excel" className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
                         <Settings className="h-5 w-5" /> Excel İşlemleri
+                    </Link>
+                    <Link href="/admin/slider" className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                        <Layers className="h-5 w-5" /> Slider Yönetimi
+                    </Link>
+                    <Link href="/admin/banner" className="flex items-center gap-3 px-3 py-2 text-gray-700 hover:bg-gray-100 rounded-lg">
+                        <Image className="h-5 w-5" /> Promo Banner
                     </Link>
                 </nav>
             </aside>
