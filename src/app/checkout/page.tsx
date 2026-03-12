@@ -5,7 +5,14 @@ import { useCartStore } from '@/store/useCartStore';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 
-const SERVED_POSTAL_CODES = ['EN8', 'EN9', 'EN10', 'EN11'];
+const POSTAL_CITY_MAP: Record<string, string> = {
+    'EN8': 'Waltham Cross',
+    'EN9': 'Waltham Abbey',
+    'EN10': 'Broxbourne',
+    'EN11': 'Hoddesdon'
+};
+
+const SERVED_POSTAL_CODES = Object.keys(POSTAL_CITY_MAP);
 
 export default function CheckoutPage() {
     const { items, getTotalPrice, clearCart } = useCartStore();
@@ -35,7 +42,9 @@ export default function CheckoutPage() {
         const subtotal = getTotalPrice();
         const deliveryFee = subtotal >= 50 ? 0 : 6.99;
         const totalAmount = subtotal + deliveryFee;
-        const fullAddress = `${formData.addressLine}, ${formData.postalCode}, Broxbourne, London`;
+
+        const city = POSTAL_CITY_MAP[formData.postalCode] || 'London';
+        const fullAddress = `${formData.addressLine}, ${formData.postalCode}, ${city}, London`;
 
         try {
             const res = await fetch('/api/orders', {
