@@ -93,7 +93,7 @@ export default async function Home() {
           </div>
           <div className="relative w-full md:w-1/2 aspect-[4/3] rounded-3xl overflow-hidden shadow-2xl rotate-2 hover:rotate-0 transition-transform duration-500 max-w-md">
             <Image
-              src="https://images.unsplash.com/photo-1615469363071-7eb9273c8d35?auto=format&fit=crop&q=80&w=800"
+              src="/delivery-banner.png"
               alt="Fast Grocery Delivery"
               fill
               className="object-cover"
