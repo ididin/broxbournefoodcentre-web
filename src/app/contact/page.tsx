@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { MapPin, Phone, Mail, Clock, CheckCircle } from 'lucide-react';
+import { MapPin, Phone, Clock, CheckCircle } from 'lucide-react';
 
 export default function ContactPage() {
     const [formData, setFormData] = useState({ name: '', email: '', phone: '', message: '' });
@@ -45,8 +45,8 @@ export default function ContactPage() {
                                     <p className="font-bold text-slate-800 text-sm mb-1">Address</p>
                                     <p className="text-slate-600 text-sm leading-relaxed">
                                         Broxbourne Food Centre<br />
-                                        Sturlas Way, Waltham Cross<br />
-                                        EN8 7BJ, London, UK
+                                        5-6, The Precinct<br />
+                                        Broxbourne EN10 7HY, London, UK
                                     </p>
                                 </div>
                             </div>
@@ -59,22 +59,8 @@ export default function ContactPage() {
                                 </div>
                                 <div>
                                     <p className="font-bold text-slate-800 text-sm mb-1">Phone</p>
-                                    <a href="tel:+441992638888" className="text-slate-600 text-sm hover:text-emerald-600 transition-colors">
-                                        +44 (0)1992 638 888
-                                    </a>
-                                </div>
-                            </div>
-
-                            <div className="w-full h-px bg-gray-100" />
-
-                            <div className="flex items-start gap-4">
-                                <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center flex-shrink-0">
-                                    <Mail className="w-5 h-5 text-emerald-600" />
-                                </div>
-                                <div>
-                                    <p className="font-bold text-slate-800 text-sm mb-1">Email</p>
-                                    <a href="mailto:info@broxbournefoodcentre.co.uk" className="text-slate-600 text-sm hover:text-emerald-600 transition-colors break-all">
-                                        info@broxbournefoodcentre.co.uk
+                                    <a href="tel:+447444474108" className="text-slate-600 text-sm hover:text-emerald-600 transition-colors">
+                                        +44 7444 474108
                                     </a>
                                 </div>
                             </div>
@@ -89,12 +75,8 @@ export default function ContactPage() {
                                     <p className="font-bold text-slate-800 text-sm mb-2">Opening Hours</p>
                                     <div className="text-slate-600 text-sm space-y-1">
                                         <div className="flex justify-between gap-8">
-                                            <span>Monday – Saturday</span>
-                                            <span className="font-semibold text-slate-700">8:00 – 21:00</span>
-                                        </div>
-                                        <div className="flex justify-between gap-8">
-                                            <span>Sunday</span>
-                                            <span className="font-semibold text-slate-700">9:00 – 18:00</span>
+                                            <span>Monday – Sunday</span>
+                                            <span className="font-semibold text-slate-700">07:00 – 23:00</span>
                                         </div>
                                     </div>
                                 </div>

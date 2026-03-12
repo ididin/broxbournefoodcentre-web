@@ -33,9 +33,9 @@ export default function Footer() {
                 <div>
                     <h3 className="text-white text-lg font-bold mb-4">Contact</h3>
                     <ul className="space-y-2 text-sm">
-                        <li>📍 Broxbourne, London</li>
-                        <li>📧 info@broxbournefoodcentre.co.uk</li>
-                        <li>📞 01234 567 890</li>
+                        <li>📍 5-6, The Precinct, Broxbourne EN10 7HY</li>
+                        <li>📞 <a href="tel:+447444474108" className="hover:text-emerald-200 transition-colors">+44 7444 474108</a></li>
+                        <li>🕐 Mon – Sun: 07:00 – 23:00</li>
                     </ul>
                 </div>
             </div>
