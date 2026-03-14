@@ -20,13 +20,14 @@ export async function POST(req: Request) {
         let createdCount = 0;
 
         for (const row of data) {
-            const { id, name, description, price, brand, categoryName, categoryId, imageUrl, stockOut, storeOrder } = row;
+            const { id, name, description, price, brand, barcode, categoryName, categoryId, imageUrl, stockOut, storeOrder } = row;
 
             const productData = {
                 name: String(name),
                 description: description ? String(description) : null,
                 price: Number(price),
                 brand: brand ? String(brand) : null,
+                barcode: barcode ? String(barcode) : null,
                 category: categoryName ? String(categoryName) : 'Uncategorized',
                 categoryId: categoryId ? String(categoryId) : null,
                 imageUrl: imageUrl ? String(imageUrl) : null,

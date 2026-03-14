@@ -18,7 +18,7 @@ export async function GET() {
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { name, description, price, imageUrl, category, categoryId, brand, stockOut, isBestSeller, storeOrder } = body;
+        const { name, description, price, imageUrl, category, categoryId, brand, barcode, stockOut, isBestSeller, storeOrder } = body;
         const newProduct = await prisma.product.create({
             data: {
                 name,
@@ -28,6 +28,7 @@ export async function POST(req: Request) {
                 category,
                 categoryId: categoryId === '' ? null : categoryId,
                 brand,
+                barcode: barcode || null,
                 stockOut: stockOut || false,
                 isBestSeller: isBestSeller || false,
                 storeOrder: storeOrder || 0
@@ -42,7 +43,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
     try {
         const body = await req.json();
-        const { id, name, description, price, imageUrl, category, categoryId, brand, stockOut, isBestSeller, storeOrder } = body;
+        const { id, name, description, price, imageUrl, category, categoryId, brand, barcode, stockOut, isBestSeller, storeOrder } = body;
 
         const updateData: any = {};
         if (name !== undefined) updateData.name = name;
@@ -52,6 +53,7 @@ export async function PUT(req: Request) {
         if (category !== undefined) updateData.category = category;
         if (categoryId !== undefined) updateData.categoryId = categoryId === '' ? null : categoryId;
         if (brand !== undefined) updateData.brand = brand;
+        if (barcode !== undefined) updateData.barcode = barcode === '' ? null : barcode;
         if (stockOut !== undefined) updateData.stockOut = stockOut;
         if (isBestSeller !== undefined) updateData.isBestSeller = isBestSeller;
         if (storeOrder !== undefined) updateData.storeOrder = storeOrder;

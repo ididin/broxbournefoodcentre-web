@@ -18,6 +18,7 @@ type Product = {
     category: string;
     categoryId: string | null;
     brand: string | null;
+    barcode: string | null;
     stockOut: boolean;
     isBestSeller: boolean;
     storeOrder: number;
@@ -36,7 +37,7 @@ export default function AdminProductsPage() {
     const excelInputRef = useRef<HTMLInputElement>(null);
 
     const [formData, setFormData] = useState({
-        id: '', name: '', description: '', price: 0, imageUrl: '', category: '', categoryId: '', brand: '', stockOut: false, isBestSeller: false, storeOrder: 0
+        id: '', name: '', description: '', price: 0, imageUrl: '', category: '', categoryId: '', brand: '', barcode: '', stockOut: false, isBestSeller: false, storeOrder: 0
     });
 
     useEffect(() => {
@@ -87,6 +88,7 @@ export default function AdminProductsPage() {
             category: prod.category || '',
             categoryId: prod.categoryId || '',
             brand: prod.brand || '',
+            barcode: prod.barcode || '',
             stockOut: prod.stockOut,
             isBestSeller: prod.isBestSeller || false,
             storeOrder: prod.storeOrder
@@ -106,7 +108,7 @@ export default function AdminProductsPage() {
     };
 
     const openCreateModal = () => {
-        setFormData({ id: '', name: '', description: '', price: 0, imageUrl: '', category: '', categoryId: '', brand: '', stockOut: false, isBestSeller: false, storeOrder: 0 });
+        setFormData({ id: '', name: '', description: '', price: 0, imageUrl: '', category: '', categoryId: '', brand: '', barcode: '', stockOut: false, isBestSeller: false, storeOrder: 0 });
         setIsEditing(false);
         setIsModalOpen(true);
     };
@@ -212,6 +214,7 @@ export default function AdminProductsPage() {
                                 <th className="px-6 py-4 font-semibold">Image</th>
                                 <th className="px-6 py-4 font-semibold">Product Name</th>
                                 <th className="px-6 py-4 font-semibold">Category</th>
+                                <th className="px-6 py-4 font-semibold">Barcode</th>
                                 <th className="px-6 py-4 font-semibold">Price</th>
                                 <th className="px-6 py-4 font-semibold">Store Order</th>
                                 <th className="px-6 py-4 font-semibold text-center">Best Seller</th>
@@ -229,6 +232,7 @@ export default function AdminProductsPage() {
                                     </td>
                                     <td className="px-6 py-4 font-medium text-gray-900">{product.name}</td>
                                     <td className="px-6 py-4 text-gray-600">{product.categoryRef ? product.categoryRef.name : product.category}</td>
+                                    <td className="px-6 py-4 text-gray-500 font-mono text-xs">{product.barcode || <span className="text-gray-300">—</span>}</td>
                                     <td className="px-6 py-4 text-gray-900 font-medium">£{product.price.toFixed(2)}</td>
                                     <td className="px-6 py-4 text-600">{product.storeOrder}</td>
                                     <td className="px-6 py-4 text-center">
@@ -257,7 +261,7 @@ export default function AdminProductsPage() {
                             ))}
                             {products.length === 0 && (
                                 <tr>
-                                    <td colSpan={7} className="px-6 py-8 text-center text-gray-500">No products found.</td>
+                                    <td colSpan={8} className="px-6 py-8 text-center text-gray-500">No products found.</td>
                                 </tr>
                             )}
                         </tbody>
@@ -289,6 +293,10 @@ export default function AdminProductsPage() {
                             <div>
                                 <label className="block text-sm font-medium mb-1">Brand</label>
                                 <input type="text" className="w-full px-3 py-2 border rounded-md" value={formData.brand} onChange={e => setFormData({ ...formData, brand: e.target.value })} />
+                            </div>
+                            <div>
+                                <label className="block text-sm font-medium mb-1">Barcode (EAN / SKU)</label>
+                                <input type="text" className="w-full px-3 py-2 border rounded-md font-mono" placeholder="e.g. 5012345678901" value={formData.barcode} onChange={e => setFormData({ ...formData, barcode: e.target.value })} />
                             </div>
                             <div>
                                 <label className="block text-sm font-medium mb-1">Linked Category</label>

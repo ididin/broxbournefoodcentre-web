@@ -15,6 +15,7 @@ export async function GET() {
             description: p.description || '',
             price: p.price,
             brand: p.brand || '',
+            barcode: p.barcode || '',
             categoryName: p.categoryRef ? p.categoryRef.name : p.category,
             categoryId: p.categoryId || '',
             imageUrl: p.imageUrl || '',
