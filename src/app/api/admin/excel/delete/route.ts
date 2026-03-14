@@ -33,27 +33,32 @@ export async function POST(req: Request) {
             return NextResponse.json({ error: 'No valid id or barcode columns found in the file.' }, { status: 400 });
         }
 
-        let deletedCount = 0;
-
-        // Delete by IDs
-        if (idsToDelete.length > 0) {
-            const result = await prisma.product.deleteMany({
-                where: { id: { in: idsToDelete } }
-            });
-            deletedCount += result.count;
-        }
-
-        // Delete by barcodes
+        // If barcodes provided, resolve them to product IDs first
         if (barcodesToDelete.length > 0) {
-            const result = await prisma.product.deleteMany({
-                where: { barcode: { in: barcodesToDelete } }
+            const found = await prisma.product.findMany({
+                where: { barcode: { in: barcodesToDelete } },
+                select: { id: true }
             });
-            deletedCount += result.count;
+            found.forEach(p => idsToDelete.push(p.id));
         }
+
+        if (idsToDelete.length === 0) {
+            return NextResponse.json({ error: 'No matching products found for the provided barcodes.' }, { status: 404 });
+        }
+
+        // Step 1: Delete related OrderItems to avoid foreign key constraint errors
+        await prisma.orderItem.deleteMany({
+            where: { productId: { in: idsToDelete } }
+        });
+
+        // Step 2: Now safe to delete the products
+        const result = await prisma.product.deleteMany({
+            where: { id: { in: idsToDelete } }
+        });
 
         return NextResponse.json({
             success: true,
-            deletedCount,
+            deletedCount: result.count,
             rowsInFile: data.length
         });
     } catch (error) {
