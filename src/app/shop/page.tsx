@@ -78,35 +78,14 @@ export default function Shop() {
     }
 
     return (
-        <div className="flex flex-col min-h-screen bg-[#f8f9fa] overflow-x-hidden">
-
-            {/* ── Desktop: Full-width search bar spanning sidebar + main ── */}
-            <div className="hidden lg:flex items-center bg-white border-b border-gray-200 shadow-sm">
-                {/* Sidebar-width spacer with "Categories" label */}
-                <div className="w-72 flex-shrink-0 flex items-center px-6 border-r border-gray-200 py-4">
-                    <h2 className="text-xl font-extrabold text-slate-800">Categories</h2>
-                </div>
-                {/* Search input fills the rest */}
-                <div className="flex-1 px-8 py-4">
-                    <div className="relative w-full">
-                        <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-emerald-600" />
-                        <input
-                            type="text"
-                            placeholder="Search thousands of products..."
-                            value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full pl-12 pr-4 py-3 rounded-xl border border-emerald-100 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium text-slate-800 placeholder:text-slate-400 outline-none"
-                        />
-                    </div>
-                </div>
-            </div>
-
-            {/* ── Content Row ── */}
-            <div className="flex flex-1 overflow-x-hidden">
-
+        <div className="min-h-screen bg-[#f8f9fa] overflow-x-hidden">
+            {/* Desktop Container */}
+            <div className="max-w-[1600px] mx-auto w-full flex flex-col lg:flex-row lg:gap-8 lg:p-8 lg:pt-8 p-4 sm:p-6">
+                
                 {/* Left Sidebar - Categories list (desktop only) */}
-                <aside className="hidden lg:block w-72 bg-white border-r border-gray-200 sticky top-20 h-[calc(100vh-5rem)] overflow-y-auto custom-scrollbar flex-shrink-0">
-                    <div className="p-6">
+                <aside className="hidden lg:block w-72 flex-shrink-0">
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sticky top-28">
+                        <h2 className="text-xl font-extrabold text-slate-800 mb-6">Categories</h2>
                         <ul className="space-y-2">
                             <li>
                                 <button
@@ -154,21 +133,7 @@ export default function Shop() {
                 </aside>
 
                 {/* Main Content Area */}
-                <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8">
-
-                    {/* Mobile: search bar */}
-                    <div className="lg:hidden bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-4">
-                        <div className="relative w-full">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-emerald-600" />
-                            <input
-                                type="text"
-                                placeholder="Search products..."
-                                value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
-                                className="w-full pl-12 pr-4 py-3 rounded-xl border border-emerald-100 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium text-slate-800 placeholder:text-slate-400 outline-none"
-                            />
-                        </div>
-                    </div>
+                <main className="flex-1 min-w-0">
 
                     {/* Mobile: Main Categories Row */}
                     <div className="flex lg:hidden gap-3 mb-4 overflow-x-auto pb-2 custom-scrollbar snap-x">
@@ -193,6 +158,20 @@ export default function Shop() {
                                 {cat.name}
                             </button>
                         ))}
+                    </div>
+
+                    {/* Search Header */}
+                    <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col justify-between gap-4 mb-6">
+                        <div className="relative w-full">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-emerald-600" />
+                            <input
+                                type="text"
+                                placeholder="Search thousands of products..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full pl-12 pr-4 py-3 rounded-xl border border-emerald-100 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium text-slate-800 placeholder:text-slate-400 outline-none"
+                            />
+                        </div>
                     </div>
 
                     {/* Subcategory Pills */}
