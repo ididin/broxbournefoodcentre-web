@@ -78,89 +78,16 @@ export default function Shop() {
     }
 
     return (
-        <div className="flex min-h-screen bg-[#f8f9fa] overflow-x-hidden">
-            {/* Left Sidebar - Categories (Sticky) */}
-            <aside className="hidden lg:block w-72 border-r border-gray-200 sticky top-20 h-[calc(100vh-5rem)] overflow-y-auto custom-scrollbar bg-[#f8f9fa]">
-                {/* 32px spacer so white panel top aligns with search bar */}
-                <div className="h-8 bg-[#f8f9fa] flex-shrink-0"></div>
-                <div className="bg-white min-h-[calc(100%-2rem)] p-6">
-                    <h2 className="text-xl font-extrabold text-slate-800 mb-6">Categories</h2>
-                    <ul className="space-y-2">
-                        <li>
-                            <button
-                                onClick={() => handleCategoryClick('All')}
-                                className={`w-full text-left px-4 py-3 rounded-xl font-bold transition-all ${selectedCategory === 'All'
-                                    ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm'
-                                    : 'text-slate-600 hover:bg-slate-50'
-                                    }`}
-                            >
-                                All Products
-                            </button>
-                        </li>
-                        {categories.map((cat) => (
-                            <li key={cat.id}>
-                                <button
-                                    onClick={() => handleCategoryClick(cat.name)}
-                                    className={`w-full text-left px-4 py-3 rounded-xl font-bold transition-all ${selectedCategory === cat.name
-                                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm'
-                                        : 'text-slate-600 hover:bg-slate-50'
-                                        }`}
-                                >
-                                    {cat.name}
-                                </button>
-                                {/* Subcategories Accordion */}
-                                {selectedCategory === cat.name && cat.subcategories.length > 0 && (
-                                    <ul className="mt-2 ml-4 space-y-1 border-l-2 border-emerald-100 pl-4 py-2">
-                                        {cat.subcategories.map((sub: string) => (
-                                            <li key={sub}>
-                                                <button
-                                                    onClick={() => setSelectedSubcategory(sub)}
-                                                    className={`w-full text-left px-3 py-2 rounded-lg text-sm font-semibold transition-all ${selectedSubcategory === sub
-                                                        ? 'text-emerald-700 bg-emerald-50 shadow-sm'
-                                                        : 'text-slate-500 hover:text-emerald-600 hover:bg-slate-50'
-                                                        }`}
-                                                >
-                                                    {sub}
-                                                </button>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </li>
-                        ))}
-                    </ul>
-                </div>
-            </aside>
+        <div className="flex flex-col min-h-screen bg-[#f8f9fa] overflow-x-hidden">
 
-            {/* Main Content Area */}
-            <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8">
-                {/* Mobile Main Categories Row */}
-                <div className="flex lg:hidden gap-3 mb-4 overflow-x-auto pb-2 custom-scrollbar snap-x">
-                    <button
-                        onClick={() => handleCategoryClick('All')}
-                        className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all flex-shrink-0 snap-start ${selectedCategory === 'All'
-                            ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
-                            : 'bg-white text-slate-600 border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
-                            }`}
-                    >
-                        All Products
-                    </button>
-                    {categories.map((cat) => (
-                        <button
-                            key={cat.id}
-                            onClick={() => handleCategoryClick(cat.name)}
-                            className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all flex-shrink-0 snap-start ${selectedCategory === cat.name
-                                ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
-                                : 'bg-white text-slate-600 border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
-                                }`}
-                        >
-                            {cat.name}
-                        </button>
-                    ))}
+            {/* ── Desktop: Full-width search bar spanning sidebar + main ── */}
+            <div className="hidden lg:flex items-center bg-white border-b border-gray-200 shadow-sm">
+                {/* Sidebar-width spacer with "Categories" label */}
+                <div className="w-72 flex-shrink-0 flex items-center px-6 border-r border-gray-200 py-4">
+                    <h2 className="text-xl font-extrabold text-slate-800">Categories</h2>
                 </div>
-
-                {/* Search Header */}
-                <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col justify-between gap-4 mb-6">
+                {/* Search input fills the rest */}
+                <div className="flex-1 px-8 py-4">
                     <div className="relative w-full">
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-emerald-600" />
                         <input
@@ -172,69 +99,166 @@ export default function Shop() {
                         />
                     </div>
                 </div>
+            </div>
 
-                {/* Subcategory Pills (Mobile/Row view) */}
-                {selectedCategory !== 'All' && activeSubcategories.length > 0 && (
-                    <div className="flex lg:hidden gap-3 mb-6 overflow-x-auto pb-2 custom-scrollbar">
+            {/* ── Content Row ── */}
+            <div className="flex flex-1 overflow-x-hidden">
+
+                {/* Left Sidebar - Categories list (desktop only) */}
+                <aside className="hidden lg:block w-72 bg-white border-r border-gray-200 sticky top-20 h-[calc(100vh-5rem)] overflow-y-auto custom-scrollbar flex-shrink-0">
+                    <div className="p-6">
+                        <ul className="space-y-2">
+                            <li>
+                                <button
+                                    onClick={() => handleCategoryClick('All')}
+                                    className={`w-full text-left px-4 py-3 rounded-xl font-bold transition-all ${selectedCategory === 'All'
+                                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm'
+                                        : 'text-slate-600 hover:bg-slate-50'
+                                        }`}
+                                >
+                                    All Products
+                                </button>
+                            </li>
+                            {categories.map((cat) => (
+                                <li key={cat.id}>
+                                    <button
+                                        onClick={() => handleCategoryClick(cat.name)}
+                                        className={`w-full text-left px-4 py-3 rounded-xl font-bold transition-all ${selectedCategory === cat.name
+                                            ? 'bg-emerald-50 text-emerald-700 border border-emerald-200 shadow-sm'
+                                            : 'text-slate-600 hover:bg-slate-50'
+                                            }`}
+                                    >
+                                        {cat.name}
+                                    </button>
+                                    {selectedCategory === cat.name && cat.subcategories.length > 0 && (
+                                        <ul className="mt-2 ml-4 space-y-1 border-l-2 border-emerald-100 pl-4 py-2">
+                                            {cat.subcategories.map((sub: string) => (
+                                                <li key={sub}>
+                                                    <button
+                                                        onClick={() => setSelectedSubcategory(sub)}
+                                                        className={`w-full text-left px-3 py-2 rounded-lg text-sm font-semibold transition-all ${selectedSubcategory === sub
+                                                            ? 'text-emerald-700 bg-emerald-50 shadow-sm'
+                                                            : 'text-slate-500 hover:text-emerald-600 hover:bg-slate-50'
+                                                            }`}
+                                                    >
+                                                        {sub}
+                                                    </button>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    )}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                </aside>
+
+                {/* Main Content Area */}
+                <main className="flex-1 min-w-0 p-4 sm:p-6 lg:p-8">
+
+                    {/* Mobile: search bar */}
+                    <div className="lg:hidden bg-white rounded-2xl p-4 shadow-sm border border-gray-100 mb-4">
+                        <div className="relative w-full">
+                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-emerald-600" />
+                            <input
+                                type="text"
+                                placeholder="Search products..."
+                                value={searchQuery}
+                                onChange={(e) => setSearchQuery(e.target.value)}
+                                className="w-full pl-12 pr-4 py-3 rounded-xl border border-emerald-100 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium text-slate-800 placeholder:text-slate-400 outline-none"
+                            />
+                        </div>
+                    </div>
+
+                    {/* Mobile: Main Categories Row */}
+                    <div className="flex lg:hidden gap-3 mb-4 overflow-x-auto pb-2 custom-scrollbar snap-x">
                         <button
-                            onClick={() => setSelectedSubcategory(null)}
-                            className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all ${selectedSubcategory === null
+                            onClick={() => handleCategoryClick('All')}
+                            className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all flex-shrink-0 snap-start ${selectedCategory === 'All'
                                 ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
                                 : 'bg-white text-slate-600 border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
                                 }`}
                         >
-                            All {selectedCategory}
+                            All Products
                         </button>
-                        {activeSubcategories.map((sub: string) => (
+                        {categories.map((cat) => (
                             <button
-                                key={sub}
-                                onClick={() => setSelectedSubcategory(sub)}
-                                className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all ${selectedSubcategory === sub
+                                key={cat.id}
+                                onClick={() => handleCategoryClick(cat.name)}
+                                className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all flex-shrink-0 snap-start ${selectedCategory === cat.name
                                     ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
                                     : 'bg-white text-slate-600 border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
                                     }`}
                             >
-                                {sub}
+                                {cat.name}
                             </button>
                         ))}
                     </div>
-                )}
 
-                {/* Products Grid */}
-                <h1 className="text-2xl font-extrabold text-slate-900 mb-6">
-                    {selectedSubcategory ? `${selectedSubcategory} (${filteredProducts.length})`
-                        : selectedCategory !== 'All' ? `${selectedCategory} (${filteredProducts.length})`
-                            : `All Products (${filteredProducts.length})`}
-                </h1>
-
-                {filteredProducts.length === 0 ? (
-                    <div className="bg-white rounded-3xl p-16 text-center border border-gray-100 shadow-sm">
-                        <div className="w-24 h-24 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6">
-                            <Search className="h-10 w-10 text-emerald-600" />
+                    {/* Subcategory Pills */}
+                    {selectedCategory !== 'All' && activeSubcategories.length > 0 && (
+                        <div className="flex lg:hidden gap-3 mb-6 overflow-x-auto pb-2 custom-scrollbar">
+                            <button
+                                onClick={() => setSelectedSubcategory(null)}
+                                className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all ${selectedSubcategory === null
+                                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
+                                    : 'bg-white text-slate-600 border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
+                                    }`}
+                            >
+                                All {selectedCategory}
+                            </button>
+                            {activeSubcategories.map((sub: string) => (
+                                <button
+                                    key={sub}
+                                    onClick={() => setSelectedSubcategory(sub)}
+                                    className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all ${selectedSubcategory === sub
+                                        ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
+                                        : 'bg-white text-slate-600 border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
+                                        }`}
+                                >
+                                    {sub}
+                                </button>
+                            ))}
                         </div>
-                        <h3 className="text-2xl font-bold text-slate-800 mb-2">No products found</h3>
-                        <p className="text-slate-500 text-lg">Try adjusting your search or category filter to find what you're looking for.</p>
-                        <button
-                            onClick={() => { setSearchQuery(''); setSelectedCategory('All'); setSelectedSubcategory(null); }}
-                            className="mt-8 px-8 py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/20 transition-all active:scale-95"
-                        >
-                            Clear Filters
-                        </button>
-                    </div>
-                ) : (
-                    <div className={`grid gap-3 sm:gap-4 lg:gap-5 ${items.length > 0
-                        ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4'
-                        : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
-                        }`}>
-                        {filteredProducts.map((product) => (
-                            <ProductCard key={product.id} product={product} />
-                        ))}
-                    </div>
-                )}
-            </main>
+                    )}
+
+                    {/* Products Grid */}
+                    <h1 className="text-2xl font-extrabold text-slate-900 mb-6">
+                        {selectedSubcategory ? `${selectedSubcategory} (${filteredProducts.length})`
+                            : selectedCategory !== 'All' ? `${selectedCategory} (${filteredProducts.length})`
+                                : `All Products (${filteredProducts.length})`}
+                    </h1>
+
+                    {filteredProducts.length === 0 ? (
+                        <div className="bg-white rounded-3xl p-16 text-center border border-gray-100 shadow-sm">
+                            <div className="w-24 h-24 bg-emerald-50 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <Search className="h-10 w-10 text-emerald-600" />
+                            </div>
+                            <h3 className="text-2xl font-bold text-slate-800 mb-2">No products found</h3>
+                            <p className="text-slate-500 text-lg">Try adjusting your search or category filter to find what you're looking for.</p>
+                            <button
+                                onClick={() => { setSearchQuery(''); setSelectedCategory('All'); setSelectedSubcategory(null); }}
+                                className="mt-8 px-8 py-3 bg-emerald-600 text-white font-bold rounded-xl hover:bg-emerald-700 hover:shadow-lg hover:shadow-emerald-600/20 transition-all active:scale-95"
+                            >
+                                Clear Filters
+                            </button>
+                        </div>
+                    ) : (
+                        <div className={`grid gap-3 sm:gap-4 lg:gap-5 ${items.length > 0
+                            ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4'
+                            : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
+                            }`}>
+                            {filteredProducts.map((product) => (
+                                <ProductCard key={product.id} product={product} />
+                            ))}
+                        </div>
+                    )}
+                </main>
+            </div>
 
             {/* Right Sidebar - Desktop Cart */}
             <CartSidebar />
         </div>
     );
 }
+
