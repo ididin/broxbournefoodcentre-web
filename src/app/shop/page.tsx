@@ -81,7 +81,7 @@ export default function Shop() {
         <div className="flex min-h-screen bg-[#f8f9fa] overflow-x-hidden">
             {/* Left Sidebar - Categories (Sticky) */}
             <aside className="hidden lg:block w-72 bg-white border-r border-gray-200 sticky top-20 h-[calc(100vh-5rem)] overflow-y-auto custom-scrollbar">
-                <div className="p-6">
+                <div className="p-8 pt-8">
                     <h2 className="text-xl font-extrabold text-slate-800 mb-6">Categories</h2>
                     <ul className="space-y-2">
                         <li>
