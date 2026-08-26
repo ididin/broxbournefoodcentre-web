@@ -4,8 +4,11 @@ import { put, list, del } from '@vercel/blob';
 export async function GET() {
     try {
         const { blobs } = await list();
-        // Return structured blob data for the UI
-        return NextResponse.json(blobs.map((b: any) => b.url));
+        // Return url + uploadedAt so the UI can sort newest first
+        const sorted = blobs
+            .map((b: any) => ({ url: b.url, uploadedAt: b.uploadedAt ?? b.createdAt ?? '' }))
+            .sort((a: any, b: any) => new Date(b.uploadedAt).getTime() - new Date(a.uploadedAt).getTime());
+        return NextResponse.json(sorted);
     } catch (error) {
         console.error(error);
         return NextResponse.json([]);

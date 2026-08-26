@@ -4,8 +4,10 @@ import { useState, useEffect } from 'react';
 import { UploadCloud, Trash2, Copy, Check } from 'lucide-react';
 import Image from 'next/image';
 
+type MediaItem = { url: string; uploadedAt: string };
+
 export default function AdminMediaPage() {
-    const [images, setImages] = useState<string[]>([]);
+    const [images, setImages] = useState<MediaItem[]>([]);
     const [isUploading, setIsUploading] = useState(false);
     const [copiedUrl, setCopiedUrl] = useState<string | null>(null);
 
@@ -16,7 +18,13 @@ export default function AdminMediaPage() {
     const fetchImages = async () => {
         const res = await fetch('/api/admin/media');
         const data = await res.json();
-        setImages(data);
+        // API returns [{url, uploadedAt}] sorted newest first
+        // Support legacy plain string[] response as well
+        if (Array.isArray(data) && data.length > 0 && typeof data[0] === 'string') {
+            setImages(data.map((url: string) => ({ url, uploadedAt: '' })));
+        } else {
+            setImages(data);
+        }
     };
 
     const handleUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,12 +63,21 @@ export default function AdminMediaPage() {
         setTimeout(() => setCopiedUrl(null), 2000);
     };
 
+    const formatDate = (dateStr: string) => {
+        if (!dateStr) return '';
+        const d = new Date(dateStr);
+        return d.toLocaleDateString('tr-TR', { day: '2-digit', month: '2-digit', year: '2-digit', hour: '2-digit', minute: '2-digit' });
+    };
+
     return (
         <div className="space-y-6 max-w-6xl mx-auto">
             <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h1 className="text-2xl font-bold text-gray-900">Media Library</h1>
-                    <p className="text-gray-500 text-sm mt-1">Upload and manage product images.</p>
+                    <p className="text-gray-500 text-sm mt-1">
+                        Upload and manage product images. &nbsp;
+                        <span className="text-blue-600 font-medium">En yeni yüklenen en üstte gösterilir.</span>
+                    </p>
                 </div>
 
                 <div className="relative">
@@ -86,21 +103,30 @@ export default function AdminMediaPage() {
                     </div>
                 ) : (
                     <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
-                        {images.map((url) => (
-                            <div key={url} className="group relative border rounded-lg overflow-hidden bg-gray-50 aspect-square flex flex-col">
+                        {images.map((item) => (
+                            <div key={item.url} className="group relative border rounded-lg overflow-hidden bg-gray-50 aspect-square flex flex-col">
                                 <div className="flex-1 relative w-full">
-                                    <Image src={url} alt="Uploaded media" fill className="object-cover" />
+                                    <Image src={item.url} alt="Uploaded media" fill className="object-cover" />
+                                    {/* NEW badge for recently uploaded (within last 10 min) */}
+                                    {item.uploadedAt && (Date.now() - new Date(item.uploadedAt).getTime()) < 10 * 60 * 1000 && (
+                                        <span className="absolute top-1 left-1 bg-green-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded">YENİ</span>
+                                    )}
                                 </div>
+                                {item.uploadedAt && (
+                                    <div className="px-2 py-1 bg-gray-50 border-t text-[10px] text-gray-400 truncate text-center">
+                                        {formatDate(item.uploadedAt)}
+                                    </div>
+                                )}
                                 <div className="p-2 bg-white border-t flex justify-between items-center z-10">
                                     <button
-                                        onClick={() => copyToClipboard(url)}
+                                        onClick={() => copyToClipboard(item.url)}
                                         className="text-gray-500 hover:text-black transition-colors"
                                         title="Copy URL"
                                     >
-                                        {copiedUrl === url ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
+                                        {copiedUrl === item.url ? <Check className="h-4 w-4 text-green-600" /> : <Copy className="h-4 w-4" />}
                                     </button>
                                     <button
-                                        onClick={() => handleDelete(url)}
+                                        onClick={() => handleDelete(item.url)}
                                         className="text-gray-500 hover:text-red-600 transition-colors"
                                         title="Delete"
                                     >
