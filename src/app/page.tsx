@@ -62,7 +62,7 @@ export default async function Home() {
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4 sm:gap-6">
             {categories.map((category) => (
               <Link
-                href={`/shop?category=${category.slug}`}
+                href={`/shop?category=${encodeURIComponent(category.name)}`}
                 key={category.id}
                 className="group relative h-40 sm:h-48 md:h-56 rounded-2xl md:rounded-3xl overflow-hidden shadow-sm hover:shadow-lg transition-all duration-500 block bg-emerald-50"
               >

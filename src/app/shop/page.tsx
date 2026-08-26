@@ -17,6 +17,15 @@ export default function Shop() {
     const [searchQuery, setSearchQuery] = useState('');
 
     useEffect(() => {
+        // Initialize category from URL if present
+        if (typeof window !== 'undefined') {
+            const params = new URLSearchParams(window.location.search);
+            const cat = params.get('category');
+            if (cat) {
+                setSelectedCategory(cat);
+            }
+        }
+
         Promise.all([
             fetch('/api/admin/categories').then(res => res.json()),
             fetch('/api/admin/products').then(res => res.json())
@@ -57,7 +66,9 @@ export default function Shop() {
         }
 
         const matchSubcategory = !selectedSubcategory || pCat === selectedSubcategory;
-        const matchSearch = product.name.toLowerCase().includes(searchQuery.toLowerCase());
+        const searchLower = searchQuery.toLowerCase();
+        const matchSearch = product.name.toLowerCase().includes(searchLower) ||
+                            (product.description && product.description.toLowerCase().includes(searchLower));
 
         return isInCategoryOrSub && matchSubcategory && matchSearch;
     });
