@@ -182,12 +182,12 @@ export default function Shop() {
                 <main className="flex-1 min-w-0">
 
                     {/* Mobile: Main Categories Row */}
-                    <div className="flex lg:hidden gap-3 mb-4 overflow-x-auto pb-2 custom-scrollbar snap-x">
+                    <div className="flex lg:hidden gap-3 mb-4 overflow-x-auto pb-2 custom-scrollbar snap-x -mx-4 px-4 sm:-mx-6 sm:px-6">
                         <button
                             onClick={() => handleCategoryClick('All')}
                             className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all flex-shrink-0 snap-start ${selectedCategory === 'All'
                                 ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
-                                : 'bg-white text-slate-600 border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
+                                : 'bg-white text-slate-600 border-slate-200 shadow-sm hover:border-emerald-500 hover:text-emerald-600'
                                 }`}
                         >
                             All Products
@@ -198,7 +198,7 @@ export default function Shop() {
                                 onClick={() => handleCategoryClick(cat.name)}
                                 className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all flex-shrink-0 snap-start ${selectedCategory === cat.name
                                     ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
-                                    : 'bg-white text-slate-600 border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
+                                    : 'bg-white text-slate-600 border-slate-200 shadow-sm hover:border-emerald-500 hover:text-emerald-600'
                                     }`}
                             >
                                 {cat.name}
@@ -208,7 +208,7 @@ export default function Shop() {
                             onClick={() => handleCategoryClick('Special Offers')}
                             className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all flex-shrink-0 snap-start flex items-center gap-1 ${selectedCategory === 'Special Offers'
                                 ? 'bg-red-600 text-white border-red-600 shadow-md'
-                                : 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100'
+                                : 'bg-red-50 text-red-600 border-red-200 shadow-sm hover:bg-red-100'
                                 }`}
                         >
                             <Tag className="w-4 h-4" /> Special Offers
@@ -240,12 +240,12 @@ export default function Shop() {
 
                         {/* Subcategory Pills */}
                         {selectedCategory !== 'All' && activeSubcategories.length > 0 && (
-                            <div className="flex lg:hidden gap-3 mb-6 overflow-x-auto pb-2 custom-scrollbar">
+                            <div className="flex lg:hidden gap-3 mb-6 overflow-x-auto pb-2 custom-scrollbar snap-x -mx-4 px-4 sm:-mx-6 sm:px-6">
                                 <button
                                     onClick={() => setSelectedSubcategory(null)}
-                                    className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all ${selectedSubcategory === null
+                                    className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all flex-shrink-0 snap-start ${selectedSubcategory === null
                                         ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
-                                        : 'bg-white text-slate-600 border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
+                                        : 'bg-white text-slate-600 border-slate-200 shadow-sm hover:border-emerald-500 hover:text-emerald-600'
                                         }`}
                                 >
                                     All {selectedCategory}
@@ -254,9 +254,9 @@ export default function Shop() {
                                     <button
                                         key={sub}
                                         onClick={() => setSelectedSubcategory(sub)}
-                                        className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all ${selectedSubcategory === sub
+                                        className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all flex-shrink-0 snap-start ${selectedSubcategory === sub
                                             ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
-                                            : 'bg-white text-slate-600 border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
+                                            : 'bg-white text-slate-600 border-slate-200 shadow-sm hover:border-emerald-500 hover:text-emerald-600'
                                             }`}
                                     >
                                         {sub}
