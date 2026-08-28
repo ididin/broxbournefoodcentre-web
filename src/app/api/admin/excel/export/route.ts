@@ -5,7 +5,7 @@ import * as XLSX from 'xlsx';
 export async function GET() {
     try {
         const products = await prisma.product.findMany({
-            include: { categoryRef: true },
+            include: { categoryRef: true, variants: { orderBy: { sortOrder: 'asc' } } },
             orderBy: { storeOrder: 'asc' }
         });
 
@@ -14,6 +14,10 @@ export async function GET() {
             name: p.name,
             description: p.description || '',
             price: p.price,
+            sellType: p.sellType || 'PIECE',
+            variants: p.variants && p.variants.length > 0 
+                ? p.variants.map((v: any) => `${v.weightLabel}:${v.price}`).join('|') 
+                : '',
             brand: p.brand || '',
             barcode: p.barcode || '',
             categoryName: p.categoryRef ? p.categoryRef.name : p.category,

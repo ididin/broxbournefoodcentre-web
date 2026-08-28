@@ -20,12 +20,22 @@ export async function POST(req: Request) {
         let createdCount = 0;
 
         for (const row of data) {
-            const { id, name, description, price, brand, barcode, categoryName, categoryId, imageUrl, stockOut, storeOrder } = row;
+            const { id, name, description, price, sellType, variants, brand, barcode, categoryName, categoryId, imageUrl, stockOut, storeOrder } = row;
 
-            const productData = {
+            let parsedVariants: any[] = [];
+            if (variants && typeof variants === 'string') {
+                const parts = variants.split('|');
+                parsedVariants = parts.map((part, index) => {
+                    const [label, priceStr] = part.split(':');
+                    return { weightLabel: label.trim(), price: Number(priceStr), sortOrder: index };
+                }).filter(v => v.weightLabel && !isNaN(v.price));
+            }
+
+            const productData: any = {
                 name: String(name),
                 description: description ? String(description) : null,
                 price: Number(price),
+                sellType: sellType === 'WEIGHT' ? 'WEIGHT' : 'PIECE',
                 brand: brand ? String(brand) : null,
                 barcode: barcode ? String(barcode) : null,
                 category: categoryName ? String(categoryName) : 'Uncategorized',
@@ -38,17 +48,48 @@ export async function POST(req: Request) {
             if (id) {
                 // Update existing
                 try {
+                    // Update the product first without variants
                     await prisma.product.update({
                         where: { id: String(id) },
                         data: productData
                     });
+
+                    // Manage variants
+                    if (productData.sellType === 'WEIGHT') {
+                        // delete existing variants
+                        await prisma.productVariant.deleteMany({
+                            where: { productId: String(id) }
+                        });
+                        // create new ones
+                        if (parsedVariants.length > 0) {
+                            await prisma.productVariant.createMany({
+                                data: parsedVariants.map(v => ({
+                                    ...v,
+                                    productId: String(id)
+                                }))
+                            });
+                        }
+                    } else {
+                        // if piece, ensure no variants
+                        await prisma.productVariant.deleteMany({
+                            where: { productId: String(id) }
+                        });
+                    }
                     updatedCount++;
                 } catch (e) {
                     console.error(`Failed to update product ${id}`, e);
                 }
             } else {
                 // Create new
-                await prisma.product.create({ data: productData });
+                const createdProduct = await prisma.product.create({ data: productData });
+                if (productData.sellType === 'WEIGHT' && parsedVariants.length > 0) {
+                    await prisma.productVariant.createMany({
+                        data: parsedVariants.map(v => ({
+                            ...v,
+                            productId: createdProduct.id
+                        }))
+                    });
+                }
                 createdCount++;
             }
         }
