@@ -35,6 +35,8 @@ type Product = {
     isBestSeller: boolean;
     storeOrder: number;
     categoryRef?: Category | null;
+    sellType?: 'PIECE' | 'WEIGHT';
+    variants?: { weightLabel: string; price: number }[];
 };
 
 /* ─── Sortable Row ─────────────────────────────────────────── */
@@ -103,7 +105,17 @@ function SortableRow({
 
             {/* Price */}
             <td className="px-3 py-3 text-gray-900 font-semibold whitespace-nowrap">
-                £{product.price.toFixed(2)}
+                {product.sellType === 'WEIGHT' && product.variants && product.variants.length > 0 ? (
+                    <div className="flex flex-col gap-0.5">
+                        {product.variants.map((v, i) => (
+                            <span key={i} className="text-[11px] text-gray-500 bg-gray-100 px-1.5 py-0.5 rounded-md inline-block w-max">
+                                {v.weightLabel}: <strong className="text-gray-900">£{v.price.toFixed(2)}</strong>
+                            </span>
+                        ))}
+                    </div>
+                ) : (
+                    <span>£{product.price.toFixed(2)}</span>
+                )}
             </td>
 
             {/* Best Seller */}

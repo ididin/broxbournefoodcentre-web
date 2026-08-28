@@ -17,7 +17,10 @@ export default async function Home() {
     where: { isBestSeller: true, stockOut: false },
     orderBy: { storeOrder: 'asc' },
     take: 8,
-    include: { categoryRef: true }
+    include: { 
+      categoryRef: true,
+      variants: { orderBy: { sortOrder: 'asc' } }
+    }
   });
 
   const slides = await prisma.slide.findMany({
