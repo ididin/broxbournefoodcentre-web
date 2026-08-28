@@ -216,7 +216,7 @@ export default function Shop() {
                     </div>
 
                     {/* Sticky Search and Title Header */}
-                    <div className="lg:sticky lg:top-24 z-30 lg:bg-[#f8f9fa] lg:pb-4 lg:-mt-4 lg:pt-4">
+                    <div className="lg:sticky lg:top-20 z-30 lg:bg-[#f8f9fa] lg:pb-4 lg:pt-4 lg:-mt-4">
                         {/* Search Header */}
                         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col justify-between gap-4 mb-6">
                             <div className="relative w-full">

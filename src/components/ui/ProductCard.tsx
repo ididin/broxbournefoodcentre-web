@@ -99,7 +99,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
     return (
         <div className="group flex flex-col h-full bg-white relative">
-            <div className="relative aspect-[5/4] bg-slate-50 rounded-2xl border border-gray-100 shadow-sm overflow-hidden group-hover:border-emerald-200 transition-colors">
+            <div className="relative aspect-square bg-slate-50 rounded-2xl border border-gray-100 shadow-sm overflow-hidden group-hover:border-emerald-200 transition-colors">
                 {isPromoActive && (
                     <div className="absolute top-2 left-2 z-10 bg-red-500 text-white text-[10px] sm:text-xs font-black px-2 py-1 rounded-md shadow-sm">
                         PROMO
