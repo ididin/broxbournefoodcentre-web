@@ -99,7 +99,7 @@ export default function ProductCard({ product }: { product: Product }) {
 
     return (
         <div className="group flex flex-col h-full bg-white relative">
-            <div className="relative aspect-square bg-slate-50 rounded-2xl border border-gray-100 shadow-sm overflow-hidden group-hover:border-emerald-200 transition-colors">
+            <div className="relative aspect-[5/4] bg-slate-50 rounded-2xl border border-gray-100 shadow-sm overflow-hidden group-hover:border-emerald-200 transition-colors">
                 {isPromoActive && (
                     <div className="absolute top-2 left-2 z-10 bg-red-500 text-white text-[10px] sm:text-xs font-black px-2 py-1 rounded-md shadow-sm">
                         PROMO
@@ -121,19 +121,19 @@ export default function ProductCard({ product }: { product: Product }) {
                 {/* Top Right Add Button Container */}
                 <div className="absolute top-2 right-2 z-10 flex flex-col items-end shadow-md rounded-lg overflow-hidden bg-white/90 backdrop-blur-sm border border-emerald-100/50">
                     {quantityInCart > 0 ? (
-                        <div className="flex flex-col items-center bg-white shadow-sm overflow-hidden w-10 lg:w-8 border border-emerald-100/50">
+                        <div className="flex flex-col items-center bg-white shadow-sm overflow-hidden w-9 lg:w-8 border border-emerald-100/50">
                             <button
                                 onClick={handleAdd}
-                                className="w-10 h-10 lg:w-8 lg:h-8 flex items-center justify-center text-emerald-600 hover:bg-emerald-50 transition-colors border-b border-emerald-50 active:bg-emerald-100"
+                                className="w-9 h-9 lg:w-8 lg:h-8 flex items-center justify-center text-emerald-600 hover:bg-emerald-50 transition-colors border-b border-emerald-50 active:bg-emerald-100"
                             >
                                 <Plus className="w-4 h-4" />
                             </button>
-                            <span className="w-10 h-10 lg:w-8 lg:h-8 flex items-center justify-center text-base lg:text-sm font-bold bg-emerald-600 text-white shadow-inner">
+                            <span className="w-9 h-9 lg:w-8 lg:h-8 flex items-center justify-center text-sm font-bold bg-emerald-600 text-white shadow-inner">
                                 {quantityInCart}
                             </span>
                             <button
                                 onClick={handleRemove}
-                                className="w-10 h-10 lg:w-8 lg:h-8 flex items-center justify-center text-emerald-600 hover:bg-emerald-50 transition-colors border-t border-emerald-50 active:bg-emerald-100"
+                                className="w-9 h-9 lg:w-8 lg:h-8 flex items-center justify-center text-emerald-600 hover:bg-emerald-50 transition-colors border-t border-emerald-50 active:bg-emerald-100"
                             >
                                 {quantityInCart === 1 ? <Trash2 className="w-4 h-4" /> : <Minus className="w-4 h-4" />}
                             </button>
@@ -142,12 +142,12 @@ export default function ProductCard({ product }: { product: Product }) {
                         <button
                             onClick={handleAdd}
                             disabled={product.stockOut}
-                            className={`w-10 h-10 lg:w-8 lg:h-8 flex items-center justify-center transition-all ${product.stockOut
+                            className={`w-9 h-9 lg:w-8 lg:h-8 flex items-center justify-center transition-all ${product.stockOut
                                 ? 'bg-slate-100 text-slate-400 cursor-not-allowed'
                                 : 'bg-white text-emerald-600 hover:bg-emerald-50 hover:text-emerald-700 active:bg-emerald-100'
                                 }`}
                         >
-                            <Plus className="w-6 h-6 stroke-[2.5px]" />
+                            <Plus className="w-5 h-5 stroke-[2.5px]" />
                         </button>
                     )}
                 </div>
@@ -161,14 +161,14 @@ export default function ProductCard({ product }: { product: Product }) {
                 )}
             </div>
 
-            <div className="p-2 sm:p-4 flex flex-col flex-1 pb-3 sm:pb-4">
-                <span className="text-[10px] sm:text-xs font-bold text-emerald-600 mb-1 sm:mb-2 uppercase tracking-wider">{product.category}</span>
-                <h3 className="text-sm sm:text-base font-bold text-slate-800 leading-snug mb-1">
+            <div className="p-2 sm:p-3 flex flex-col flex-1 pb-2 sm:pb-3">
+                <span className="text-[10px] sm:text-[11px] font-bold text-emerald-600 mb-1 uppercase tracking-wider">{product.category}</span>
+                <h3 className="text-sm font-bold text-slate-800 leading-snug mb-1">
                     {cleanName}
                 </h3>
                 
                 {!hasVariants && backwardWeight && (
-                    <p className="text-xs text-slate-500 mb-1 sm:mb-2 font-medium">{backwardWeight}</p>
+                    <p className="text-xs text-slate-500 mb-1 font-medium">{backwardWeight}</p>
                 )}
 
                 {hasVariants && (
