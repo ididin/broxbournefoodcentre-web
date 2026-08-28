@@ -24,7 +24,7 @@ export default function Navbar() {
             const currentScrollY = window.scrollY;
             if (currentScrollY > lastScrollY && currentScrollY > 100) {
                 setIsVisible(false);
-                document.documentElement.style.setProperty('--header-offset', '16px');
+                document.documentElement.style.setProperty('--header-offset', '0px');
             } else if (currentScrollY < lastScrollY) {
                 setIsVisible(true);
                 document.documentElement.style.setProperty('--header-offset', '112px');
