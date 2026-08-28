@@ -118,7 +118,7 @@ export default function Shop() {
             <div className="max-w-[1600px] mx-auto w-full flex flex-col lg:flex-row lg:gap-8 lg:p-8 lg:pt-8 p-4 sm:p-6">
                 
                 {/* Left Sidebar - Categories list (desktop only) */}
-                <aside className="hidden lg:block w-72 flex-shrink-0 self-start sticky top-24">
+                <aside className="hidden lg:block w-72 flex-shrink-0 self-start sticky z-20 transition-all duration-300" style={{ top: 'var(--header-offset, 112px)' }}>
                     <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
                         <h2 className="text-xl font-extrabold text-slate-800 mb-6">Categories</h2>
                         <ul className="space-y-2">
@@ -216,7 +216,7 @@ export default function Shop() {
                     </div>
 
                     {/* Sticky Search and Title Header */}
-                    <div className="lg:sticky lg:top-20 z-30 lg:bg-[#f8f9fa] lg:pb-4 lg:pt-4 lg:-mt-4">
+                    <div className="lg:sticky z-30 lg:bg-[#f8f9fa] lg:pb-4 transition-all duration-300" style={{ top: 'var(--header-offset, 112px)' }}>
                         {/* Search Header */}
                         <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col justify-between gap-4 mb-6">
                             <div className="relative w-full">

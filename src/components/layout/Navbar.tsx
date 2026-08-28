@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { ShoppingCart, User, Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
 import { useCartStore } from '@/store/useCartStore';
 import { useSession, signOut } from 'next-auth/react';
@@ -11,12 +11,34 @@ export default function Navbar() {
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { data: session } = useSession();
 
+    const [isVisible, setIsVisible] = useState(true);
+    const [lastScrollY, setLastScrollY] = useState(0);
+
+    useEffect(() => {
+        // Initialize CSS var
+        document.documentElement.style.setProperty('--header-offset', '112px');
+        
+        const handleScroll = () => {
+            const currentScrollY = window.scrollY;
+            if (currentScrollY > lastScrollY && currentScrollY > 100) {
+                setIsVisible(false);
+                document.documentElement.style.setProperty('--header-offset', '16px');
+            } else if (currentScrollY < lastScrollY) {
+                setIsVisible(true);
+                document.documentElement.style.setProperty('--header-offset', '112px');
+            }
+            setLastScrollY(currentScrollY);
+        };
+        window.addEventListener('scroll', handleScroll, { passive: true });
+        return () => window.removeEventListener('scroll', handleScroll);
+    }, [lastScrollY]);
+
     return (
-        <>
+        <header className={`fixed top-0 w-full z-50 transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
             <div className="bg-emerald-600 text-white text-xs sm:text-sm font-semibold py-2.5 px-4 text-center tracking-wide">
-                📍 Delivery to: EN10, EN11, EN8 & EN9 | 🚀 Delivered within 24 hours | 💷 Free Delivery £50+ (Under £50: £6.99 fee)
+                🚚 Delivery to: EN10, EN11, EN8 & EN9 | ⏱️ Delivered within 24 hours | 💷 Free Delivery £50+ (Under £50: £6.99 fee)
             </div>
-            <nav className="bg-white/80 backdrop-blur-md border-b border-gray-100 sticky top-0 z-50 shadow-sm transition-all duration-300">
+            <nav className="bg-white/90 backdrop-blur-md border-b border-gray-100 shadow-sm">
                 <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                     <div className="flex justify-between h-20 items-center">
                         <div className="flex-shrink-0 flex items-center">
@@ -108,6 +130,6 @@ export default function Navbar() {
                     </div>
                 )}
             </nav>
-        </>
+        </header>
     );
 }

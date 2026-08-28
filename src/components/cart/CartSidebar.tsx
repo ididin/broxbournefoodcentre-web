@@ -11,7 +11,7 @@ export default function CartSidebar() {
     if (items.length === 0) return null;
 
     return (
-        <aside className="hidden lg:flex w-[320px] xl:w-[380px] bg-white border-l border-gray-200 sticky top-20 h-[calc(100vh-5rem)] flex-col shadow-[-4px_0_24px_-12px_rgba(0,0,0,0.1)] z-30">
+        <aside className="hidden lg:flex w-[320px] xl:w-[380px] bg-white border-l border-gray-200 sticky flex-col shadow-[-4px_0_24px_-12px_rgba(0,0,0,0.1)] z-30 transition-all duration-300" style={{ top: 'var(--header-offset, 112px)', height: 'calc(100vh - var(--header-offset, 112px))' }}>
             <div className="flex items-center justify-between p-5 border-b border-gray-100 bg-white">
                 <h2 className="text-xl font-bold flex items-center gap-2 text-slate-800">
                     <span className="bg-emerald-100 p-2 rounded-lg"><ShoppingCart className="h-5 w-5 text-emerald-600" /></span>
