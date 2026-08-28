@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import ProductCard from '@/components/ui/ProductCard';
 import { Search, Loader2 } from 'lucide-react';
 import { useCartStore } from '@/store/useCartStore';
+import { useAgeStore } from '@/store/useAgeStore';
 import CartSidebar from '@/components/cart/CartSidebar';
 
 export default function Shop() {
@@ -16,13 +17,22 @@ export default function Shop() {
     const [selectedSubcategory, setSelectedSubcategory] = useState<string | null>(null);
     const [searchQuery, setSearchQuery] = useState('');
 
+    const { requireVerification, isVerified } = useAgeStore();
+
     useEffect(() => {
         // Initialize category from URL if present
         if (typeof window !== 'undefined') {
             const params = new URLSearchParams(window.location.search);
             const cat = params.get('category');
             if (cat) {
-                setSelectedCategory(cat);
+                const isRestricted = /alcohol|tobacco|spirits|beer|wine/i.test(cat);
+                if (isRestricted) {
+                    useAgeStore.getState().requireVerification(() => {
+                        setSelectedCategory(cat);
+                    });
+                } else {
+                    setSelectedCategory(cat);
+                }
             }
         }
 
@@ -75,9 +85,21 @@ export default function Shop() {
 
     const activeSubcategories = categories.find(c => c.name === selectedCategory)?.subcategories || [];
 
+    const { requireVerification } = useAgeStore();
+
     const handleCategoryClick = (categoryName: string) => {
-        setSelectedCategory(categoryName);
-        setSelectedSubcategory(null);
+        const isRestricted = /alcohol|tobacco|spirits|beer|wine/i.test(categoryName);
+        
+        const changeCategory = () => {
+            setSelectedCategory(categoryName);
+            setSelectedSubcategory(null);
+        };
+
+        if (isRestricted) {
+            requireVerification(changeCategory);
+        } else {
+            changeCategory();
+        }
     };
 
     if (loading) {

@@ -19,6 +19,8 @@ import CartDrawer from "@/components/cart/CartDrawer";
 import { NextAuthProvider } from "@/providers/NextAuthProvider";
 import FloatingCart from "@/components/cart/FloatingCart";
 
+import AgeVerificationModal from "@/components/ui/AgeVerificationModal";
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -33,6 +35,7 @@ export default function RootLayout({
           <Navbar />
           <CartDrawer />
           <FloatingCart />
+          <AgeVerificationModal />
           <main className="flex-grow">{children}</main>
           <Footer />
         </NextAuthProvider>

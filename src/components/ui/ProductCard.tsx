@@ -4,6 +4,7 @@ import Image from 'next/image';
 import { useCartStore } from '@/store/useCartStore';
 import { Plus, Minus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
+import { useAgeStore } from '@/store/useAgeStore';
 
 interface ProductVariant {
     weightLabel: string;
@@ -41,23 +42,35 @@ export default function ProductCard({ product }: { product: Product }) {
     const cartItem = useCartStore((state) => state.items.find((i) => i.id === cartItemId));
     const quantityInCart = cartItem?.quantity || 0;
 
+    const { requireVerification } = useAgeStore();
+
     const handleAdd = (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
         if (product.stockOut) return;
 
-        if (quantityInCart === 0) {
-            addItem({
-                id: cartItemId,
-                productId: product.id,
-                name: product.name,
-                price: currentPrice,
-                quantity: 1,
-                imageUrl: product.imageUrl || undefined,
-                variantName: currentVariantName
-            });
+        const performAdd = () => {
+            if (quantityInCart === 0) {
+                addItem({
+                    id: cartItemId,
+                    productId: product.id,
+                    name: product.name,
+                    price: currentPrice,
+                    quantity: 1,
+                    imageUrl: product.imageUrl || undefined,
+                    variantName: currentVariantName
+                });
+            } else {
+                updateQuantity(cartItemId, quantityInCart + 1);
+            }
+        };
+
+        const isRestricted = /alcohol|tobacco|spirits|beer|wine/i.test(product.category);
+
+        if (isRestricted) {
+            requireVerification(performAdd);
         } else {
-            updateQuantity(cartItemId, quantityInCart + 1);
+            performAdd();
         }
     };
 
