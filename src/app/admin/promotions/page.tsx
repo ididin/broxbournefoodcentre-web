@@ -1,4 +1,4 @@
-'use client';
+ï»¿'use client';
 
 import { useState, useEffect } from 'react';
 import { Search, Loader2, Save, X, Tag } from 'lucide-react';
@@ -165,8 +165,8 @@ export default function PromotionsAdmin() {
                                     <td className="px-6 py-4">
                                         {product.sellType === 'PIECE' ? (
                                             <div>
-                                                {product.oldPrice && <span className="text-xs text-gray-400 line-through mr-2">£{product.oldPrice.toFixed(2)}</span>}
-                                                <span className="font-semibold text-emerald-600">£{product.price.toFixed(2)}</span>
+                                                {product.oldPrice && <span className="text-xs text-gray-400 line-through mr-2">Â£{product.oldPrice.toFixed(2)}</span>}
+                                                <span className="font-semibold text-emerald-600">Â£{product.price.toFixed(2)}</span>
                                             </div>
                                         ) : (
                                             <div className="text-xs text-gray-500">{product.variants?.length || 0} variants</div>
@@ -221,12 +221,12 @@ export default function PromotionsAdmin() {
                             {editingProduct.sellType === 'PIECE' ? (
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-semibold mb-1 text-gray-700">Old Price (£)</label>
+                                        <label className="block text-sm font-semibold mb-1 text-gray-700">Old Price (Â£)</label>
                                         <input type="number" step="0.01" className="w-full px-3 py-2 border rounded-md" placeholder="e.g. 5.99" value={editingProduct.oldPrice || ''} onChange={e => setEditingProduct({ ...editingProduct, oldPrice: e.target.value ? Number(e.target.value) : null })} />
                                         <p className="text-[10px] text-gray-400 mt-1">Leave empty for no strike-through.</p>
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-semibold mb-1 text-emerald-700">New Price (£)</label>
+                                        <label className="block text-sm font-semibold mb-1 text-emerald-700">New Price (Â£)</label>
                                         <input required type="number" step="0.01" className="w-full px-3 py-2 border-2 border-emerald-500 rounded-md" value={editingProduct.price} onChange={e => setEditingProduct({ ...editingProduct, price: Number(e.target.value) })} />
                                     </div>
                                 </div>
@@ -271,4 +271,3 @@ export default function PromotionsAdmin() {
         </div>
     );
 }
-
