@@ -9,6 +9,7 @@ import { useAgeStore } from '@/store/useAgeStore';
 interface ProductVariant {
     weightLabel: string;
     price: number;
+    oldPrice?: number | null;
 }
 
 interface Product {
@@ -16,6 +17,8 @@ interface Product {
     name: string;
     category: string;
     price: number;
+    oldPrice?: number | null;
+    isPromoted?: boolean;
     imageUrl?: string | null;
     stockOut: boolean;
     sellType?: 'PIECE' | 'WEIGHT';
@@ -34,6 +37,7 @@ export default function ProductCard({ product }: { product: Product }) {
     const activeVariant = hasVariants ? product.variants![selectedVariantIdx] : null;
 
     const currentPrice = activeVariant ? activeVariant.price : product.price;
+    const currentOldPrice = activeVariant ? activeVariant.oldPrice : product.oldPrice;
     const currentVariantName = activeVariant ? activeVariant.weightLabel : undefined;
     
     // Composite ID for cart
@@ -92,6 +96,11 @@ export default function ProductCard({ product }: { product: Product }) {
     return (
         <div className="group flex flex-col h-full bg-white relative">
             <div className="relative aspect-square bg-slate-50 rounded-2xl border border-gray-100 shadow-sm overflow-hidden group-hover:border-emerald-200 transition-colors">
+                {product.isPromoted && (
+                    <div className="absolute top-2 left-2 z-10 bg-red-500 text-white text-[10px] sm:text-xs font-black px-2 py-1 rounded-md shadow-sm">
+                        PROMO
+                    </div>
+                )}
                 {product.imageUrl ? (
                     <Image
                         src={product.imageUrl}
@@ -182,6 +191,9 @@ export default function ProductCard({ product }: { product: Product }) {
 
                 <div className="mt-auto pt-2 flex items-center justify-between border-t border-gray-100">
                     <div className="flex flex-col">
+                        {currentOldPrice && (
+                            <span className="text-xs text-slate-400 line-through font-semibold">£{currentOldPrice.toFixed(2)}</span>
+                        )}
                         <span className="text-base sm:text-xl font-black text-slate-900">£{currentPrice.toFixed(2)}</span>
                     </div>
                 </div>

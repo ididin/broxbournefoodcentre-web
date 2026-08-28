@@ -65,6 +65,8 @@ export default function Shop() {
         let isInCategoryOrSub = false;
         if (selectedCategory === 'All') {
             isInCategoryOrSub = true;
+        } else if (selectedCategory === 'Special Offers') {
+            isInCategoryOrSub = product.isPromoted;
         } else if (pCat === selectedCategory) {
             isInCategoryOrSub = true;
         } else {
@@ -161,6 +163,17 @@ export default function Shop() {
                                     )}
                                 </li>
                             ))}
+                            <li className="pt-2 border-t border-gray-100 mt-2">
+                                <button
+                                    onClick={() => handleCategoryClick('Special Offers')}
+                                    className={`w-full text-left px-4 py-3 rounded-xl font-bold transition-all flex items-center gap-2 ${selectedCategory === 'Special Offers'
+                                        ? 'bg-red-50 text-red-700 border border-red-200 shadow-sm'
+                                        : 'text-red-600 hover:bg-red-50'
+                                        }`}
+                                >
+                                    🎁 Special Offers
+                                </button>
+                            </li>
                         </ul>
                     </div>
                 </aside>
@@ -191,6 +204,15 @@ export default function Shop() {
                                 {cat.name}
                             </button>
                         ))}
+                        <button
+                            onClick={() => handleCategoryClick('Special Offers')}
+                            className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all flex-shrink-0 snap-start flex items-center gap-1 ${selectedCategory === 'Special Offers'
+                                ? 'bg-red-600 text-white border-red-600 shadow-md'
+                                : 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100'
+                                }`}
+                        >
+                            🎁 Special Offers
+                        </button>
                     </div>
 
                     {/* Search Header */}

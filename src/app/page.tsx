@@ -23,6 +23,16 @@ export default async function Home() {
     }
   });
 
+  const promotedProducts = await prisma.product.findMany({
+    where: { isPromoted: true, stockOut: false },
+    orderBy: { storeOrder: 'asc' },
+    take: 8,
+    include: { 
+      categoryRef: true,
+      variants: { orderBy: { sortOrder: 'asc' } }
+    }
+  });
+
   const slides = await prisma.slide.findMany({
     where: { active: true },
     orderBy: { order: 'asc' }
@@ -53,6 +63,20 @@ export default async function Home() {
         </div>
         <BestSellersSlider products={bestSellers} />
       </section>
+
+      {promotedProducts.length > 0 && (
+        <section className="max-w-7xl flex-1 px-4 sm:px-6 lg:px-8 w-full mx-auto relative overflow-hidden -mt-4">
+          <div className="flex justify-between items-end mb-8">
+            <h2 className="text-3xl font-bold text-emerald-700 tracking-tight flex items-center gap-2">
+              🎁 Special Offers
+            </h2>
+            <Link href="/shop?category=Special%20Offers" className="text-emerald-700 font-semibold hover:underline">
+              View All Offers →
+            </Link>
+          </div>
+          <BestSellersSlider products={promotedProducts} />
+        </section>
+      )}
 
       <section className="bg-white py-16" id="categories">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
