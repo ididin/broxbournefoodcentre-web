@@ -85,7 +85,7 @@ export default function Shop() {
 
     const activeSubcategories = categories.find(c => c.name === selectedCategory)?.subcategories || [];
 
-    const { requireVerification } = useAgeStore();
+
 
     const handleCategoryClick = (categoryName: string) => {
         const isRestricted = /alcohol|tobacco|spirits|beer|wine/i.test(categoryName);
