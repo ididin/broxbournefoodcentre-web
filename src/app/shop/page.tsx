@@ -113,13 +113,13 @@ export default function Shop() {
     }
 
     return (
-        <div className="min-h-screen bg-[#f8f9fa] overflow-x-hidden">
+        <div className="min-h-screen bg-[#f8f9fa]">
             {/* Desktop Container */}
             <div className="max-w-[1600px] mx-auto w-full flex flex-col lg:flex-row lg:gap-8 lg:p-8 lg:pt-8 p-4 sm:p-6">
                 
                 {/* Left Sidebar - Categories list (desktop only) */}
-                <aside className="hidden lg:block w-72 flex-shrink-0">
-                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 sticky top-28">
+                <aside className="hidden lg:block w-72 flex-shrink-0 self-start sticky top-24">
+                    <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 max-h-[calc(100vh-8rem)] overflow-y-auto custom-scrollbar">
                         <h2 className="text-xl font-extrabold text-slate-800 mb-6">Categories</h2>
                         <ul className="space-y-2">
                             <li>
