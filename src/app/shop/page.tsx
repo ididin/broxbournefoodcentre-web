@@ -215,60 +215,63 @@ export default function Shop() {
                         </button>
                     </div>
 
-                    {/* Search Header */}
-                    <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col justify-between gap-4 mb-6">
-                        <div className="relative w-full">
-                            <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-emerald-600" />
-                            <input
-                                type="text"
-                                placeholder="Search thousands of products..."
-                                value={searchQuery}
-                                onChange={(e) => {
-                                    const val = e.target.value;
-                                    setSearchQuery(val);
-                                    if (val.trim().length > 0 && selectedCategory !== 'All') {
-                                        setSelectedCategory('All');
-                                        setSelectedSubcategory(null);
-                                    }
-                                }}
-                                className="w-full pl-12 pr-4 py-3 rounded-xl border border-emerald-100 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium text-slate-800 placeholder:text-slate-400 outline-none"
-                            />
+                    {/* Sticky Search and Title Header */}
+                    <div className="lg:sticky lg:top-24 z-30 lg:bg-[#f8f9fa] lg:pb-4 lg:-mt-4 lg:pt-4">
+                        {/* Search Header */}
+                        <div className="bg-white rounded-2xl p-4 shadow-sm border border-gray-100 flex flex-col justify-between gap-4 mb-6">
+                            <div className="relative w-full">
+                                <Search className="absolute left-4 top-1/2 -translate-y-1/2 h-5 w-5 text-emerald-600" />
+                                <input
+                                    type="text"
+                                    placeholder="Search thousands of products..."
+                                    value={searchQuery}
+                                    onChange={(e) => {
+                                        const val = e.target.value;
+                                        setSearchQuery(val);
+                                        if (val.trim().length > 0 && selectedCategory !== 'All') {
+                                            setSelectedCategory('All');
+                                            setSelectedSubcategory(null);
+                                        }
+                                    }}
+                                    className="w-full pl-12 pr-4 py-3 rounded-xl border border-emerald-100 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium text-slate-800 placeholder:text-slate-400 outline-none"
+                                />
+                            </div>
                         </div>
-                    </div>
 
-                    {/* Subcategory Pills */}
-                    {selectedCategory !== 'All' && activeSubcategories.length > 0 && (
-                        <div className="flex lg:hidden gap-3 mb-6 overflow-x-auto pb-2 custom-scrollbar">
-                            <button
-                                onClick={() => setSelectedSubcategory(null)}
-                                className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all ${selectedSubcategory === null
-                                    ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
-                                    : 'bg-white text-slate-600 border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
-                                    }`}
-                            >
-                                All {selectedCategory}
-                            </button>
-                            {activeSubcategories.map((sub: string) => (
+                        {/* Subcategory Pills */}
+                        {selectedCategory !== 'All' && activeSubcategories.length > 0 && (
+                            <div className="flex lg:hidden gap-3 mb-6 overflow-x-auto pb-2 custom-scrollbar">
                                 <button
-                                    key={sub}
-                                    onClick={() => setSelectedSubcategory(sub)}
-                                    className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all ${selectedSubcategory === sub
+                                    onClick={() => setSelectedSubcategory(null)}
+                                    className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all ${selectedSubcategory === null
                                         ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
                                         : 'bg-white text-slate-600 border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
                                         }`}
                                 >
-                                    {sub}
+                                    All {selectedCategory}
                                 </button>
-                            ))}
-                        </div>
-                    )}
+                                {activeSubcategories.map((sub: string) => (
+                                    <button
+                                        key={sub}
+                                        onClick={() => setSelectedSubcategory(sub)}
+                                        className={`whitespace-nowrap px-4 py-2 rounded-full text-sm font-bold border transition-all ${selectedSubcategory === sub
+                                            ? 'bg-emerald-600 text-white border-emerald-600 shadow-md'
+                                            : 'bg-white text-slate-600 border-gray-200 hover:border-emerald-500 hover:text-emerald-600'
+                                            }`}
+                                    >
+                                        {sub}
+                                    </button>
+                                ))}
+                            </div>
+                        )}
 
-                    {/* Products Grid */}
-                    <h1 className="text-2xl font-extrabold text-slate-900 mb-6">
-                        {selectedSubcategory ? `${selectedSubcategory} (${filteredProducts.length})`
-                            : selectedCategory !== 'All' ? `${selectedCategory} (${filteredProducts.length})`
-                                : `All Products (${filteredProducts.length})`}
-                    </h1>
+                        {/* Products Grid Title */}
+                        <h1 className="text-2xl font-extrabold text-slate-900 lg:mb-2 mb-6">
+                            {selectedSubcategory ? `${selectedSubcategory} (${filteredProducts.length})`
+                                : selectedCategory !== 'All' ? `${selectedCategory} (${filteredProducts.length})`
+                                    : `All Products (${filteredProducts.length})`}
+                        </h1>
+                    </div>
 
                     {filteredProducts.length === 0 ? (
                         <div className="bg-white rounded-3xl p-16 text-center border border-gray-100 shadow-sm">
