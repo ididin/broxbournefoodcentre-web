@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import { useState, useEffect } from 'react';
 import { Search, Loader2, Save, X, Tag } from 'lucide-react';
@@ -165,8 +165,14 @@ export default function PromotionsAdmin() {
                                     <td className="px-6 py-4">
                                         {product.sellType === 'PIECE' ? (
                                             <div>
-                                                {product.promoPrice && <span className="text-xs text-gray-400 line-through mr-2">£{product.promoPrice.toFixed(2)}</span>}
-                                                <span className="font-semibold text-emerald-600">£{product.price.toFixed(2)}</span>
+                                                {product.isPromoted && product.promoPrice ? (
+                                                    <>
+                                                        <span className="text-xs text-gray-400 line-through mr-2">£{product.price.toFixed(2)}</span>
+                                                        <span className="font-semibold text-emerald-600">£{product.promoPrice.toFixed(2)}</span>
+                                                    </>
+                                                ) : (
+                                                    <span className="font-semibold text-emerald-600">£{product.price.toFixed(2)}</span>
+                                                )}
                                             </div>
                                         ) : (
                                             <div className="text-xs text-gray-500">{product.variants?.length || 0} variants</div>
@@ -221,13 +227,13 @@ export default function PromotionsAdmin() {
                             {editingProduct.sellType === 'PIECE' ? (
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-semibold mb-1 text-gray-700">Promo Price (£)</label>
-                                        <input type="number" step="0.01" className="w-full px-3 py-2 border rounded-md" placeholder="e.g. 5.99" value={editingProduct.promoPrice || ''} onChange={e => setEditingProduct({ ...editingProduct, promoPrice: e.target.value ? Number(e.target.value) : null })} />
-                                        <p className="text-[10px] text-gray-400 mt-1">Leave empty for no strike-through.</p>
+                                        <label className="block text-sm font-semibold mb-1 text-gray-700">Normal Price (£)</label>
+                                        <input required type="number" step="0.01" className="w-full px-3 py-2 border rounded-md" value={editingProduct.price} onChange={e => setEditingProduct({ ...editingProduct, price: Number(e.target.value) })} />
                                     </div>
                                     <div>
-                                        <label className="block text-sm font-semibold mb-1 text-emerald-700">New Price (£)</label>
-                                        <input required type="number" step="0.01" className="w-full px-3 py-2 border-2 border-emerald-500 rounded-md" value={editingProduct.price} onChange={e => setEditingProduct({ ...editingProduct, price: Number(e.target.value) })} />
+                                        <label className="block text-sm font-semibold mb-1 text-emerald-700">Promo Price (£)</label>
+                                        <input type="number" step="0.01" className="w-full px-3 py-2 border-2 border-emerald-500 rounded-md" placeholder="e.g. 5.99" value={editingProduct.promoPrice || ''} onChange={e => setEditingProduct({ ...editingProduct, promoPrice: e.target.value ? Number(e.target.value) : null })} />
+                                        <p className="text-[10px] text-emerald-600/70 mt-1">Leave empty to disable discount.</p>
                                     </div>
                                 </div>
                             ) : (
@@ -237,18 +243,18 @@ export default function PromotionsAdmin() {
                                         <div key={index} className="flex items-center gap-3 bg-gray-50 p-3 rounded-lg border">
                                             <div className="flex-1 font-semibold text-sm">{variant.weightLabel}</div>
                                             <div className="w-24">
-                                                <label className="block text-[10px] font-medium text-gray-500 mb-1">Promo Price</label>
-                                                <input type="number" step="0.01" className="w-full px-2 py-1.5 border rounded text-sm" placeholder="Old" value={variant.promoPrice || ''} onChange={e => {
+                                                <label className="block text-[10px] font-medium text-gray-500 mb-1">Normal Price</label>
+                                                <input required type="number" step="0.01" className="w-full px-2 py-1.5 border rounded text-sm" value={variant.price} onChange={e => {
                                                     const newVariants = [...editingProduct.variants];
-                                                    newVariants[index].promoPrice = e.target.value ? Number(e.target.value) : null;
+                                                    newVariants[index].price = Number(e.target.value);
                                                     setEditingProduct({ ...editingProduct, variants: newVariants });
                                                 }} />
                                             </div>
                                             <div className="w-24">
-                                                <label className="block text-[10px] font-medium text-emerald-600 mb-1">New Price</label>
-                                                <input required type="number" step="0.01" className="w-full px-2 py-1.5 border-2 border-emerald-400 rounded text-sm" value={variant.price} onChange={e => {
+                                                <label className="block text-[10px] font-medium text-emerald-600 mb-1">Promo Price</label>
+                                                <input type="number" step="0.01" className="w-full px-2 py-1.5 border-2 border-emerald-400 rounded text-sm" placeholder="Empty" value={variant.promoPrice || ''} onChange={e => {
                                                     const newVariants = [...editingProduct.variants];
-                                                    newVariants[index].price = Number(e.target.value);
+                                                    newVariants[index].promoPrice = e.target.value ? Number(e.target.value) : null;
                                                     setEditingProduct({ ...editingProduct, variants: newVariants });
                                                 }} />
                                             </div>
