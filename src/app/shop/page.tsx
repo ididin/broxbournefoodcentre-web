@@ -201,7 +201,14 @@ export default function Shop() {
                                 type="text"
                                 placeholder="Search thousands of products..."
                                 value={searchQuery}
-                                onChange={(e) => setSearchQuery(e.target.value)}
+                                onChange={(e) => {
+                                    const val = e.target.value;
+                                    setSearchQuery(val);
+                                    if (val.trim().length > 0 && selectedCategory !== 'All') {
+                                        setSelectedCategory('All');
+                                        setSelectedSubcategory(null);
+                                    }
+                                }}
                                 className="w-full pl-12 pr-4 py-3 rounded-xl border border-emerald-100 focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10 transition-all font-medium text-slate-800 placeholder:text-slate-400 outline-none"
                             />
                         </div>
