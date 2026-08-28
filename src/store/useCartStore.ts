@@ -2,11 +2,13 @@ import { create } from 'zustand';
 import { persist } from 'zustand/middleware';
 
 export interface CartItem {
-    id: string;
+    id: string; // Composite ID: productId + variantName
+    productId: string;
     name: string;
     price: number;
     quantity: number;
     imageUrl?: string;
+    variantName?: string;
 }
 
 interface CartStore {

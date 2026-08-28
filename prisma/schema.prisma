@@ -47,11 +47,16 @@ model ContactMessage {
   createdAt DateTime @default(now())
 }
 
+enum SellType {
+  PIECE
+  WEIGHT
+}
+
 model Product {
   id          String   @id @default(cuid())
   name        String
   description String?
-  price       Float
+  price       Float    // Adet ürünler için ana fiyat
   imageUrl    String?
   category    String
   categoryId  String?
@@ -61,10 +66,21 @@ model Product {
   stockOut    Boolean  @default(false)
   isBestSeller Boolean @default(false)
   storeOrder  Int      @default(0)
+  sellType    SellType @default(PIECE)
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 
   orderItems  OrderItem[]
+  variants    ProductVariant[]
+}
+
+model ProductVariant {
+  id          String  @id @default(cuid())
+  productId   String
+  product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
+  weightLabel String  // e.g. "500g", "1kg"
+  price       Float
+  sortOrder   Int     @default(0)
 }
 
 model Order {
@@ -97,15 +113,14 @@ enum OrderStatus {
 }
 
 model OrderItem {
-  id        String   @id @default(cuid())
-  orderId   String
-  order     Order    @relation(fields: [orderId], references: [id])
-  productId String
-  product   Product  @relation(fields: [productId], references: [id])
-  quantity  Int
-  priceAtBuy Float
-
-  @@unique([orderId, productId])
+  id          String   @id @default(cuid())
+  orderId     String
+  order       Order    @relation(fields: [orderId], references: [id])
+  productId   String
+  product     Product  @relation(fields: [productId], references: [id])
+  variantName String?  // Hangi gramaj seçildi? (Yoksa null)
+  quantity    Int
+  priceAtBuy  Float
 }
 
 model Slide {

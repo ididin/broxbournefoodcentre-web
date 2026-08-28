@@ -166,10 +166,16 @@ export default function AdminProductsPage() {
     const fileInputRef = useRef<HTMLInputElement>(null);
     const excelInputRef = useRef<HTMLInputElement>(null);
 
-    const [formData, setFormData] = useState({
+    const [formData, setFormData] = useState<{
+        id: string; name: string; description: string; price: number; imageUrl: string;
+        category: string; categoryId: string; brand: string; barcode: string;
+        stockOut: boolean; isBestSeller: boolean; storeOrder: number;
+        sellType: 'PIECE' | 'WEIGHT'; variants: { weightLabel: string; price: number }[];
+    }>({
         id: '', name: '', description: '', price: 0, imageUrl: '',
         category: '', categoryId: '', brand: '', barcode: '',
         stockOut: false, isBestSeller: false, storeOrder: 0,
+        sellType: 'PIECE', variants: [],
     });
 
     const sensors = useSensors(
@@ -239,13 +245,14 @@ export default function AdminProductsPage() {
         fetchProducts();
     };
 
-    const handleEdit = (prod: Product) => {
+    const handleEdit = (prod: any) => {
         setFormData({
             id: prod.id, name: prod.name, description: prod.description || '',
             price: prod.price, imageUrl: prod.imageUrl || '', category: prod.category || '',
             categoryId: prod.categoryId || '', brand: prod.brand || '',
             barcode: prod.barcode || '', stockOut: prod.stockOut,
             isBestSeller: prod.isBestSeller || false, storeOrder: prod.storeOrder,
+            sellType: prod.sellType || 'PIECE', variants: prod.variants || [],
         });
         setIsEditing(true);
         setIsModalOpen(true);
@@ -262,7 +269,7 @@ export default function AdminProductsPage() {
     };
 
     const openCreateModal = () => {
-        setFormData({ id: '', name: '', description: '', price: 0, imageUrl: '', category: '', categoryId: '', brand: '', barcode: '', stockOut: false, isBestSeller: false, storeOrder: 0 });
+        setFormData({ id: '', name: '', description: '', price: 0, imageUrl: '', category: '', categoryId: '', brand: '', barcode: '', stockOut: false, isBestSeller: false, storeOrder: 0, sellType: 'PIECE', variants: [] });
         setIsEditing(false);
         setIsModalOpen(true);
     };
@@ -305,6 +312,22 @@ export default function AdminProductsPage() {
             else { alert(`Import successful! ${data.processed} products processed.`); fetchProducts(); }
         } catch { alert('Import failed'); }
         finally { setIsImporting(false); if (excelInputRef.current) excelInputRef.current.value = ''; }
+    };
+
+    const addVariant = () => {
+        setFormData({ ...formData, variants: [...formData.variants, { weightLabel: '', price: 0 }] });
+    };
+
+    const updateVariant = (index: number, field: string, value: string | number) => {
+        const newVariants = [...formData.variants];
+        newVariants[index] = { ...newVariants[index], [field]: value };
+        setFormData({ ...formData, variants: newVariants });
+    };
+
+    const removeVariant = (index: number) => {
+        const newVariants = [...formData.variants];
+        newVariants.splice(index, 1);
+        setFormData({ ...formData, variants: newVariants });
     };
 
     return (
@@ -396,6 +419,19 @@ export default function AdminProductsPage() {
                         </div>
                         <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div className="md:col-span-2">
+                                <label className="block text-sm font-medium mb-1">Satış Tipi</label>
+                                <div className="flex gap-4">
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="sellType" checked={formData.sellType === 'PIECE'} onChange={() => setFormData({ ...formData, sellType: 'PIECE' })} />
+                                        <span>Adet ile Satılır</span>
+                                    </label>
+                                    <label className="flex items-center gap-2 cursor-pointer">
+                                        <input type="radio" name="sellType" checked={formData.sellType === 'WEIGHT'} onChange={() => setFormData({ ...formData, sellType: 'WEIGHT' })} />
+                                        <span>Kilo / Seçenek ile Satılır</span>
+                                    </label>
+                                </div>
+                            </div>
+                            <div className="md:col-span-2">
                                 <label className="block text-sm font-medium mb-1">Product Name</label>
                                 <input required type="text" className="w-full px-3 py-2 border rounded-md" value={formData.name} onChange={e => setFormData({ ...formData, name: e.target.value })} />
                             </div>
@@ -403,10 +439,38 @@ export default function AdminProductsPage() {
                                 <label className="block text-sm font-medium mb-1">Description</label>
                                 <textarea className="w-full px-3 py-2 border rounded-md" rows={2} value={formData.description} onChange={e => setFormData({ ...formData, description: e.target.value })} />
                             </div>
-                            <div>
-                                <label className="block text-sm font-medium mb-1">Price (£)</label>
-                                <input required type="number" step="0.01" className="w-full px-3 py-2 border rounded-md" value={formData.price} onChange={e => setFormData({ ...formData, price: Number(e.target.value) })} />
-                            </div>
+                            
+                            {formData.sellType === 'PIECE' ? (
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Price (£)</label>
+                                    <input required type="number" step="0.01" className="w-full px-3 py-2 border rounded-md" value={formData.price} onChange={e => setFormData({ ...formData, price: Number(e.target.value) })} />
+                                </div>
+                            ) : (
+                                <div className="md:col-span-2 bg-gray-50 p-4 rounded-lg border">
+                                    <label className="block text-sm font-bold mb-2">Gramaj Seçenekleri</label>
+                                    <div className="space-y-3">
+                                        {formData.variants.map((variant, index) => (
+                                            <div key={index} className="flex gap-3 items-end">
+                                                <div className="flex-1">
+                                                    <label className="block text-xs text-gray-500 mb-1">Etiket (Örn: 500g)</label>
+                                                    <input required type="text" className="w-full px-3 py-2 border rounded-md text-sm" value={variant.weightLabel} onChange={e => updateVariant(index, 'weightLabel', e.target.value)} />
+                                                </div>
+                                                <div className="flex-1">
+                                                    <label className="block text-xs text-gray-500 mb-1">Fiyat (£)</label>
+                                                    <input required type="number" step="0.01" className="w-full px-3 py-2 border rounded-md text-sm" value={variant.price} onChange={e => updateVariant(index, 'price', Number(e.target.value))} />
+                                                </div>
+                                                <button type="button" onClick={() => removeVariant(index)} className="p-2 text-red-500 hover:bg-red-50 rounded-md mb-[1px]">
+                                                    <Trash2 className="w-5 h-5" />
+                                                </button>
+                                            </div>
+                                        ))}
+                                        <button type="button" onClick={addVariant} className="text-sm text-emerald-600 font-medium hover:text-emerald-700 flex items-center gap-1">
+                                            <Plus className="w-4 h-4" /> Yeni Seçenek Ekle
+                                        </button>
+                                    </div>
+                                </div>
+                            )}
+
                             <div>
                                 <label className="block text-sm font-medium mb-1">Brand</label>
                                 <input type="text" className="w-full px-3 py-2 border rounded-md" value={formData.brand} onChange={e => setFormData({ ...formData, brand: e.target.value })} />

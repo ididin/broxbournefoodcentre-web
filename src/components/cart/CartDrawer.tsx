@@ -53,8 +53,13 @@ export default function CartDrawer() {
                                         )}
                                     </div>
                                     <div className="flex-1 flex flex-col pt-1">
-                                        <div className="flex justify-between">
-                                            <h3 className="font-bold text-slate-800 line-clamp-2 pr-2">{item.name}</h3>
+                                        <div className="flex justify-between items-start">
+                                            <div className="flex flex-col">
+                                                <h3 className="font-bold text-slate-800 line-clamp-2 pr-2 leading-tight">{item.name}</h3>
+                                                {item.variantName && (
+                                                    <span className="text-xs text-emerald-600 font-bold">{item.variantName}</span>
+                                                )}
+                                            </div>
                                             <button
                                                 onClick={() => removeItem(item.id)}
                                                 className="text-slate-400 hover:text-red-500 hover:bg-red-50 p-1.5 rounded-lg transition-all"

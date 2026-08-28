@@ -7,7 +7,12 @@ export async function GET() {
     try {
         const products = await prisma.product.findMany({
             orderBy: { storeOrder: 'asc' },
-            include: { categoryRef: true }
+            include: { 
+                categoryRef: true,
+                variants: {
+                    orderBy: { sortOrder: 'asc' }
+                }
+            }
         });
         return NextResponse.json(products);
     } catch (error) {
@@ -18,7 +23,8 @@ export async function GET() {
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { name, description, price, imageUrl, category, categoryId, brand, barcode, stockOut, isBestSeller, storeOrder } = body;
+        const { name, description, price, imageUrl, category, categoryId, brand, barcode, stockOut, isBestSeller, storeOrder, sellType, variants } = body;
+        
         const newProduct = await prisma.product.create({
             data: {
                 name,
@@ -31,7 +37,15 @@ export async function POST(req: Request) {
                 barcode: barcode || null,
                 stockOut: stockOut || false,
                 isBestSeller: isBestSeller || false,
-                storeOrder: storeOrder || 0
+                storeOrder: storeOrder || 0,
+                sellType: sellType || 'PIECE',
+                variants: variants && sellType === 'WEIGHT' ? {
+                    create: variants.map((v: any, index: number) => ({
+                        weightLabel: v.weightLabel,
+                        price: Number(v.price),
+                        sortOrder: index
+                    }))
+                } : undefined
             }
         });
         return NextResponse.json(newProduct, { status: 201 });
@@ -43,7 +57,7 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
     try {
         const body = await req.json();
-        const { id, name, description, price, imageUrl, category, categoryId, brand, barcode, stockOut, isBestSeller, storeOrder } = body;
+        const { id, name, description, price, imageUrl, category, categoryId, brand, barcode, stockOut, isBestSeller, storeOrder, sellType, variants } = body;
 
         const updateData: any = {};
         if (name !== undefined) updateData.name = name;
@@ -57,6 +71,19 @@ export async function PUT(req: Request) {
         if (stockOut !== undefined) updateData.stockOut = stockOut;
         if (isBestSeller !== undefined) updateData.isBestSeller = isBestSeller;
         if (storeOrder !== undefined) updateData.storeOrder = storeOrder;
+        if (sellType !== undefined) updateData.sellType = sellType;
+
+        // Easiest way to update variants is to delete existing and recreate
+        if (variants !== undefined) {
+            updateData.variants = {
+                deleteMany: {},
+                create: sellType === 'WEIGHT' ? variants.map((v: any, index: number) => ({
+                    weightLabel: v.weightLabel,
+                    price: Number(v.price),
+                    sortOrder: index
+                })) : []
+            };
+        }
 
         const updatedProduct = await prisma.product.update({
             where: { id },

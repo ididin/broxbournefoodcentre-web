@@ -25,7 +25,8 @@ export async function POST(req: Request) {
                 status: 'PENDING',
                 orderItems: {
                     create: items.map((item: any) => ({
-                        productId: item.id,
+                        productId: item.productId || item.id,
+                        variantName: item.variantName || null,
                         quantity: item.quantity,
                         priceAtBuy: item.price
                     }))

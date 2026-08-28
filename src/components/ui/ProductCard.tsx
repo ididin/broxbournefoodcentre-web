@@ -3,6 +3,12 @@
 import Image from 'next/image';
 import { useCartStore } from '@/store/useCartStore';
 import { Plus, Minus, Trash2 } from 'lucide-react';
+import { useState } from 'react';
+
+interface ProductVariant {
+    weightLabel: string;
+    price: number;
+}
 
 interface Product {
     id: string;
@@ -11,6 +17,8 @@ interface Product {
     price: number;
     imageUrl?: string | null;
     stockOut: boolean;
+    sellType?: 'PIECE' | 'WEIGHT';
+    variants?: ProductVariant[];
 }
 
 export default function ProductCard({ product }: { product: Product }) {
@@ -18,7 +26,19 @@ export default function ProductCard({ product }: { product: Product }) {
     const removeItem = useCartStore((state) => state.removeItem);
     const updateQuantity = useCartStore((state) => state.updateQuantity);
 
-    const cartItem = useCartStore((state) => state.items.find((i) => i.id === product.id));
+    const hasVariants = product.sellType === 'WEIGHT' && product.variants && product.variants.length > 0;
+    
+    // Default to the first variant if it's a weight product
+    const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
+    const activeVariant = hasVariants ? product.variants![selectedVariantIdx] : null;
+
+    const currentPrice = activeVariant ? activeVariant.price : product.price;
+    const currentVariantName = activeVariant ? activeVariant.weightLabel : undefined;
+    
+    // Composite ID for cart
+    const cartItemId = `${product.id}-${currentVariantName || 'default'}`;
+
+    const cartItem = useCartStore((state) => state.items.find((i) => i.id === cartItemId));
     const quantityInCart = cartItem?.quantity || 0;
 
     const handleAdd = (e: React.MouseEvent) => {
@@ -28,14 +48,16 @@ export default function ProductCard({ product }: { product: Product }) {
 
         if (quantityInCart === 0) {
             addItem({
-                id: product.id,
+                id: cartItemId,
+                productId: product.id,
                 name: product.name,
-                price: product.price,
+                price: currentPrice,
                 quantity: 1,
                 imageUrl: product.imageUrl || undefined,
+                variantName: currentVariantName
             });
         } else {
-            updateQuantity(product.id, quantityInCart + 1);
+            updateQuantity(cartItemId, quantityInCart + 1);
         }
     };
 
@@ -43,15 +65,15 @@ export default function ProductCard({ product }: { product: Product }) {
         e.preventDefault();
         e.stopPropagation();
         if (quantityInCart > 1) {
-            updateQuantity(product.id, quantityInCart - 1);
+            updateQuantity(cartItemId, quantityInCart - 1);
         } else {
-            removeItem(product.id);
+            removeItem(cartItemId);
         }
     };
 
-    // Extract weight from name (e.g. "Bananas (1kg)" -> match "1kg", clean name -> "Bananas")
+    // Extract weight from name for backward compatibility
     const match = product.name.match(/\((.*?)\)/);
-    const weight = match ? match[1] : '';
+    const backwardWeight = match ? match[1] : '';
     const cleanName = product.name.replace(/\(.*?\)/g, '').trim();
 
     return (
@@ -118,13 +140,36 @@ export default function ProductCard({ product }: { product: Product }) {
                 <h3 className="text-sm sm:text-base font-bold text-slate-800 leading-snug mb-1">
                     {cleanName}
                 </h3>
-                {weight && (
-                    <p className="text-xs text-slate-500 mb-1 sm:mb-2 font-medium">{weight}</p>
+                
+                {!hasVariants && backwardWeight && (
+                    <p className="text-xs text-slate-500 mb-1 sm:mb-2 font-medium">{backwardWeight}</p>
+                )}
+
+                {hasVariants && (
+                    <div className="flex flex-wrap gap-1 mb-2 mt-1">
+                        {product.variants!.map((v, idx) => (
+                            <button
+                                key={idx}
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    e.stopPropagation();
+                                    setSelectedVariantIdx(idx);
+                                }}
+                                className={`text-[10px] sm:text-xs font-semibold px-2 py-1 rounded-full border transition-colors ${
+                                    selectedVariantIdx === idx 
+                                        ? 'bg-emerald-50 border-emerald-500 text-emerald-700'
+                                        : 'bg-white border-gray-200 text-gray-500 hover:border-emerald-300'
+                                }`}
+                            >
+                                {v.weightLabel}
+                            </button>
+                        ))}
+                    </div>
                 )}
 
                 <div className="mt-auto pt-2 flex items-center justify-between border-t border-gray-100">
                     <div className="flex flex-col">
-                        <span className="text-base sm:text-xl font-black text-slate-900">£{product.price.toFixed(2)}</span>
+                        <span className="text-base sm:text-xl font-black text-slate-900">£{currentPrice.toFixed(2)}</span>
                     </div>
                 </div>
 
@@ -132,8 +177,6 @@ export default function ProductCard({ product }: { product: Product }) {
                     <span className="mt-2 text-[10px] sm:text-xs font-bold text-red-500 bg-red-50 px-2 py-1 rounded-full w-fit">OutOfStock</span>
                 )}
             </div>
-
-            {/* Mobile Bottom Add Button Container (Optional depending on design, currently using top-right corner approach, so keeping bottom area clear) */}
         </div>
     );
 }

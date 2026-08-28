@@ -32,7 +32,12 @@ export default function CartSidebar() {
                         </div>
                         <div className="flex-1 flex flex-col">
                             <div className="flex justify-between items-start gap-2">
-                                <h3 className="font-bold text-slate-800 text-[13px] leading-tight line-clamp-2">{item.name}</h3>
+                                <div className="flex flex-col">
+                                    <h3 className="font-bold text-slate-800 text-[13px] leading-tight line-clamp-2">{item.name}</h3>
+                                    {item.variantName && (
+                                        <span className="text-xs text-emerald-600 font-bold">{item.variantName}</span>
+                                    )}
+                                </div>
                                 <button
                                     onClick={() => removeItem(item.id)}
                                     className="text-slate-300 hover:text-red-500 transition-colors shrink-0"

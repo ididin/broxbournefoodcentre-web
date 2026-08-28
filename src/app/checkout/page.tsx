@@ -177,6 +177,7 @@ export default function CheckoutPage() {
                                     </div>
                                     <div className="flex-1">
                                         <p className="font-medium text-sm line-clamp-2">{item.name}</p>
+                                        {item.variantName && <p className="text-emerald-600 font-bold text-xs">{item.variantName}</p>}
                                         <p className="text-gray-500 text-sm mt-1">Qty: {item.quantity}</p>
                                     </div>
                                     <div className="font-bold">£{(item.price * item.quantity).toFixed(2)}</div>
