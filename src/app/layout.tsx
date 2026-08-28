@@ -36,7 +36,7 @@ export default function RootLayout({
           <CartDrawer />
           <FloatingCart />
           <AgeVerificationModal />
-          <main className="flex-grow pt-[112px]">{children}</main>
+          <main className="flex-grow pt-[140px] md:pt-[112px]">{children}</main>
           <Footer />
         </NextAuthProvider>
       </body>

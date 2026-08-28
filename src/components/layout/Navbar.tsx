@@ -5,11 +5,14 @@ import { useState, useEffect } from 'react';
 import { ShoppingCart, User, Menu, X, LogOut, LayoutDashboard } from 'lucide-react';
 import { useCartStore } from '@/store/useCartStore';
 import { useSession, signOut } from 'next-auth/react';
+import { usePathname } from 'next/navigation';
 
 export default function Navbar() {
     const totalItems = useCartStore((state) => state.getTotalItems());
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const { data: session } = useSession();
+    const pathname = usePathname();
+    const isShopPage = pathname === '/shop';
 
     const [isVisible, setIsVisible] = useState(true);
     const [lastScrollY, setLastScrollY] = useState(0);
@@ -20,6 +23,12 @@ export default function Navbar() {
     }, []);
 
     useEffect(() => {
+        if (!isShopPage) {
+            setIsVisible(true);
+            document.documentElement.style.setProperty('--header-offset', '112px');
+            return;
+        }
+
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
             if (currentScrollY > lastScrollY && currentScrollY > 100) {
@@ -33,7 +42,7 @@ export default function Navbar() {
         };
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
-    }, [lastScrollY]);
+    }, [lastScrollY, isShopPage]);
 
     return (
         <header className={`fixed top-0 w-full z-50 transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-full'}`}>
