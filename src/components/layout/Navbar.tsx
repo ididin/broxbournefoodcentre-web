@@ -15,9 +15,11 @@ export default function Navbar() {
     const [lastScrollY, setLastScrollY] = useState(0);
 
     useEffect(() => {
-        // Initialize CSS var
+        // Initialize CSS var only once on mount
         document.documentElement.style.setProperty('--header-offset', '112px');
-        
+    }, []);
+
+    useEffect(() => {
         const handleScroll = () => {
             const currentScrollY = window.scrollY;
             if (currentScrollY > lastScrollY && currentScrollY > 100) {
