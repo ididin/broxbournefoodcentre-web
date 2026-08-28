@@ -288,10 +288,7 @@ export default function Shop() {
                             </button>
                         </div>
                     ) : (
-                        <div className={`grid gap-3 sm:gap-4 lg:gap-5 ${items.length > 0
-                            ? 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-3 xl:grid-cols-4'
-                            : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'
-                            }`}>
+                        <div className="grid gap-3 sm:gap-4 lg:gap-5 grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
                             {filteredProducts.map((product) => (
                                 <ProductCard key={product.id} product={product} />
                             ))}
