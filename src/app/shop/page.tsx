@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import ProductCard from '@/components/ui/ProductCard';
-import { Search, Loader2 } from 'lucide-react';
+import { Search, Loader2, Tag } from 'lucide-react';
 import { useCartStore } from '@/store/useCartStore';
 import { useAgeStore } from '@/store/useAgeStore';
 import CartSidebar from '@/components/cart/CartSidebar';
@@ -171,7 +171,7 @@ export default function Shop() {
                                         : 'text-red-600 hover:bg-red-50'
                                         }`}
                                 >
-                                    🎁 Special Offers
+                                    <Tag className="w-5 h-5" /> Special Offers
                                 </button>
                             </li>
                         </ul>
@@ -211,7 +211,7 @@ export default function Shop() {
                                 : 'bg-red-50 text-red-600 border-red-200 hover:bg-red-100'
                                 }`}
                         >
-                            🎁 Special Offers
+                            <Tag className="w-4 h-4" /> Special Offers
                         </button>
                     </div>
 

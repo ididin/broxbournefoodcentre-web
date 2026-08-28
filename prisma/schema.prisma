@@ -66,7 +66,7 @@ model Product {
   stockOut    Boolean  @default(false)
   isBestSeller Boolean @default(false)
   isPromoted  Boolean  @default(false)
-  oldPrice    Float?
+  promoPrice  Float?
   storeOrder  Int      @default(0)
   sellType    SellType @default(PIECE)
   createdAt   DateTime @default(now())
@@ -82,7 +82,7 @@ model ProductVariant {
   product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
   weightLabel String  // e.g. "500g", "1kg"
   price       Float
-  oldPrice    Float?
+  promoPrice  Float?
   sortOrder   Int     @default(0)
 }
 

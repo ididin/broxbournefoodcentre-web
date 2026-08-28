@@ -23,14 +23,14 @@ export async function GET() {
 export async function POST(req: Request) {
     try {
         const body = await req.json();
-        const { name, description, price, oldPrice, isPromoted, imageUrl, category, categoryId, brand, barcode, stockOut, isBestSeller, storeOrder, sellType, variants } = body;
+        const { name, description, price, promoPrice, isPromoted, imageUrl, category, categoryId, brand, barcode, stockOut, isBestSeller, storeOrder, sellType, variants } = body;
         
         const newProduct = await prisma.product.create({
             data: {
                 name,
                 description,
                 price: Number(price),
-                oldPrice: oldPrice ? Number(oldPrice) : null,
+                promoPrice: promoPrice ? Number(promoPrice) : null,
                 isPromoted: isPromoted || false,
                 imageUrl,
                 category,
@@ -45,7 +45,7 @@ export async function POST(req: Request) {
                     create: variants.map((v: any, index: number) => ({
                         weightLabel: v.weightLabel,
                         price: Number(v.price),
-                        oldPrice: v.oldPrice ? Number(v.oldPrice) : null,
+                        promoPrice: v.promoPrice ? Number(v.promoPrice) : null,
                         sortOrder: index
                     }))
                 } : undefined
@@ -60,13 +60,13 @@ export async function POST(req: Request) {
 export async function PUT(req: Request) {
     try {
         const body = await req.json();
-        const { id, name, description, price, oldPrice, isPromoted, imageUrl, category, categoryId, brand, barcode, stockOut, isBestSeller, storeOrder, sellType, variants } = body;
+        const { id, name, description, price, promoPrice, isPromoted, imageUrl, category, categoryId, brand, barcode, stockOut, isBestSeller, storeOrder, sellType, variants } = body;
 
         const updateData: any = {};
         if (name !== undefined) updateData.name = name;
         if (description !== undefined) updateData.description = description;
         if (price !== undefined) updateData.price = Number(price);
-        if (oldPrice !== undefined) updateData.oldPrice = oldPrice ? Number(oldPrice) : null;
+        if (promoPrice !== undefined) updateData.promoPrice = promoPrice ? Number(promoPrice) : null;
         if (isPromoted !== undefined) updateData.isPromoted = isPromoted;
         if (imageUrl !== undefined) updateData.imageUrl = imageUrl;
         if (category !== undefined) updateData.category = category;
@@ -85,7 +85,7 @@ export async function PUT(req: Request) {
                 create: sellType === 'WEIGHT' ? variants.map((v: any, index: number) => ({
                     weightLabel: v.weightLabel,
                     price: Number(v.price),
-                    oldPrice: v.oldPrice ? Number(v.oldPrice) : null,
+                    promoPrice: v.promoPrice ? Number(v.promoPrice) : null,
                     sortOrder: index
                 })) : []
             };

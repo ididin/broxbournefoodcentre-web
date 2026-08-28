@@ -9,7 +9,7 @@ import { useAgeStore } from '@/store/useAgeStore';
 interface ProductVariant {
     weightLabel: string;
     price: number;
-    oldPrice?: number | null;
+    promoPrice?: number | null;
 }
 
 interface Product {
@@ -17,7 +17,7 @@ interface Product {
     name: string;
     category: string;
     price: number;
-    oldPrice?: number | null;
+    promoPrice?: number | null;
     isPromoted?: boolean;
     imageUrl?: string | null;
     stockOut: boolean;
@@ -36,8 +36,12 @@ export default function ProductCard({ product }: { product: Product }) {
     const [selectedVariantIdx, setSelectedVariantIdx] = useState(0);
     const activeVariant = hasVariants ? product.variants![selectedVariantIdx] : null;
 
-    const currentPrice = activeVariant ? activeVariant.price : product.price;
-    const currentOldPrice = activeVariant ? activeVariant.oldPrice : product.oldPrice;
+    const basePrice = activeVariant ? activeVariant.price : product.price;
+    const promoPrice = activeVariant ? activeVariant.promoPrice : product.promoPrice;
+    
+    const isPromoActive = product.isPromoted && promoPrice != null && promoPrice > 0;
+    const currentPrice = isPromoActive ? promoPrice! : basePrice;
+    const currentOldPrice = isPromoActive ? basePrice : null;
     const currentVariantName = activeVariant ? activeVariant.weightLabel : undefined;
     
     // Composite ID for cart
@@ -96,7 +100,7 @@ export default function ProductCard({ product }: { product: Product }) {
     return (
         <div className="group flex flex-col h-full bg-white relative">
             <div className="relative aspect-square bg-slate-50 rounded-2xl border border-gray-100 shadow-sm overflow-hidden group-hover:border-emerald-200 transition-colors">
-                {product.isPromoted && (
+                {isPromoActive && (
                     <div className="absolute top-2 left-2 z-10 bg-red-500 text-white text-[10px] sm:text-xs font-black px-2 py-1 rounded-md shadow-sm">
                         PROMO
                     </div>

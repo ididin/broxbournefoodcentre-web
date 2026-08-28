@@ -7,14 +7,14 @@ interface ProductVariant {
     id?: string;
     weightLabel: string;
     price: number;
-    oldPrice?: number | null;
+    promoPrice?: number | null;
 }
 
 interface Product {
     id: string;
     name: string;
     price: number;
-    oldPrice?: number | null;
+    promoPrice?: number | null;
     isPromoted: boolean;
     sellType: 'PIECE' | 'WEIGHT';
     variants: ProductVariant[];
@@ -58,7 +58,7 @@ export default function PromotionsAdmin() {
                     id: editingProduct.id,
                     isPromoted: editingProduct.isPromoted,
                     price: editingProduct.price,
-                    oldPrice: editingProduct.oldPrice,
+                    promoPrice: editingProduct.promoPrice,
                     variants: editingProduct.variants
                 })
             });
@@ -165,7 +165,7 @@ export default function PromotionsAdmin() {
                                     <td className="px-6 py-4">
                                         {product.sellType === 'PIECE' ? (
                                             <div>
-                                                {product.oldPrice && <span className="text-xs text-gray-400 line-through mr-2">£{product.oldPrice.toFixed(2)}</span>}
+                                                {product.promoPrice && <span className="text-xs text-gray-400 line-through mr-2">£{product.promoPrice.toFixed(2)}</span>}
                                                 <span className="font-semibold text-emerald-600">£{product.price.toFixed(2)}</span>
                                             </div>
                                         ) : (
@@ -221,8 +221,8 @@ export default function PromotionsAdmin() {
                             {editingProduct.sellType === 'PIECE' ? (
                                 <div className="grid grid-cols-2 gap-4">
                                     <div>
-                                        <label className="block text-sm font-semibold mb-1 text-gray-700">Old Price (£)</label>
-                                        <input type="number" step="0.01" className="w-full px-3 py-2 border rounded-md" placeholder="e.g. 5.99" value={editingProduct.oldPrice || ''} onChange={e => setEditingProduct({ ...editingProduct, oldPrice: e.target.value ? Number(e.target.value) : null })} />
+                                        <label className="block text-sm font-semibold mb-1 text-gray-700">Promo Price (£)</label>
+                                        <input type="number" step="0.01" className="w-full px-3 py-2 border rounded-md" placeholder="e.g. 5.99" value={editingProduct.promoPrice || ''} onChange={e => setEditingProduct({ ...editingProduct, promoPrice: e.target.value ? Number(e.target.value) : null })} />
                                         <p className="text-[10px] text-gray-400 mt-1">Leave empty for no strike-through.</p>
                                     </div>
                                     <div>
@@ -237,10 +237,10 @@ export default function PromotionsAdmin() {
                                         <div key={index} className="flex items-center gap-3 bg-gray-50 p-3 rounded-lg border">
                                             <div className="flex-1 font-semibold text-sm">{variant.weightLabel}</div>
                                             <div className="w-24">
-                                                <label className="block text-[10px] font-medium text-gray-500 mb-1">Old Price</label>
-                                                <input type="number" step="0.01" className="w-full px-2 py-1.5 border rounded text-sm" placeholder="Old" value={variant.oldPrice || ''} onChange={e => {
+                                                <label className="block text-[10px] font-medium text-gray-500 mb-1">Promo Price</label>
+                                                <input type="number" step="0.01" className="w-full px-2 py-1.5 border rounded text-sm" placeholder="Old" value={variant.promoPrice || ''} onChange={e => {
                                                     const newVariants = [...editingProduct.variants];
-                                                    newVariants[index].oldPrice = e.target.value ? Number(e.target.value) : null;
+                                                    newVariants[index].promoPrice = e.target.value ? Number(e.target.value) : null;
                                                     setEditingProduct({ ...editingProduct, variants: newVariants });
                                                 }} />
                                             </div>

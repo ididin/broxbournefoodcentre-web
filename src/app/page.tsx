@@ -3,6 +3,7 @@ import BestSellersSlider from '@/components/ui/BestSellersSlider';
 import Link from 'next/link';
 import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
+import { Tag } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
@@ -68,7 +69,7 @@ export default async function Home() {
         <section className="max-w-7xl flex-1 px-4 sm:px-6 lg:px-8 w-full mx-auto relative overflow-hidden -mt-4">
           <div className="flex justify-between items-end mb-8">
             <h2 className="text-3xl font-bold text-emerald-700 tracking-tight flex items-center gap-2">
-              🎁 Special Offers
+              <Tag className="w-8 h-8 text-emerald-600" /> Special Offers
             </h2>
             <Link href="/shop?category=Special%20Offers" className="text-emerald-700 font-semibold hover:underline">
               View All Offers →
