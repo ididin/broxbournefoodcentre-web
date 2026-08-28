@@ -59,6 +59,7 @@ export default function PromotionsAdmin() {
                     isPromoted: editingProduct.isPromoted,
                     price: editingProduct.price,
                     promoPrice: editingProduct.promoPrice,
+                    sellType: editingProduct.sellType,
                     variants: editingProduct.variants
                 })
             });

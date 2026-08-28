@@ -82,12 +82,12 @@ export async function PUT(req: Request) {
         if (variants !== undefined) {
             updateData.variants = {
                 deleteMany: {},
-                create: sellType === 'WEIGHT' ? variants.map((v: any, index: number) => ({
+                create: variants.map((v: any, index: number) => ({
                     weightLabel: v.weightLabel,
                     price: Number(v.price),
                     promoPrice: v.promoPrice ? Number(v.promoPrice) : null,
                     sortOrder: index
-                })) : []
+                }))
             };
         }
 
