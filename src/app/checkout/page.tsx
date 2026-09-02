@@ -34,7 +34,7 @@ export default function CheckoutPage() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [orderNumber, setOrderNumber] = useState<string | null>(null);
-    const [selectedAddressId, setSelectedAddressId] = useState<string>('');
+    const [selectedAddressId, setSelectedAddressId] = useState<string>('new');
 
     useEffect(() => {
         if (status === 'authenticated') {
@@ -62,9 +62,22 @@ export default function CheckoutPage() {
 
     const handleSelectAddress = (addressId: string, addressList = savedAddresses) => {
         if (!addressId) return;
+        
+        setSelectedAddressId(addressId);
+        
+        if (addressId === 'new') {
+            setFormData(prev => ({
+                ...prev,
+                addressLine: '',
+                postalCode: '',
+                city: ''
+                // keep name/email/phone from session or previous input
+            }));
+            return;
+        }
+
         const address = addressList.find(a => a.id === addressId);
         if (address) {
-            setSelectedAddressId(addressId);
             setFormData(prev => ({
                 ...prev,
                 name: address.name || prev.name,
@@ -173,7 +186,7 @@ export default function CheckoutPage() {
                                     value={selectedAddressId}
                                     onChange={(e) => handleSelectAddress(e.target.value)}
                                 >
-                                    <option value="" disabled>Select a saved address to auto-fill</option>
+                                    <option value="new">-- Use a different address --</option>
                                     {savedAddresses.map(addr => (
                                         <option key={addr.id} value={addr.id}>
                                             {addr.title} - {addr.addressLine}, {addr.postalCode}
