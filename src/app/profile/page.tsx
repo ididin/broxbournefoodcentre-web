@@ -6,6 +6,15 @@ import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useCartStore } from '@/store/useCartStore';
 
+const POSTAL_CITY_MAP: Record<string, string> = {
+    'EN8': 'Waltham Cross',
+    'EN9': 'Waltham Abbey',
+    'EN10': 'Broxbourne',
+    'EN11': 'Hoddesdon'
+};
+
+const SERVED_POSTAL_CODES = Object.keys(POSTAL_CITY_MAP);
+
 export default function ProfilePage() {
     const { data: session, status } = useSession();
     const router = useRouter();
@@ -15,7 +24,16 @@ export default function ProfilePage() {
     const [profile, setProfile] = useState<any>(null);
     const [loading, setLoading] = useState(true);
 
-    const [newAddress, setNewAddress] = useState({ title: '', addressLine: '', postalCode: '', city: '' });
+    const [newAddress, setNewAddress] = useState({ 
+        title: '', 
+        name: '', 
+        email: '', 
+        phone: '', 
+        addressLine: '', 
+        postalCode: '', 
+        city: '',
+        isDefault: false
+    });
     const [isAddingAddress, setIsAddingAddress] = useState(false);
 
     useEffect(() => {
@@ -49,7 +67,9 @@ export default function ProfilePage() {
                 body: JSON.stringify(newAddress)
             });
             if (res.ok) {
-                setNewAddress({ title: '', addressLine: '', postalCode: '', city: '' });
+                setNewAddress({ 
+                    title: '', name: '', email: '', phone: '', addressLine: '', postalCode: '', city: '', isDefault: false 
+                });
                 setIsAddingAddress(false);
                 fetchProfile();
             }
@@ -217,17 +237,54 @@ export default function ProfilePage() {
                                     <input required type="text" className="w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none" value={newAddress.title} onChange={e => setNewAddress({...newAddress, title: e.target.value})} />
                                 </div>
                                 <div>
+                                    <label className="block text-sm font-medium mb-1">Full Name</label>
+                                    <input required type="text" className="w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none" value={newAddress.name} onChange={e => setNewAddress({...newAddress, name: e.target.value})} />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Email</label>
+                                    <input required type="email" className="w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none" value={newAddress.email} onChange={e => setNewAddress({...newAddress, email: e.target.value})} />
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">Phone Number</label>
+                                    <input required type="tel" className="w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none" value={newAddress.phone} onChange={e => setNewAddress({...newAddress, phone: e.target.value})} />
+                                </div>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                                <div>
                                     <label className="block text-sm font-medium mb-1">Postal Code</label>
-                                    <input required type="text" className="w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none" value={newAddress.postalCode} onChange={e => setNewAddress({...newAddress, postalCode: e.target.value})} />
+                                    <select 
+                                        required 
+                                        className="w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none bg-white" 
+                                        value={newAddress.postalCode} 
+                                        onChange={e => {
+                                            const code = e.target.value;
+                                            setNewAddress({
+                                                ...newAddress, 
+                                                postalCode: code,
+                                                city: POSTAL_CITY_MAP[code] || newAddress.city
+                                            });
+                                        }}
+                                    >
+                                        <option value="" disabled>Select code</option>
+                                        {SERVED_POSTAL_CODES.map(code => (
+                                            <option key={code} value={code}>{code}</option>
+                                        ))}
+                                    </select>
+                                </div>
+                                <div>
+                                    <label className="block text-sm font-medium mb-1">City</label>
+                                    <input type="text" className="w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none bg-gray-100" readOnly value={newAddress.city} onChange={e => setNewAddress({...newAddress, city: e.target.value})} />
                                 </div>
                             </div>
                             <div className="mb-4">
                                 <label className="block text-sm font-medium mb-1">Street Address</label>
                                 <input required type="text" className="w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none" value={newAddress.addressLine} onChange={e => setNewAddress({...newAddress, addressLine: e.target.value})} />
                             </div>
-                            <div className="mb-4">
-                                <label className="block text-sm font-medium mb-1">City</label>
-                                <input type="text" className="w-full px-4 py-2 border rounded-lg focus:ring-2 outline-none" value={newAddress.city} onChange={e => setNewAddress({...newAddress, city: e.target.value})} />
+                            <div className="mb-4 flex items-center">
+                                <input type="checkbox" id="isDefault" className="w-4 h-4 mr-2 cursor-pointer text-black focus:ring-black" checked={newAddress.isDefault} onChange={e => setNewAddress({...newAddress, isDefault: e.target.checked})} />
+                                <label htmlFor="isDefault" className="text-sm font-medium cursor-pointer">Set as default address</label>
                             </div>
                             <button type="submit" className="bg-black text-white px-6 py-2 rounded-lg font-bold hover:bg-gray-800">
                                 Save Address
@@ -237,15 +294,23 @@ export default function ProfilePage() {
 
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                         {profile.addresses.map((address: any) => (
-                            <div key={address.id} className="border border-gray-200 p-6 rounded-2xl relative">
-                                <h3 className="font-bold mb-2">{address.title}</h3>
+                            <div key={address.id} className={`border p-6 rounded-2xl relative ${address.isDefault ? 'border-emerald-500 bg-emerald-50' : 'border-gray-200'}`}>
+                                <div className="flex justify-between items-start mb-2">
+                                    <h3 className="font-bold">{address.title}</h3>
+                                    {address.isDefault && (
+                                        <span className="bg-emerald-100 text-emerald-800 text-xs font-bold px-2 py-1 rounded">Default</span>
+                                    )}
+                                </div>
+                                {address.name && <p className="text-gray-800 font-medium text-sm mb-1">{address.name}</p>}
+                                {address.phone && <p className="text-gray-600 text-sm mb-1">{address.phone}</p>}
+                                {address.email && <p className="text-gray-600 text-sm mb-2">{address.email}</p>}
                                 <p className="text-gray-600 text-sm mb-1">{address.addressLine}</p>
                                 <p className="text-gray-600 text-sm mb-1">{address.city}</p>
                                 <p className="text-gray-600 text-sm">{address.postalCode}</p>
 
                                 <button 
                                     onClick={() => handleDeleteAddress(address.id)}
-                                    className="absolute top-4 right-4 text-red-500 hover:text-red-700 text-sm font-medium"
+                                    className="absolute bottom-4 right-4 text-red-500 hover:text-red-700 text-sm font-medium bg-white px-2 py-1 rounded"
                                 >
                                     Delete
                                 </button>

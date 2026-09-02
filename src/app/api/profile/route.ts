@@ -57,15 +57,27 @@ export async function POST(req: Request) {
 
     try {
         const body = await req.json();
-        const { title, addressLine, postalCode, city } = body;
+        const { title, name, email, phone, addressLine, postalCode, city, isDefault } = body;
+
+        // If isDefault is true, unset other default addresses for this user
+        if (isDefault) {
+            await prisma.address.updateMany({
+                where: { userId: session.user.id },
+                data: { isDefault: false }
+            });
+        }
 
         const newAddress = await prisma.address.create({
             data: {
                 userId: session.user.id,
                 title: title || 'Other',
+                name,
+                email,
+                phone,
                 addressLine,
                 postalCode,
-                city
+                city,
+                isDefault: isDefault || false
             }
         });
 

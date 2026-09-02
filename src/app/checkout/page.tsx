@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useCartStore } from '@/store/useCartStore';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
+import { useSession } from 'next-auth/react';
 
 const POSTAL_CITY_MAP: Record<string, string> = {
     'EN8': 'Waltham Cross',
@@ -17,6 +18,8 @@ const SERVED_POSTAL_CODES = Object.keys(POSTAL_CITY_MAP);
 export default function CheckoutPage() {
     const { items, getTotalPrice, clearCart } = useCartStore();
     const router = useRouter();
+    const { data: session, status } = useSession();
+    
     const [formData, setFormData] = useState({
         name: '',
         email: '',
@@ -26,9 +29,53 @@ export default function CheckoutPage() {
         deliveryTime: '',
         paymentMethod: 'CASH', // or CREDIT_CARD
     });
+    
+    const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
     const [orderNumber, setOrderNumber] = useState<string | null>(null);
+    const [selectedAddressId, setSelectedAddressId] = useState<string>('');
+
+    useEffect(() => {
+        if (status === 'authenticated') {
+            if (session.user) {
+                setFormData(prev => ({
+                    ...prev,
+                    name: prev.name || session.user.name || '',
+                    email: prev.email || session.user.email || ''
+                }));
+            }
+            fetch('/api/profile')
+                .then(res => res.json())
+                .then(data => {
+                    if (data.addresses && data.addresses.length > 0) {
+                        setSavedAddresses(data.addresses);
+                        const defaultAddress = data.addresses.find((a: any) => a.isDefault);
+                        if (defaultAddress) {
+                            handleSelectAddress(defaultAddress.id, data.addresses);
+                        }
+                    }
+                })
+                .catch(err => console.error('Error fetching profile:', err));
+        }
+    }, [status, session]);
+
+    const handleSelectAddress = (addressId: string, addressList = savedAddresses) => {
+        if (!addressId) return;
+        const address = addressList.find(a => a.id === addressId);
+        if (address) {
+            setSelectedAddressId(addressId);
+            setFormData(prev => ({
+                ...prev,
+                name: address.name || prev.name,
+                email: address.email || prev.email,
+                phone: address.phone || prev.phone,
+                addressLine: address.addressLine || '',
+                postalCode: address.postalCode || '',
+                city: address.city || ''
+            }));
+        }
+    };
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -118,6 +165,23 @@ export default function CheckoutPage() {
             <div className="flex flex-col lg:flex-row gap-12">
                 <div className="flex-1">
                     <form onSubmit={handleSubmit} className="space-y-6 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                        {savedAddresses.length > 0 && (
+                            <div>
+                                <h2 className="text-xl font-bold border-b pb-2 mb-4">Saved Addresses</h2>
+                                <select 
+                                    className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-black outline-none bg-white mb-4"
+                                    value={selectedAddressId}
+                                    onChange={(e) => handleSelectAddress(e.target.value)}
+                                >
+                                    <option value="" disabled>Select a saved address to auto-fill</option>
+                                    {savedAddresses.map(addr => (
+                                        <option key={addr.id} value={addr.id}>
+                                            {addr.title} - {addr.addressLine}, {addr.postalCode}
+                                        </option>
+                                    ))}
+                                </select>
+                            </div>
+                        )}
                         <div>
                             <h2 className="text-xl font-bold border-b pb-2 mb-4">Contact Information</h2>
                             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
