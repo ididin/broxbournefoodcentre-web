@@ -189,17 +189,33 @@ export default function ProfilePage() {
                                         </div>
                                     </div>
 
-                                    <div className="flex gap-4 overflow-x-auto pb-4 mb-4">
-                                        {order.orderItems.map((item: any) => (
-                                            <div key={item.id} className="flex-shrink-0 w-16 h-16 bg-gray-50 rounded-lg overflow-hidden relative border">
-                                                {item.product?.imageUrl && (
-                                                    <Image src={item.product.imageUrl} alt={item.product.name} fill className="object-cover" />
-                                                )}
-                                                <div className="absolute -top-2 -right-2 bg-black text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">
-                                                    {item.quantity}
+                                    <div className="space-y-4 mb-4 border-t pt-4">
+                                        {order.orderItems.map((item: any) => {
+                                            const itemPrice = item.priceAtBuy || item.product?.promoPrice || item.product?.price || 0;
+                                            return (
+                                                <div key={item.id} className="flex items-center gap-4">
+                                                    <div className="flex-shrink-0 w-16 h-16 bg-gray-50 rounded-lg overflow-hidden relative border">
+                                                        {item.product?.imageUrl && (
+                                                            <Image src={item.product.imageUrl} alt={item.product?.name || 'Product image'} fill className="object-cover" />
+                                                        )}
+                                                    </div>
+                                                    <div className="flex-1">
+                                                        <p className="font-semibold text-gray-800 line-clamp-2">{item.product?.name || 'Unknown Product'}</p>
+                                                        {item.variantName && (
+                                                            <p className="text-emerald-600 text-xs font-bold mt-0.5">{item.variantName}</p>
+                                                        )}
+                                                        <p className="text-gray-500 text-sm mt-1">
+                                                            Qty: <span className="font-semibold">{item.quantity}</span> 
+                                                            <span className="mx-2">•</span> 
+                                                            £{itemPrice.toFixed(2)} each
+                                                        </p>
+                                                    </div>
+                                                    <div className="font-bold text-gray-800">
+                                                        £{(itemPrice * item.quantity).toFixed(2)}
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        ))}
+                                            );
+                                        })}
                                     </div>
 
                                     <div className="flex justify-end pt-4">

@@ -88,7 +88,7 @@ export default function Navbar() {
                             {session ? (
                                 <div className="flex items-center space-x-4">
                                     <Link href={session.user.role === 'ADMIN' ? '/admin/dashboard' : '/profile'} className="text-slate-600 hover:text-emerald-600 transition-colors flex items-center gap-1">
-                                        <LayoutDashboard className="h-5 w-5" />
+                                        {session.user.role === 'ADMIN' ? <LayoutDashboard className="h-5 w-5" /> : <User className="h-6 w-6" />}
                                     </Link>
                                     <button onClick={() => signOut()} className="text-slate-600 hover:text-red-600 transition-colors">
                                         <LogOut className="h-5 w-5 hover:scale-110 transition-transform" />
