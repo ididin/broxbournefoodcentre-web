@@ -8,14 +8,15 @@ datasource db {
 }
 
 model User {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   name      String?
-  email     String   @unique
+  email     String    @unique
   password  String
-  role      Role     @default(CUSTOMER)
+  role      Role      @default(CUSTOMER)
   orders    Order[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  addresses Address[]
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 }
 
 enum Role {
@@ -24,17 +25,17 @@ enum Role {
 }
 
 model Category {
-  id          String     @id @default(cuid())
-  name        String
-  slug        String     @unique
-  parentId    String?
-  parent      Category?  @relation("SubCategories", fields: [parentId], references: [id])
-  children    Category[] @relation("SubCategories")
-  imageUrl    String?
-  storeOrder  Int        @default(0)
-  products    Product[]
-  createdAt   DateTime   @default(now())
-  updatedAt   DateTime   @updatedAt
+  id         String     @id @default(cuid())
+  name       String
+  slug       String     @unique
+  parentId   String?
+  parent     Category?  @relation("SubCategories", fields: [parentId], references: [id])
+  children   Category[] @relation("SubCategories")
+  imageUrl   String?
+  storeOrder Int        @default(0)
+  products   Product[]
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
 }
 
 model ContactMessage {
@@ -53,53 +54,54 @@ enum SellType {
 }
 
 model Product {
-  id          String   @id @default(cuid())
-  name        String
-  description String?
-  price       Float    // Adet ürünler için ana fiyat
-  imageUrl    String?
-  category    String
-  categoryId  String?
-  categoryRef Category? @relation(fields: [categoryId], references: [id])
-  barcode     String?  @unique
-  brand       String?
-  stockOut    Boolean  @default(false)
-  isBestSeller Boolean @default(false)
-  isPromoted  Boolean  @default(false)
-  promoPrice  Float?
-  storeOrder  Int      @default(0)
-  sellType    SellType @default(PIECE)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id           String    @id @default(cuid())
+  name         String
+  description  String?
+  price        Float // Adet ürünler için ana fiyat
+  imageUrl     String?
+  category     String
+  categoryId   String?
+  categoryRef  Category? @relation(fields: [categoryId], references: [id])
+  barcode      String?   @unique
+  brand        String?
+  stockOut     Boolean   @default(false)
+  isBestSeller Boolean   @default(false)
+  isPromoted   Boolean   @default(false)
+  promoPrice   Float?
+  storeOrder   Int       @default(0)
+  sellType     SellType  @default(PIECE)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
 
-  orderItems  OrderItem[]
-  variants    ProductVariant[]
+  orderItems OrderItem[]
+  variants   ProductVariant[]
 }
 
 model ProductVariant {
   id          String  @id @default(cuid())
   productId   String
   product     Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-  weightLabel String  // e.g. "500g", "1kg"
+  weightLabel String // e.g. "500g", "1kg"
   price       Float
   promoPrice  Float?
   sortOrder   Int     @default(0)
 }
 
 model Order {
-  id                   String        @id @default(cuid())
-  userId               String?
-  user                 User?         @relation(fields: [userId], references: [id])
-  guestEmail           String?
-  deliveryAddress      String
-  deliveryTimePref     String?       // optional
-  paymentMethod        PaymentMethod @default(CASH_ON_DELIVERY)
-  status               OrderStatus   @default(PENDING)
-  totalAmount          Float
-  createdAt            DateTime      @default(now())
-  updatedAt            DateTime      @updatedAt
+  id               String        @id @default(cuid())
+  orderNumber      String?       @unique
+  userId           String?
+  user             User?         @relation(fields: [userId], references: [id])
+  guestEmail       String?
+  deliveryAddress  String
+  deliveryTimePref String? // optional
+  paymentMethod    PaymentMethod @default(CASH_ON_DELIVERY)
+  status           OrderStatus   @default(PENDING)
+  totalAmount      Float
+  createdAt        DateTime      @default(now())
+  updatedAt        DateTime      @updatedAt
 
-  orderItems           OrderItem[]
+  orderItems OrderItem[]
 }
 
 enum PaymentMethod {
@@ -116,12 +118,12 @@ enum OrderStatus {
 }
 
 model OrderItem {
-  id          String   @id @default(cuid())
+  id          String  @id @default(cuid())
   orderId     String
-  order       Order    @relation(fields: [orderId], references: [id])
+  order       Order   @relation(fields: [orderId], references: [id])
   productId   String
-  product     Product  @relation(fields: [productId], references: [id])
-  variantName String?  // Hangi gramaj seçildi? (Yoksa null)
+  product     Product @relation(fields: [productId], references: [id])
+  variantName String? // Hangi gramaj seçildi? (Yoksa null)
   quantity    Int
   priceAtBuy  Float
 }
@@ -145,4 +147,17 @@ model PromoBanner {
   btnText String
   btnHref String
   image   String
+}
+
+model Address {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  title       String?
+  addressLine String
+  postalCode  String
+  city        String?
+  isDefault   Boolean  @default(false)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
 }

@@ -28,6 +28,7 @@ export default function CheckoutPage() {
     });
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [isSuccess, setIsSuccess] = useState(false);
+    const [orderNumber, setOrderNumber] = useState<string | null>(null);
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -61,6 +62,8 @@ export default function CheckoutPage() {
             });
 
             if (res.ok) {
+                const data = await res.json();
+                setOrderNumber(data.orderNumber);
                 setIsSuccess(true);
                 clearCart();
             } else {
@@ -81,8 +84,20 @@ export default function CheckoutPage() {
                     <svg className="w-12 h-12" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3} d="M5 13l4 4L19 7" /></svg>
                 </div>
                 <h1 className="text-4xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-green-600 to-emerald-800 mb-4">Order Confirmed!</h1>
-                <p className="text-xl text-gray-600 mb-8">Thank you for your order, {formData.name}. We will deliver it to {formData.postalCode} within 24 hours.</p>
-                <button onClick={() => router.push('/')} className="bg-black text-white px-8 py-3 rounded-xl font-bold hover:bg-gray-800 transition">Return to Home</button>
+                <p className="text-xl text-gray-600 mb-4">Thank you for your order, {formData.name}. We will deliver it to {formData.postalCode} within 24 hours.</p>
+                {orderNumber && (
+                    <div className="bg-gray-50 border border-gray-200 rounded-xl p-6 mb-8 inline-block">
+                        <p className="text-sm text-gray-500 mb-1">Your Order Number</p>
+                        <p className="text-2xl font-bold tracking-wider">{orderNumber}</p>
+                        <p className="text-sm text-gray-500 mt-2">You can use this number to track your order.</p>
+                    </div>
+                )}
+                <div>
+                    <button onClick={() => router.push('/')} className="bg-black text-white px-8 py-3 rounded-xl font-bold hover:bg-gray-800 transition mr-4">Return to Home</button>
+                    {orderNumber && (
+                        <button onClick={() => router.push(`/order-tracking?orderNumber=${orderNumber}`)} className="bg-white border-2 border-black text-black px-8 py-3 rounded-xl font-bold hover:bg-gray-50 transition">Track Order</button>
+                    )}
+                </div>
             </div>
         );
     }

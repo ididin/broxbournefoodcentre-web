@@ -14,9 +14,22 @@ export async function POST(req: Request) {
         // Map PaymentMethod string to Enum
         const mappedPaymentMethod = paymentMethod === 'CREDIT_CARD' ? 'CREDIT_CARD_ON_DELIVERY' : 'CASH_ON_DELIVERY';
 
+        // Generate a random 8-character uppercase alphanumeric string for the order number
+        const generateOrderNumber = () => {
+            const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            let result = '';
+            for (let i = 0; i < 8; i++) {
+                result += chars.charAt(Math.floor(Math.random() * chars.length));
+            }
+            return `ORD-${result}`;
+        };
+
+        const orderNumber = generateOrderNumber();
+
         // Create the order and associated order items in a transaction
         const order = await prisma.order.create({
             data: {
+                orderNumber,
                 guestEmail,
                 deliveryAddress,
                 deliveryTimePref,
@@ -37,7 +50,7 @@ export async function POST(req: Request) {
             }
         });
 
-        return NextResponse.json({ success: true, orderId: order.id }, { status: 201 });
+        return NextResponse.json({ success: true, orderId: order.id, orderNumber: order.orderNumber }, { status: 201 });
     } catch (error) {
         console.error('Order creation failed:', error);
         return NextResponse.json({ error: 'Failed to create order' }, { status: 500 });

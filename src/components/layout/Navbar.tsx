@@ -72,6 +72,9 @@ export default function Navbar() {
                             <Link href="/contact" className="text-slate-600 hover:text-emerald-600 font-semibold transition-colors">
                                 Contact
                             </Link>
+                            <Link href="/order-tracking" className="text-slate-600 hover:text-emerald-600 font-semibold transition-colors">
+                                Track Order
+                            </Link>
 
                             <button onClick={() => useCartStore.getState().openCart()} className="text-slate-600 hover:text-emerald-600 relative transition-colors group">
                                 <ShoppingCart className="h-6 w-6 group-hover:scale-110 transition-transform" />
@@ -84,7 +87,7 @@ export default function Navbar() {
 
                             {session ? (
                                 <div className="flex items-center space-x-4">
-                                    <Link href={session.user.role === 'ADMIN' ? '/admin/dashboard' : '/dashboard'} className="text-slate-600 hover:text-emerald-600 transition-colors flex items-center gap-1">
+                                    <Link href={session.user.role === 'ADMIN' ? '/admin/dashboard' : '/profile'} className="text-slate-600 hover:text-emerald-600 transition-colors flex items-center gap-1">
                                         <LayoutDashboard className="h-5 w-5" />
                                     </Link>
                                     <button onClick={() => signOut()} className="text-slate-600 hover:text-red-600 transition-colors">
@@ -133,9 +136,10 @@ export default function Navbar() {
                         <Link href="/shop" onClick={() => setIsMobileMenuOpen(false)} className="block text-slate-600 font-semibold">Shop</Link>
                         <Link href="/services" onClick={() => setIsMobileMenuOpen(false)} className="block text-slate-600 font-semibold">Services</Link>
                         <Link href="/contact" onClick={() => setIsMobileMenuOpen(false)} className="block text-slate-600 font-semibold">Contact</Link>
+                        <Link href="/order-tracking" onClick={() => setIsMobileMenuOpen(false)} className="block text-slate-600 font-semibold">Track Order</Link>
                         {session && (
-                            <Link href={session.user.role === 'ADMIN' ? '/admin/dashboard' : '/dashboard'} onClick={() => setIsMobileMenuOpen(false)} className="block text-emerald-600 font-semibold border-t pt-2">
-                                Dashboard ({session.user.name})
+                            <Link href={session.user.role === 'ADMIN' ? '/admin/dashboard' : '/profile'} onClick={() => setIsMobileMenuOpen(false)} className="block text-emerald-600 font-semibold border-t pt-2">
+                                Profile ({session.user.name || session.user.email})
                             </Link>
                         )}
                     </div>
