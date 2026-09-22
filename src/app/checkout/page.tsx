@@ -255,12 +255,8 @@ export default function CheckoutPage() {
                                     <span className="ml-3 font-medium">Cash on Delivery</span>
                                 </label>
                                 <label className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition">
-                                    <input type="radio" name="paymentMethod" value="CREDIT_CARD" checked={formData.paymentMethod === 'CREDIT_CARD'} onChange={e => setFormData({ ...formData, paymentMethod: e.target.value })} className="w-5 h-5 text-black border-gray-300 focus:ring-black" />
-                                    <span className="ml-3 font-medium">Credit Card on Delivery</span>
-                                </label>
-                                <label className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition">
                                     <input type="radio" name="paymentMethod" value="SQUARE_ONLINE" checked={formData.paymentMethod === 'SQUARE_ONLINE'} onChange={e => setFormData({ ...formData, paymentMethod: e.target.value })} className="w-5 h-5 text-black border-gray-300 focus:ring-black" />
-                                    <span className="ml-3 font-medium">Pay Online (Secure Credit Card)</span>
+                                    <span className="ml-3 font-medium">Pay Online</span>
                                 </label>
                             </div>
                         </div>
@@ -273,8 +269,8 @@ export default function CheckoutPage() {
                     </form>
                     
                     {formData.paymentMethod === 'SQUARE_ONLINE' && (
-                        <div className="mt-8 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
-                            <h2 className="text-xl font-bold border-b pb-2 mb-4">Enter Card Details</h2>
+                        <div className="mt-8 bg-white p-8 rounded-2xl shadow-sm border border-gray-100 relative">
+                            <h2 className="text-xl font-bold border-b pb-2 mb-6">Enter Card Details</h2>
                             {isSubmitting ? (
                                 <div className="w-full py-4 bg-gray-100 rounded-xl flex justify-center items-center">
                                     <span className="animate-spin rounded-full h-6 w-6 border-b-2 border-black"></span>
@@ -283,19 +279,45 @@ export default function CheckoutPage() {
                             ) : (
                                 <div className="min-h-[150px]">
                                     {process.env.NEXT_PUBLIC_SQUARE_APP_ID && process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID ? (
-                                        <PaymentForm
-                                            applicationId={process.env.NEXT_PUBLIC_SQUARE_APP_ID}
-                                            locationId={process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID}
-                                            cardTokenizeResponseReceived={async (token, verifiedBuyer) => {
-                                                if (token.status === 'OK' && token.token) {
-                                                    await processOrder(token.token);
-                                                } else {
-                                                    alert('Payment could not be validated. Please check your details.');
-                                                }
-                                            }}
-                                        >
-                                            <CreditCard />
-                                        </PaymentForm>
+                                        <div className="square-payment-container">
+                                            <PaymentForm
+                                                applicationId={process.env.NEXT_PUBLIC_SQUARE_APP_ID}
+                                                locationId={process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID}
+                                                cardTokenizeResponseReceived={async (token, verifiedBuyer) => {
+                                                    if (token.status === 'OK' && token.token) {
+                                                        await processOrder(token.token);
+                                                    } else {
+                                                        alert('Payment could not be validated. Please check your details.');
+                                                    }
+                                                }}
+                                            >
+                                                <CreditCard 
+                                                    includePostalCode={false}
+                                                    buttonProps={{
+                                                        css: {
+                                                            backgroundColor: '#000000',
+                                                            color: '#ffffff',
+                                                            fontSize: '1.125rem',
+                                                            lineHeight: '1.75rem',
+                                                            fontWeight: '700',
+                                                            padding: '1rem',
+                                                            width: '100%',
+                                                            borderRadius: '0.75rem',
+                                                            marginTop: '1.5rem',
+                                                            cursor: 'pointer',
+                                                            transition: 'background-color 0.2s',
+                                                            '&:hover': {
+                                                                backgroundColor: '#111827',
+                                                            },
+                                                        }
+                                                    }}
+                                                />
+                                            </PaymentForm>
+                                            <div className="flex items-center justify-center mt-4 text-gray-400 text-xs gap-1">
+                                                <svg className="w-3 h-3" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-1 15l-4-4 1.41-1.41L11 14.17l6.59-6.59L19 9l-8 8z"/></svg>
+                                                <span>Payments secured and processed by Square</span>
+                                            </div>
+                                        </div>
                                     ) : (
                                         <div className="text-red-500 p-4 bg-red-50 rounded-lg border border-red-100">
                                             Square API keys are missing in the environment configuration.
