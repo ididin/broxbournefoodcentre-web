@@ -2,12 +2,12 @@ import { NextResponse } from 'next/server';
 import { prisma } from '@/lib/prisma';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
-import { Client, Environment } from 'square';
+import { SquareClient, SquareEnvironment } from 'square';
 import crypto from 'crypto';
 
-const squareClient = new Client({
-    accessToken: process.env.SQUARE_ACCESS_TOKEN,
-    environment: process.env.NODE_ENV === 'production' ? Environment.Production : Environment.Sandbox,
+const squareClient = new SquareClient({
+    token: process.env.SQUARE_ACCESS_TOKEN,
+    environment: process.env.NODE_ENV === 'production' ? SquareEnvironment.Production : SquareEnvironment.Sandbox,
 });
 
 export async function POST(req: Request) {
