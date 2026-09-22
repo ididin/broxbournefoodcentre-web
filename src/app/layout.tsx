@@ -44,6 +44,7 @@ import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/cart/CartDrawer";
 import { NextAuthProvider } from "@/providers/NextAuthProvider";
 import FloatingCart from "@/components/cart/FloatingCart";
+import Script from "next/script";
 
 import AgeVerificationModal from "@/components/ui/AgeVerificationModal";
 
@@ -116,6 +117,27 @@ export default function RootLayout({
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
         />
+        
+        {/* Google Analytics */}
+        <Script
+          strategy="afterInteractive"
+          src={`https://www.googletagmanager.com/gtag/js?id=G-5E70DLVMZ9`}
+        />
+        <Script
+          id="google-analytics"
+          strategy="afterInteractive"
+          dangerouslySetInnerHTML={{
+            __html: `
+              window.dataLayer = window.dataLayer || [];
+              function gtag(){dataLayer.push(arguments);}
+              gtag('js', new Date());
+              gtag('config', 'G-5E70DLVMZ9', {
+                page_path: window.location.pathname,
+              });
+            `,
+          }}
+        />
+
         <NextAuthProvider>
           <Navbar />
           <CartDrawer />
