@@ -5,9 +5,11 @@ import { authOptions } from '@/lib/auth';
 import { SquareClient, SquareEnvironment } from 'square';
 import crypto from 'crypto';
 
+const isSandbox = process.env.NEXT_PUBLIC_SQUARE_APP_ID?.startsWith('sandbox') || false;
+
 const squareClient = new SquareClient({
     token: process.env.SQUARE_ACCESS_TOKEN,
-    environment: process.env.NODE_ENV === 'production' ? SquareEnvironment.Production : SquareEnvironment.Sandbox,
+    environment: isSandbox ? SquareEnvironment.Sandbox : SquareEnvironment.Production,
 });
 
 export async function POST(req: Request) {
@@ -63,9 +65,17 @@ export async function POST(req: Request) {
                 } else {
                     throw new Error('Payment was not completed');
                 }
-            } catch (error) {
+            } catch (error: any) {
                 console.error('Square payment failed:', error);
-                return NextResponse.json({ error: 'Payment processing failed' }, { status: 402 }); // 402 Payment Required
+                
+                let errorMessage = 'Payment processing failed';
+                if (error.errors && error.errors.length > 0) {
+                    errorMessage = error.errors[0].detail || error.errors[0].code;
+                } else if (error.message) {
+                    errorMessage = error.message;
+                }
+                
+                return NextResponse.json({ error: errorMessage }, { status: 402 }); // 402 Payment Required
             }
         }
 
