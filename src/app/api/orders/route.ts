@@ -48,7 +48,7 @@ export async function POST(req: Request) {
                 return NextResponse.json({ error: 'Payment token is missing' }, { status: 400 });
             }
             try {
-                const response = await squareClient.paymentsApi.createPayment({
+                const response = await squareClient.payments.create({
                     sourceId: squareToken,
                     idempotencyKey: crypto.randomUUID(),
                     amountMoney: {
@@ -57,8 +57,8 @@ export async function POST(req: Request) {
                     }
                 });
                 
-                if (response.result.payment?.status === 'COMPLETED' || response.result.payment?.status === 'APPROVED') {
-                    paymentTransactionId = response.result.payment.id;
+                if (response.payment?.status === 'COMPLETED' || response.payment?.status === 'APPROVED') {
+                    paymentTransactionId = response.payment.id;
                     initialStatus = 'PROCESSING'; // Payment succeeded, order is now processing
                 } else {
                     throw new Error('Payment was not completed');
