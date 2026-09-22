@@ -9,8 +9,34 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
-  title: "Broxbourne Food Centre | Online Delivery",
-  description: "Fresh groceries delivered right to your door within 24 hours in Broxbourne.",
+  title: {
+    template: "%s | Broxbourne Food Centre",
+    default: "Broxbourne Food Centre | Online Delivery EN10, EN11",
+  },
+  description: "Fresh groceries, alcohol, and house essentials delivered right to your door in Broxbourne, EN10, EN11, EN8, and EN9. Quick local delivery.",
+  keywords: ["Broxbourne grocery delivery", "food centre EN10", "local supermarket Broxbourne", "online grocery EN11", "fresh food delivery EN8"],
+  openGraph: {
+    title: "Broxbourne Food Centre | Local Online Grocery",
+    description: "Fresh groceries delivered directly to your door in Broxbourne and surrounding areas (EN10, EN11, EN8, EN9).",
+    url: "https://broxbournefoodcentre.com",
+    siteName: "Broxbourne Food Centre",
+    locale: "en_GB",
+    type: "website",
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: "https://broxbournefoodcentre.com",
+  },
 };
 
 import Navbar from "@/components/layout/Navbar";
@@ -26,11 +52,70 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const localBusinessSchema = {
+    "@context": "https://schema.org",
+    "@type": "GroceryStore",
+    "name": "Broxbourne Food Centre",
+    "image": "https://broxbournefoodcentre.com/icon.png",
+    "@id": "https://broxbournefoodcentre.com",
+    "url": "https://broxbournefoodcentre.com",
+    "telephone": "+447444474108",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "5-6, The Precinct",
+      "addressLocality": "Broxbourne",
+      "postalCode": "EN10 7HY",
+      "addressCountry": "GB"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 51.7485, // Approximate for EN10 7HY
+      "longitude": -0.0150
+    },
+    "openingHoursSpecification": {
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": [
+        "Monday",
+        "Tuesday",
+        "Wednesday",
+        "Thursday",
+        "Friday",
+        "Saturday",
+        "Sunday"
+      ],
+      "opens": "07:00",
+      "closes": "23:00"
+    },
+    "areaServed": [
+      {
+        "@type": "PostalAddress",
+        "postalCode": "EN10"
+      },
+      {
+        "@type": "PostalAddress",
+        "postalCode": "EN11"
+      },
+      {
+        "@type": "PostalAddress",
+        "postalCode": "EN8"
+      },
+      {
+        "@type": "PostalAddress",
+        "postalCode": "EN9"
+      }
+    ],
+    "priceRange": "$$"
+  };
+
   return (
     <html lang="en">
       <body
         className={`${jakarta.variable} font-sans antialiased bg-[#fcfcfc] text-slate-800 selection:bg-emerald-500 selection:text-white flex flex-col min-h-screen`}
       >
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+        />
         <NextAuthProvider>
           <Navbar />
           <CartDrawer />

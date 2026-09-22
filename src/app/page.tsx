@@ -7,6 +7,14 @@ import { Tag } from 'lucide-react';
 
 export const dynamic = 'force-dynamic';
 
+export const metadata = {
+  title: 'Home | Broxbourne Food Centre EN10, EN11',
+  description: 'Your local online supermarket in Broxbourne. Fast delivery for fresh groceries, drinks, and daily essentials to EN10, EN11, EN8, and EN9.',
+  alternates: {
+    canonical: 'https://broxbournefoodcentre.com/',
+  },
+};
+
 export default async function Home() {
   const categories = await prisma.category.findMany({
     where: { parentId: null },

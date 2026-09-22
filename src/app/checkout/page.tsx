@@ -5,6 +5,7 @@ import { useCartStore } from '@/store/useCartStore';
 import { useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useSession } from 'next-auth/react';
+import { PaymentForm, CreditCard } from 'react-square-web-payments-sdk';
 
 const POSTAL_CITY_MAP: Record<string, string> = {
     'EN8': 'Waltham Cross',
@@ -27,7 +28,7 @@ export default function CheckoutPage() {
         addressLine: '',
         postalCode: '',
         deliveryTime: '',
-        paymentMethod: 'CASH', // or CREDIT_CARD
+        paymentMethod: 'CASH', // or CREDIT_CARD, SQUARE_ONLINE
     });
     
     const [savedAddresses, setSavedAddresses] = useState<any[]>([]);
@@ -90,9 +91,7 @@ export default function CheckoutPage() {
         }
     };
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault();
-
+    const processOrder = async (squareToken?: string) => {
         if (!formData.postalCode) {
             alert('Please select a valid postal code.');
             return;
@@ -117,7 +116,8 @@ export default function CheckoutPage() {
                     deliveryTimePref: formData.deliveryTime,
                     paymentMethod: formData.paymentMethod,
                     totalAmount: totalAmount,
-                    items: items
+                    items: items,
+                    squareToken // Optional, only passed if SQUARE_ONLINE
                 })
             });
 
@@ -127,13 +127,22 @@ export default function CheckoutPage() {
                 setIsSuccess(true);
                 clearCart();
             } else {
-                alert('Order could not be placed. Please try again.');
+                const errorData = await res.json();
+                alert(`Order could not be placed. ${errorData.error || 'Please try again.'}`);
             }
         } catch (error) {
             console.error('Checkout error:', error);
             alert('A network error occurred.');
         } finally {
             setIsSubmitting(false);
+        }
+    };
+
+    const handleSubmit = async (e: React.FormEvent) => {
+        e.preventDefault();
+        // Standard submit for Cash or Card on Delivery
+        if (formData.paymentMethod !== 'SQUARE_ONLINE') {
+            await processOrder();
         }
     };
 
@@ -249,13 +258,53 @@ export default function CheckoutPage() {
                                     <input type="radio" name="paymentMethod" value="CREDIT_CARD" checked={formData.paymentMethod === 'CREDIT_CARD'} onChange={e => setFormData({ ...formData, paymentMethod: e.target.value })} className="w-5 h-5 text-black border-gray-300 focus:ring-black" />
                                     <span className="ml-3 font-medium">Credit Card on Delivery</span>
                                 </label>
+                                <label className="flex items-center p-4 border rounded-lg cursor-pointer hover:bg-gray-50 transition">
+                                    <input type="radio" name="paymentMethod" value="SQUARE_ONLINE" checked={formData.paymentMethod === 'SQUARE_ONLINE'} onChange={e => setFormData({ ...formData, paymentMethod: e.target.value })} className="w-5 h-5 text-black border-gray-300 focus:ring-black" />
+                                    <span className="ml-3 font-medium">Pay Online (Secure Credit Card)</span>
+                                </label>
                             </div>
                         </div>
 
-                        <button disabled={isSubmitting} type="submit" className="w-full py-4 mt-8 bg-black text-white rounded-xl font-bold text-lg hover:bg-gray-900 transition flex justify-center items-center disabled:opacity-50">
-                            {isSubmitting ? <span className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></span> : 'Place Order'}
-                        </button>
+                        {formData.paymentMethod !== 'SQUARE_ONLINE' && (
+                            <button disabled={isSubmitting} type="submit" className="w-full py-4 mt-8 bg-black text-white rounded-xl font-bold text-lg hover:bg-gray-900 transition flex justify-center items-center disabled:opacity-50">
+                                {isSubmitting ? <span className="animate-spin rounded-full h-6 w-6 border-b-2 border-white"></span> : 'Place Order'}
+                            </button>
+                        )}
                     </form>
+                    
+                    {formData.paymentMethod === 'SQUARE_ONLINE' && (
+                        <div className="mt-8 bg-white p-8 rounded-2xl shadow-sm border border-gray-100">
+                            <h2 className="text-xl font-bold border-b pb-2 mb-4">Enter Card Details</h2>
+                            {isSubmitting ? (
+                                <div className="w-full py-4 bg-gray-100 rounded-xl flex justify-center items-center">
+                                    <span className="animate-spin rounded-full h-6 w-6 border-b-2 border-black"></span>
+                                    <span className="ml-2 font-medium">Processing Payment...</span>
+                                </div>
+                            ) : (
+                                <div className="min-h-[150px]">
+                                    {process.env.NEXT_PUBLIC_SQUARE_APP_ID && process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID ? (
+                                        <PaymentForm
+                                            applicationId={process.env.NEXT_PUBLIC_SQUARE_APP_ID}
+                                            locationId={process.env.NEXT_PUBLIC_SQUARE_LOCATION_ID}
+                                            cardTokenizeResponseReceived={async (token, verifiedBuyer) => {
+                                                if (token.status === 'OK' && token.token) {
+                                                    await processOrder(token.token);
+                                                } else {
+                                                    alert('Payment could not be validated. Please check your details.');
+                                                }
+                                            }}
+                                        >
+                                            <CreditCard />
+                                        </PaymentForm>
+                                    ) : (
+                                        <div className="text-red-500 p-4 bg-red-50 rounded-lg border border-red-100">
+                                            Square API keys are missing in the environment configuration.
+                                        </div>
+                                    )}
+                                </div>
+                            )}
+                        </div>
+                    )}
                 </div>
 
                 <div className="w-full lg:w-96 flex-shrink-0">

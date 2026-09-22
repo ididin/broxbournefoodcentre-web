@@ -98,6 +98,7 @@ model Order {
   paymentMethod    PaymentMethod @default(CASH_ON_DELIVERY)
   status           OrderStatus   @default(PENDING)
   totalAmount      Float
+  paymentTransactionId String?
   createdAt        DateTime      @default(now())
   updatedAt        DateTime      @updatedAt
 
@@ -107,14 +108,17 @@ model Order {
 enum PaymentMethod {
   CASH_ON_DELIVERY
   CREDIT_CARD_ON_DELIVERY
+  SQUARE_ONLINE
 }
 
 enum OrderStatus {
+  AWAITING_PAYMENT
   PENDING
   PROCESSING
   SHIPPED
   DELIVERED
   CANCELLED
+  PAYMENT_FAILED
 }
 
 model OrderItem {
