@@ -1,4 +1,4 @@
-import { ShoppingBag, Truck, CreditCard, Clock, CheckCircle2 } from 'lucide-react';
+import { ShoppingBag, Truck, Banknote, Clock, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
 
 export default function ServicesPage() {
@@ -20,8 +20,8 @@ export default function ServicesPage() {
         {
             id: 3,
             title: 'Pay at Your Door',
-            description: 'No need to pay online in advance! You can securely pay via Credit/Debit card or Cash when our driver arrives with your delivery.',
-            icon: CreditCard,
+            description: 'No need to pay online in advance! You can securely pay in Cash when our driver arrives with your delivery.',
+            icon: Banknote,
             color: 'bg-purple-100 text-purple-600 border-purple-200',
         },
     ];

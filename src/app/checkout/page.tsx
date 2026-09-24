@@ -27,6 +27,7 @@ export default function CheckoutPage() {
         phone: '',
         addressLine: '',
         postalCode: '',
+        serviceArea: '',
         deliveryTime: '',
         paymentMethod: 'CASH', // or CREDIT_CARD, SQUARE_ONLINE
     });
@@ -71,6 +72,7 @@ export default function CheckoutPage() {
                 ...prev,
                 addressLine: '',
                 postalCode: '',
+                serviceArea: '',
                 city: ''
                 // keep name/email/phone from session or previous input
             }));
@@ -79,21 +81,37 @@ export default function CheckoutPage() {
 
         const address = addressList.find(a => a.id === addressId);
         if (address) {
+            let sArea = '';
+            let pCode = address.postalCode || '';
+            if (SERVED_POSTAL_CODES.includes(pCode)) {
+                sArea = pCode;
+                pCode = '';
+            } else {
+                // If it's a new style address, serviceArea might be stored in the address object (if db was updated),
+                // but let's just try to infer or fallback.
+                sArea = address.serviceArea || '';
+            }
+
             setFormData(prev => ({
                 ...prev,
                 name: address.name || prev.name,
                 email: address.email || prev.email,
                 phone: address.phone || prev.phone,
                 addressLine: address.addressLine || '',
-                postalCode: address.postalCode || '',
+                postalCode: pCode,
+                serviceArea: sArea,
                 city: address.city || ''
             }));
         }
     };
 
     const processOrder = async (squareToken?: string) => {
+        if (!formData.serviceArea) {
+            alert('Please select a valid service area.');
+            return;
+        }
         if (!formData.postalCode) {
-            alert('Please select a valid postal code.');
+            alert('Please enter a valid postal code.');
             return;
         }
 
@@ -103,7 +121,7 @@ export default function CheckoutPage() {
         const deliveryFee = subtotal >= 50 ? 0 : 6.99;
         const totalAmount = subtotal + deliveryFee;
 
-        const city = POSTAL_CITY_MAP[formData.postalCode] || 'London';
+        const city = POSTAL_CITY_MAP[formData.serviceArea] || 'London';
         const fullAddress = `${formData.addressLine}, ${formData.postalCode}, ${city}, London`;
 
         try {
@@ -230,15 +248,19 @@ export default function CheckoutPage() {
                                     <input required type="text" placeholder="House number and street name" className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-black outline-none" value={formData.addressLine} onChange={e => setFormData({ ...formData, addressLine: e.target.value })} />
                                 </div>
                                 <div>
-                                    <label className="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
-                                    <select required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-black outline-none bg-white" value={formData.postalCode} onChange={e => setFormData({ ...formData, postalCode: e.target.value })}>
-                                        <option value="" disabled>Select code</option>
+                                    <label className="block text-sm font-medium text-gray-700 mb-1">Service Area</label>
+                                    <select required className="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-black outline-none bg-white" value={formData.serviceArea} onChange={e => setFormData({ ...formData, serviceArea: e.target.value })}>
+                                        <option value="" disabled>Select area</option>
                                         {SERVED_POSTAL_CODES.map(code => (
                                             <option key={code} value={code}>{code}</option>
                                         ))}
                                     </select>
                                     <p className="text-xs text-emerald-600 mt-1">We only deliver to these areas.</p>
                                 </div>
+                            </div>
+                            <div className="mb-4">
+                                <label className="block text-sm font-medium text-gray-700 mb-1">Postal Code</label>
+                                <input required type="text" placeholder="e.g. EN10 6RF" className="w-full md:w-1/2 px-4 py-2 border rounded-lg focus:ring-2 focus:ring-black outline-none" value={formData.postalCode} onChange={e => setFormData({ ...formData, postalCode: e.target.value })} />
                             </div>
 
                             <div className="mt-4">
