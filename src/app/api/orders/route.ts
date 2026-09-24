@@ -4,6 +4,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { SquareClient, SquareEnvironment } from 'square';
 import crypto from 'crypto';
+import { sendOrderNotification } from '@/lib/email';
 
 const isSandbox = process.env.NEXT_PUBLIC_SQUARE_APP_ID?.startsWith('sandbox') || false;
 
@@ -104,6 +105,9 @@ export async function POST(req: Request) {
                 orderItems: true
             }
         });
+
+        // E-posta bildirimini asenkron olarak gönderelim (kullanıcıyı bekletmemek için await kullanmıyoruz)
+        sendOrderNotification(order, items).catch(e => console.error("Failed to send order email:", e));
 
         return NextResponse.json({ success: true, orderId: order.id, orderNumber: order.orderNumber }, { status: 201 });
     } catch (error) {
