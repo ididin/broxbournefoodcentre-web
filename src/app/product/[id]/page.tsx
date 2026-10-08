@@ -6,9 +6,9 @@ import ProductCard from '@/components/ui/ProductCard';
 import Link from 'next/link';
 import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 
-interface Props {
-  params: { id: string };
-}
+type Props = {
+  params: Promise<{ id: string }>;
+};
 
 function generateSeoText(productName: string, categoryName: string) {
   return `Buy ${productName} online from Broxbourne Food Centre. Your trusted local supermarket offering fast same day delivery and next day delivery for fresh groceries in EN8, EN9, EN10, EN11, Hoddesdon, Cheshunt, and Broxbourne. Order online food delivery, international brands, and daily essentials with cash on delivery and pay on delivery options. Better than Tesco grocery offers and Sainsburys Hoddesdon - shop at the best grocery store near me today!`;
@@ -19,8 +19,9 @@ function generateSlugId(productName: string, id: string) {
   return `${slug}-${id}`;
 }
 
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const idParam = (await params).id;
+export async function generateMetadata(props: Props): Promise<Metadata> {
+  const params = await props.params;
+  const idParam = params.id;
   const id = idParam.split('-').pop();
 
   if (!id) return { title: 'Product Not Found' };
@@ -57,8 +58,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   };
 }
 
-export default async function ProductPage({ params }: Props) {
-  const idParam = (await params).id;
+export default async function ProductPage(props: Props) {
+  const params = await props.params;
+  const idParam = params.id;
   const id = idParam.split('-').pop();
 
   if (!id) notFound();
