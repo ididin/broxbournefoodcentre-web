@@ -4,14 +4,27 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import ProductCard from '@/components/ui/ProductCard';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, CheckCircle2 } from 'lucide-react';
 
 interface Props {
   params: { id: string };
 }
 
+function generateSeoText(productName: string, categoryName: string) {
+  return `Buy ${productName} online from Broxbourne Food Centre. Your trusted local supermarket offering fast same day delivery and next day delivery for fresh groceries in EN8, EN9, EN10, EN11, Hoddesdon, Cheshunt, and Broxbourne. Order online food delivery, international brands, and daily essentials with cash on delivery and pay on delivery options. Better than Tesco grocery offers and Sainsburys Hoddesdon - shop at the best grocery store near me today!`;
+}
+
+function generateSlugId(productName: string, id: string) {
+  const slug = productName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+  return `${slug}-${id}`;
+}
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { id } = await params;
+  const idParam = (await params).id;
+  const id = idParam.split('-').pop();
+
+  if (!id) return { title: 'Product Not Found' };
+
   const product = await prisma.product.findUnique({
     where: { id },
     include: { categoryRef: true }
@@ -23,26 +36,33 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
   const categoryName = product.categoryRef?.name || product.category;
   const price = product.isPromoted && product.promoPrice ? product.promoPrice : product.price;
+  const seoDescription = product.description || generateSeoText(product.name, categoryName);
+  const fullSlug = generateSlugId(product.name, product.id);
 
   return {
-    title: `${product.name} | ${categoryName} | Broxbourne Food Centre`,
-    description: product.description || `Buy ${product.name} online. Fast delivery in Broxbourne, EN10, EN11, EN8, EN9.`,
+    title: `${product.name} | Local Grocery Delivery | Broxbourne Food Centre`,
+    description: seoDescription,
+    keywords: ['Market', 'Supermarket', 'Local Market', 'Market Order', 'shopping delivery', 'food delivery', 'online food delivery', 'EN8', 'EN9', 'EN10', 'EN11', 'Online Delivery', 'grocery store near me', 'grocery delivery', 'next day delivery', 'same day delivery', 'hoddesdon', 'cheshunt', 'broxbourne'],
     alternates: {
-      canonical: `https://broxbournefoodcentre.com/product/${product.id}`,
+      canonical: `https://broxbournefoodcentre.com/product/${fullSlug}`,
     },
     openGraph: {
-      title: product.name,
-      description: `Buy ${product.name} online for £${price.toFixed(2)}. Fresh groceries delivered to Broxbourne.`,
-      url: `https://broxbournefoodcentre.com/product/${product.id}`,
+      title: `${product.name} - Buy Online | Broxbourne Food Centre`,
+      description: seoDescription,
+      url: `https://broxbournefoodcentre.com/product/${fullSlug}`,
       images: product.imageUrl ? [{ url: product.imageUrl }] : [],
       siteName: 'Broxbourne Food Centre',
-      type: 'website', // using website or article, ideally product but Next.js OG type product is limited. we will use JSON-LD for product.
+      type: 'website',
     },
   };
 }
 
 export default async function ProductPage({ params }: Props) {
-  const { id } = await params;
+  const idParam = (await params).id;
+  const id = idParam.split('-').pop();
+
+  if (!id) notFound();
+
   const product = await prisma.product.findUnique({
     where: { id },
     include: { 
@@ -57,13 +77,15 @@ export default async function ProductPage({ params }: Props) {
 
   const price = product.isPromoted && product.promoPrice ? product.promoPrice : product.price;
   const categoryName = product.categoryRef?.name || product.category;
+  const seoDescription = product.description || generateSeoText(product.name, categoryName);
+  const fullSlug = generateSlugId(product.name, product.id);
 
   const productSchema = {
     "@context": "https://schema.org/",
     "@type": "Product",
     "name": product.name,
     "image": product.imageUrl ? [product.imageUrl] : [],
-    "description": product.description || `Buy ${product.name} from Broxbourne Food Centre.`,
+    "description": seoDescription,
     "sku": product.barcode || product.id,
     "brand": {
       "@type": "Brand",
@@ -71,7 +93,7 @@ export default async function ProductPage({ params }: Props) {
     },
     "offers": {
       "@type": "Offer",
-      "url": `https://broxbournefoodcentre.com/product/${product.id}`,
+      "url": `https://broxbournefoodcentre.com/product/${fullSlug}`,
       "priceCurrency": "GBP",
       "price": price.toFixed(2),
       "itemCondition": "https://schema.org/NewCondition",
@@ -137,13 +159,17 @@ export default async function ProductPage({ params }: Props) {
             )}
           </div>
 
-          {product.description && (
-            <p className="text-slate-600 mb-8 leading-relaxed">
-              {product.description}
-            </p>
-          )}
+          <div className="prose prose-emerald max-w-none mb-8 text-slate-600">
+            <p className="leading-relaxed text-lg mb-4">{seoDescription}</p>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6 bg-slate-50 p-4 rounded-2xl border border-slate-100">
+              <div className="flex items-center gap-2 text-sm font-medium"><CheckCircle2 className="w-4 h-4 text-emerald-500"/> Fast Delivery (EN10, EN11, EN8, EN9)</div>
+              <div className="flex items-center gap-2 text-sm font-medium"><CheckCircle2 className="w-4 h-4 text-emerald-500"/> Local Supermarket in Broxbourne</div>
+              <div className="flex items-center gap-2 text-sm font-medium"><CheckCircle2 className="w-4 h-4 text-emerald-500"/> Pay on Delivery / Cash</div>
+              <div className="flex items-center gap-2 text-sm font-medium"><CheckCircle2 className="w-4 h-4 text-emerald-500"/> Same Day & Next Day Options</div>
+            </div>
+          </div>
 
-          <div className="w-full max-w-sm">
+          <div className="w-full max-w-sm mt-4">
             <h3 className="text-sm font-semibold text-slate-500 mb-3">Order Now</h3>
             <div className="h-[300px]">
               <ProductCard product={{

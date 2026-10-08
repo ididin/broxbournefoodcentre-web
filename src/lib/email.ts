@@ -63,9 +63,9 @@ export const sendOrderNotification = async (order: any, items: any[]) => {
 
     try {
         const mailOptions = {
-            from: \`"Broxbourne Web Sipariş" <\${process.env.EMAIL_USER}>\`,
+            from: `"Broxbourne Web Sipariş" <${process.env.EMAIL_USER}>`,
             to: notifyTo.join(', '),
-            subject: \`🚨 YENİ SİPARİŞ: #\${order.orderNumber} - \${formatCurrency(order.totalAmount)}\`,
+            subject: `🚨 YENİ SİPARİŞ: #${order.orderNumber} - ${formatCurrency(order.totalAmount)}`,
             html: htmlContent,
         };
 

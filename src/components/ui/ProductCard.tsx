@@ -1,6 +1,7 @@
 'use client';
 
 import Image from 'next/image';
+import Link from 'next/link';
 import { useCartStore } from '@/store/useCartStore';
 import { Plus, Minus, Trash2 } from 'lucide-react';
 import { useState } from 'react';
@@ -163,9 +164,14 @@ export default function ProductCard({ product }: { product: Product }) {
 
             <div className="p-2 sm:p-3 flex flex-col flex-1 pb-2 sm:pb-3">
                 <span className="text-[10px] sm:text-[11px] font-bold text-emerald-600 mb-1 uppercase tracking-wider">{product.category}</span>
-                <h3 className="text-sm font-bold text-slate-800 leading-snug mb-1">
-                    {cleanName}
-                </h3>
+                <Link 
+                    href={`/product/${product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')}-${product.id}`}
+                    prefetch={false}
+                >
+                    <h3 className="text-sm font-bold text-slate-800 leading-snug mb-1 hover:text-emerald-600 transition-colors">
+                        {cleanName}
+                    </h3>
+                </Link>
                 
                 {!hasVariants && backwardWeight && (
                     <p className="text-xs text-slate-500 mb-1 font-medium">{backwardWeight}</p>
