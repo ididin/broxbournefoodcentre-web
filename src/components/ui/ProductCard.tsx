@@ -98,6 +98,9 @@ export default function ProductCard({ product }: { product: Product }) {
     const backwardWeight = match ? match[1] : '';
     const cleanName = product.name.replace(/\(.*?\)/g, '').trim();
 
+    const slug = cleanName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+    const productUrl = `/product/${slug}-${product.id}`;
+
     return (
         <div className="group flex flex-col h-full bg-white relative">
             <div className="relative aspect-square bg-slate-50 rounded-2xl border border-gray-100 shadow-sm overflow-hidden group-hover:border-emerald-200 transition-colors">
@@ -165,7 +168,7 @@ export default function ProductCard({ product }: { product: Product }) {
             <div className="p-2 sm:p-3 flex flex-col flex-1 pb-2 sm:pb-3">
                 <span className="text-[10px] sm:text-[11px] font-bold text-emerald-600 mb-1 uppercase tracking-wider">{product.category}</span>
                 <Link 
-                    href={`/product/${product.name.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '')}-${product.id}`}
+                    href={productUrl}
                     prefetch={false}
                 >
                     <h3 className="text-sm font-bold text-slate-800 leading-snug mb-1 hover:text-emerald-600 transition-colors">
