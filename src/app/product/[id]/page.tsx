@@ -117,16 +117,11 @@ export default async function ProductPage(props: Props) {
     variants: product.variants,
   });
 
-  const variantPrices =
-    product.sellType === 'WEIGHT' && product.variants.length > 0
-      ? product.variants.map((v) => (v.promoPrice && v.promoPrice < v.price ? v.promoPrice : v.price))
-      : [];
-
   const shippingDetails = {
     '@type': 'OfferShippingDetails',
     shippingRate: {
       '@type': 'MonetaryAmount',
-      value: '6.99',
+      value: price >= 50 ? '0.00' : '6.99',
       currency: 'GBP',
     },
     shippingDestination: {
@@ -155,40 +150,32 @@ export default async function ProductPage(props: Props) {
     },
   };
 
-  const offerSchema =
-    variantPrices.length > 1
-      ? {
-          '@type': 'AggregateOffer',
-          url: productUrl,
-          priceCurrency: 'GBP',
-          lowPrice: Math.min(...variantPrices).toFixed(2),
-          highPrice: Math.max(...variantPrices).toFixed(2),
-          offerCount: variantPrices.length,
-          availability: product.stockOut
-            ? 'https://schema.org/OutOfStock'
-            : 'https://schema.org/InStock',
-          seller: {
-            '@type': 'GroceryStore',
-            name: STORE_NAME,
-            url: SITE_URL,
-          },
-        }
-      : {
-          '@type': 'Offer',
-          url: productUrl,
-          priceCurrency: 'GBP',
-          price: price.toFixed(2),
-          itemCondition: 'https://schema.org/NewCondition',
-          availability: product.stockOut
-            ? 'https://schema.org/OutOfStock'
-            : 'https://schema.org/InStock',
-          shippingDetails,
-          seller: {
-            '@type': 'GroceryStore',
-            name: STORE_NAME,
-            url: SITE_URL,
-          },
-        };
+  // Always emit a single Offer with explicit `price` so Google Merchant Center
+  // reads the exact price on both piece and weighted products.
+  const offerSchema = {
+    '@type': 'Offer',
+    url: productUrl,
+    priceCurrency: 'GBP',
+    price: price.toFixed(2),
+    itemCondition: 'https://schema.org/NewCondition',
+    availability: product.stockOut
+      ? 'https://schema.org/OutOfStock'
+      : 'https://schema.org/InStock',
+    shippingDetails,
+    hasMerchantReturnPolicy: {
+      '@type': 'MerchantReturnPolicy',
+      applicableCountry: 'GB',
+      returnPolicyCategory: 'https://schema.org/MerchantReturnFiniteReturnWindow',
+      merchantReturnDays: 3,
+      returnMethod: 'https://schema.org/ReturnInStore',
+      returnFees: 'https://schema.org/FreeReturn',
+    },
+    seller: {
+      '@type': 'GroceryStore',
+      name: STORE_NAME,
+      url: SITE_URL,
+    },
+  };
 
   const productSchema = {
     '@context': 'https://schema.org/',

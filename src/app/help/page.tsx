@@ -54,7 +54,7 @@ const FAQ_GROUPS = [
     items: [
       {
         q: 'What is your return, exchange, and refund policy?',
-        a: 'We accept in-store returns and exchanges in the UK for both defective and non-defective products in new condition, with a lifetime return window and no restocking fees. Bring your item to 5-6, The Precinct, Broxbourne EN10 7HY and refunds are processed within 1 day.',
+        a: 'We accept in-store returns and exchanges in the UK within 72 hours (3 days) of delivery for unopened, unused items in new condition, with no restocking fees. Because we deliver orders ourselves, items delivered in good condition cannot be returned as defective afterwards. Bring eligible unopened items to 5-6, The Precinct, Broxbourne EN10 7HY and refunds are processed within 1 day.',
       },
       {
         q: 'Can I cancel or change my order after placing it?',

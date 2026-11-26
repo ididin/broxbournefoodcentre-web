@@ -47,9 +47,9 @@ export default function TermsPage() {
           </div>
           <div className="bg-white rounded-2xl p-5 border border-gray-100 shadow-sm">
             <RotateCcw className="w-6 h-6 text-emerald-600 mb-2" />
-            <h2 className="font-bold text-slate-900 text-sm">Easy In-Store Returns</h2>
+            <h2 className="font-bold text-slate-900 text-sm">72-Hour In-Store Returns</h2>
             <p className="text-xs text-slate-600 mt-1">
-              Returns &amp; exchanges accepted in store with no restocking fee. Refunds processed within 1 day.
+              Unopened items accepted in store within 72 hours with no restocking fee. Refunds within 1 day.
             </p>
           </div>
         </div>
@@ -171,21 +171,18 @@ export default function TermsPage() {
             </p>
             <ul className="list-disc pl-5 space-y-2">
               <li>
-                <strong>Eligible Returns (Defective &amp; Non-Defective):</strong> We accept returns for{' '}
-                <strong>both defective and non-defective products</strong>.
+                <strong>Return Window (72 Hours / 3 Days):</strong> Returns and exchanges are accepted
+                within <strong>72 hours (3 days)</strong> of delivery.
               </li>
               <li>
-                <strong>Exchanges Accepted:</strong> We gladly <strong>accept exchanges</strong> for
-                eligible items.
+                <strong>Product Condition (New &amp; Unopened Only):</strong> Because all local orders are
+                delivered directly by our own team, items delivered in sound condition cannot be returned
+                as defective afterwards. Returned or exchanged products must be{' '}
+                <strong>unopened, unused, and in new original condition</strong> with intact packaging.
               </li>
               <li>
-                <strong>Product Condition:</strong> Returned or exchanged items must be in{' '}
-                <strong>new condition only</strong> (unused, unopened, and in their original packaging,
-                unless the item arrived damaged or defective).
-              </li>
-              <li>
-                <strong>Return Window:</strong> We offer a <strong>lifetime return window</strong> (no
-                fixed time limit) for eligible items in new condition.
+                <strong>Exchanges Accepted:</strong> We accept <strong>exchanges</strong> for eligible
+                unopened items within 72 hours of delivery.
               </li>
               <li>
                 <strong>Return Method (In-Store):</strong> Returns and exchanges are accepted{' '}
