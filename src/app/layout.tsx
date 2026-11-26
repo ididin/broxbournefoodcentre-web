@@ -59,6 +59,9 @@ export const metadata: Metadata = {
   alternates: {
     canonical: "https://broxbournefoodcentre.com",
   },
+  verification: {
+    google: "RB8jWYFeXovNtMYo0nBM-xpTKz_e8CAEPpQPQMSaXxQ",
+  },
 };
 
 import Navbar from "@/components/layout/Navbar";
