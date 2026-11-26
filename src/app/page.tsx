@@ -5,11 +5,16 @@ import Image from 'next/image';
 import { prisma } from '@/lib/prisma';
 import { Tag } from 'lucide-react';
 
+import type { Metadata } from 'next';
+
 export const dynamic = 'force-dynamic';
 
-export const metadata = {
-  title: 'Home | Broxbourne Food Centre EN10, EN11',
-  description: 'Your local online supermarket in Broxbourne. Fast delivery for fresh groceries, drinks, and daily essentials to EN10, EN11, EN8, and EN9.',
+export const metadata: Metadata = {
+  title: {
+    absolute: 'Broxbourne Food Centre | Local Supermarket & Grocery Delivery EN10, EN11, EN8, EN9',
+  },
+  description:
+    'Shop fresh groceries, fruit & veg, drinks, snacks, and everyday essentials online. Fast 24-hour doorstep delivery in Broxbourne (EN10), Hoddesdon (EN11), Cheshunt & Waltham Cross (EN8), and Waltham Abbey (EN9). Free delivery over £50.',
   alternates: {
     canonical: 'https://broxbournefoodcentre.com/',
   },
@@ -61,6 +66,9 @@ export default async function Home() {
 
   return (
     <div className="flex flex-col gap-16 pb-16">
+      <h1 className="sr-only">
+        Broxbourne Food Centre — Local Online Supermarket &amp; Grocery Delivery in Broxbourne (EN10), Hoddesdon (EN11), Cheshunt &amp; Waltham Cross (EN8), and Waltham Abbey (EN9)
+      </h1>
       <Slider slides={slides} />
 
       <section className="max-w-7xl flex-1 px-4 sm:px-6 lg:px-8 w-full mt-4 mx-auto relative overflow-hidden">

@@ -1,5 +1,15 @@
+import type { Metadata } from 'next';
 import { ShoppingBag, Truck, Banknote, Clock, CheckCircle2 } from 'lucide-react';
 import Link from 'next/link';
+
+export const metadata: Metadata = {
+  title: 'How Our Local Grocery Delivery Works | EN10, EN11, EN8, EN9',
+  description:
+    'Order online in minutes and get fresh groceries delivered to your doorstep within 24 hours across Broxbourne (EN10), Hoddesdon (EN11), Waltham Cross & Cheshunt (EN8), and Waltham Abbey (EN9). Pay online or at your door.',
+  alternates: {
+    canonical: 'https://broxbournefoodcentre.com/services',
+  },
+};
 
 export default function ServicesPage() {
     const steps = [

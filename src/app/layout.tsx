@@ -9,19 +9,41 @@ const jakarta = Plus_Jakarta_Sans({
 });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://broxbournefoodcentre.com"),
   title: {
     template: "%s | Broxbourne Food Centre",
-    default: "Broxbourne Food Centre | Online Delivery EN10, EN11",
+    default: "Broxbourne Food Centre | Local Supermarket & Grocery Delivery EN10, EN11, EN8, EN9",
   },
-  description: "Fresh groceries, alcohol, and house essentials delivered right to your door in Broxbourne, EN10, EN11, EN8, and EN9. Quick local delivery.",
-  keywords: ["Broxbourne grocery delivery", "food centre EN10", "local supermarket Broxbourne", "online grocery EN11", "fresh food delivery EN8"],
+  description:
+    "Your local online supermarket in Broxbourne. Order fresh groceries, fruit & veg, snacks, drinks, and household essentials with fast 24h home delivery across Broxbourne (EN10), Hoddesdon (EN11), Cheshunt & Waltham Cross (EN8), and Waltham Abbey (EN9).",
+  keywords: [
+    "grocery delivery near me",
+    "delivery market near me",
+    "online supermarket Broxbourne",
+    "shopping supermarket near me",
+    "local supermarket delivery EN10",
+    "grocery delivery Hoddesdon EN11",
+    "supermarket delivery Cheshunt EN8",
+    "food delivery Waltham Cross EN8",
+    "grocery delivery Waltham Abbey EN9",
+    "online food shopping Broxbourne",
+    "fresh groceries delivered EN10",
+    "Broxbourne Food Centre",
+  ],
   openGraph: {
-    title: "Broxbourne Food Centre | Local Online Grocery",
-    description: "Fresh groceries delivered directly to your door in Broxbourne and surrounding areas (EN10, EN11, EN8, EN9).",
+    title: "Broxbourne Food Centre | Local Online Supermarket & Grocery Delivery",
+    description:
+      "Shop fresh groceries, international foods, drinks & daily essentials online. Fast local home delivery within 24 hours in Broxbourne (EN10), Hoddesdon (EN11), Cheshunt & Waltham Cross (EN8), and Waltham Abbey (EN9).",
     url: "https://broxbournefoodcentre.com",
     siteName: "Broxbourne Food Centre",
     locale: "en_GB",
     type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Broxbourne Food Centre | Online Supermarket & Grocery Delivery",
+    description:
+      "Fast 24h local grocery delivery across EN10, EN11, EN8 & EN9. Free delivery over £50.",
   },
   robots: {
     index: true,
@@ -57,23 +79,28 @@ export default function RootLayout({
     "@context": "https://schema.org",
     "@type": "GroceryStore",
     "name": "Broxbourne Food Centre",
+    "description": "Local neighbourhood supermarket and online grocery delivery market serving Broxbourne (EN10), Hoddesdon (EN11), Cheshunt & Waltham Cross (EN8), and Waltham Abbey (EN9).",
     "image": "https://broxbournefoodcentre.com/icon.png",
     "logo": "https://broxbournefoodcentre.com/icon.png",
-    "@id": "https://broxbournefoodcentre.com",
+    "@id": "https://broxbournefoodcentre.com/#grocerystore",
     "url": "https://broxbournefoodcentre.com",
     "telephone": "+447444474108",
+    "currenciesAccepted": "GBP",
+    "paymentAccepted": "Cash, Credit Card, Debit Card, Online Payment",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "5-6, The Precinct",
       "addressLocality": "Broxbourne",
+      "addressRegion": "Hertfordshire",
       "postalCode": "EN10 7HY",
       "addressCountry": "GB"
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": 51.7485, // Approximate for EN10 7HY
-      "longitude": -0.0150
+      "latitude": 51.747568,
+      "longitude": -0.021267
     },
+    "hasMap": "https://maps.google.com/?q=Broxbourne+Food+Centre+5-6+The+Precinct+EN10+7HY",
     "openingHoursSpecification": {
       "@type": "OpeningHoursSpecification",
       "dayOfWeek": [
@@ -89,24 +116,32 @@ export default function RootLayout({
       "closes": "23:00"
     },
     "areaServed": [
-      {
-        "@type": "PostalAddress",
-        "postalCode": "EN10"
-      },
-      {
-        "@type": "PostalAddress",
-        "postalCode": "EN11"
-      },
-      {
-        "@type": "PostalAddress",
-        "postalCode": "EN8"
-      },
-      {
-        "@type": "PostalAddress",
-        "postalCode": "EN9"
-      }
+      { "@type": "City", "name": "Broxbourne" },
+      { "@type": "City", "name": "Hoddesdon" },
+      { "@type": "City", "name": "Cheshunt" },
+      { "@type": "City", "name": "Waltham Cross" },
+      { "@type": "City", "name": "Waltham Abbey" },
+      { "@type": "City", "name": "Wormley" },
+      { "@type": "City", "name": "Turnford" },
+      { "@type": "City", "name": "Nazeing" },
+      { "@type": "PostalAddress", "postalCode": "EN10", "addressCountry": "GB" },
+      { "@type": "PostalAddress", "postalCode": "EN11", "addressCountry": "GB" },
+      { "@type": "PostalAddress", "postalCode": "EN8", "addressCountry": "GB" },
+      { "@type": "PostalAddress", "postalCode": "EN9", "addressCountry": "GB" }
     ],
-    "priceRange": "$$"
+    "priceRange": "£"
+  };
+
+  const websiteSchema = {
+    "@context": "https://schema.org",
+    "@type": "WebSite",
+    "name": "Broxbourne Food Centre",
+    "url": "https://broxbournefoodcentre.com",
+    "potentialAction": {
+      "@type": "SearchAction",
+      "target": "https://broxbournefoodcentre.com/shop?search={search_term_string}",
+      "query-input": "required name=search_term_string"
+    }
   };
 
   return (
@@ -117,6 +152,10 @@ export default function RootLayout({
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(websiteSchema) }}
         />
         
         {/* Google Analytics */}

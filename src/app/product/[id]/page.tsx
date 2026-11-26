@@ -4,18 +4,18 @@ import { Metadata } from 'next';
 import Image from 'next/image';
 import ProductCard from '@/components/ui/ProductCard';
 import Link from 'next/link';
-import { ArrowLeft, CheckCircle2 } from 'lucide-react';
+import { ArrowLeft, CheckCircle2, ChevronRight } from 'lucide-react';
+import { buildProductSeo, SITE_URL, STORE_NAME } from '@/lib/seo';
 
 type Props = {
   params: Promise<{ id: string }>;
 };
 
-function generateSeoText(productName: string, categoryName: string) {
-  return `Buy ${productName} online from Broxbourne Food Centre. Your trusted local supermarket offering fast same day delivery and next day delivery for fresh groceries in EN8, EN9, EN10, EN11, Hoddesdon, Cheshunt, and Broxbourne. Order online food delivery, international brands, and daily essentials with cash on delivery and pay on delivery options. Better than Tesco grocery offers and Sainsburys Hoddesdon - shop at the best grocery store near me today!`;
-}
-
 function generateSlugId(productName: string, id: string) {
-  const slug = productName.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)+/g, '');
+  const slug = productName
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, '-')
+    .replace(/(^-|-$)+/g, '');
   return `${slug}-${id}`;
 }
 
@@ -28,7 +28,10 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
 
   const product = await prisma.product.findUnique({
     where: { id },
-    include: { categoryRef: true }
+    include: {
+      categoryRef: true,
+      variants: { orderBy: { sortOrder: 'asc' } },
+    },
   });
 
   if (!product) {
@@ -36,24 +39,43 @@ export async function generateMetadata(props: Props): Promise<Metadata> {
   }
 
   const categoryName = product.categoryRef?.name || product.category;
-  const price = product.isPromoted && product.promoPrice ? product.promoPrice : product.price;
-  const seoDescription = product.description || generateSeoText(product.name, categoryName);
   const fullSlug = generateSlugId(product.name, product.id);
+  const seo = buildProductSeo({
+    id: product.id,
+    name: product.name,
+    category: categoryName,
+    brand: product.brand,
+    description: product.description,
+    price: product.price,
+    promoPrice: product.promoPrice,
+    isPromoted: product.isPromoted,
+    sellType: product.sellType,
+    variants: product.variants,
+  });
 
   return {
-    title: `${product.name} | Local Grocery Delivery | Broxbourne Food Centre`,
-    description: seoDescription,
-    keywords: ['Market', 'Supermarket', 'Local Market', 'Market Order', 'shopping delivery', 'food delivery', 'online food delivery', 'EN8', 'EN9', 'EN10', 'EN11', 'Online Delivery', 'grocery store near me', 'grocery delivery', 'next day delivery', 'same day delivery', 'hoddesdon', 'cheshunt', 'broxbourne'],
+    title: seo.title,
+    description: seo.metaDescription,
+    keywords: seo.keywords,
     alternates: {
-      canonical: `https://broxbournefoodcentre.com/product/${fullSlug}`,
+      canonical: `${SITE_URL}/product/${fullSlug}`,
     },
     openGraph: {
-      title: `${product.name} - Buy Online | Broxbourne Food Centre`,
-      description: seoDescription,
-      url: `https://broxbournefoodcentre.com/product/${fullSlug}`,
-      images: product.imageUrl ? [{ url: product.imageUrl }] : [],
-      siteName: 'Broxbourne Food Centre',
+      title: seo.ogTitle,
+      description: seo.metaDescription,
+      url: `${SITE_URL}/product/${fullSlug}`,
+      images: product.imageUrl
+        ? [{ url: product.imageUrl, alt: `${product.name} - ${STORE_NAME}` }]
+        : [],
+      siteName: STORE_NAME,
+      locale: 'en_GB',
       type: 'website',
+    },
+    twitter: {
+      card: 'summary_large_image',
+      title: seo.ogTitle,
+      description: seo.metaDescription,
+      images: product.imageUrl ? [product.imageUrl] : [],
     },
   };
 }
@@ -67,10 +89,10 @@ export default async function ProductPage(props: Props) {
 
   const product = await prisma.product.findUnique({
     where: { id },
-    include: { 
+    include: {
       categoryRef: true,
-      variants: { orderBy: { sortOrder: 'asc' } } 
-    }
+      variants: { orderBy: { sortOrder: 'asc' } },
+    },
   });
 
   if (!product) {
@@ -79,32 +101,140 @@ export default async function ProductPage(props: Props) {
 
   const price = product.isPromoted && product.promoPrice ? product.promoPrice : product.price;
   const categoryName = product.categoryRef?.name || product.category;
-  const seoDescription = product.description || generateSeoText(product.name, categoryName);
   const fullSlug = generateSlugId(product.name, product.id);
+  const productUrl = `${SITE_URL}/product/${fullSlug}`;
+
+  const seo = buildProductSeo({
+    id: product.id,
+    name: product.name,
+    category: categoryName,
+    brand: product.brand,
+    description: product.description,
+    price: product.price,
+    promoPrice: product.promoPrice,
+    isPromoted: product.isPromoted,
+    sellType: product.sellType,
+    variants: product.variants,
+  });
+
+  const variantPrices =
+    product.sellType === 'WEIGHT' && product.variants.length > 0
+      ? product.variants.map((v) => (v.promoPrice && v.promoPrice < v.price ? v.promoPrice : v.price))
+      : [];
+
+  const shippingDetails = {
+    '@type': 'OfferShippingDetails',
+    shippingRate: {
+      '@type': 'MonetaryAmount',
+      value: '6.99',
+      currency: 'GBP',
+    },
+    shippingDestination: {
+      '@type': 'DefinedRegion',
+      addressCountry: 'GB',
+      postalCodeRange: {
+        '@type': 'PostalCodeRangeSpecification',
+        postalCodeBegin: 'EN8',
+        postalCodeEnd: 'EN11',
+      },
+    },
+    deliveryTime: {
+      '@type': 'ShippingDeliveryTime',
+      handlingTime: {
+        '@type': 'QuantitativeValue',
+        minValue: 0,
+        maxValue: 1,
+        unitCode: 'DAY',
+      },
+      transitTime: {
+        '@type': 'QuantitativeValue',
+        minValue: 0,
+        maxValue: 1,
+        unitCode: 'DAY',
+      },
+    },
+  };
+
+  const offerSchema =
+    variantPrices.length > 1
+      ? {
+          '@type': 'AggregateOffer',
+          url: productUrl,
+          priceCurrency: 'GBP',
+          lowPrice: Math.min(...variantPrices).toFixed(2),
+          highPrice: Math.max(...variantPrices).toFixed(2),
+          offerCount: variantPrices.length,
+          availability: product.stockOut
+            ? 'https://schema.org/OutOfStock'
+            : 'https://schema.org/InStock',
+          seller: {
+            '@type': 'GroceryStore',
+            name: STORE_NAME,
+            url: SITE_URL,
+          },
+        }
+      : {
+          '@type': 'Offer',
+          url: productUrl,
+          priceCurrency: 'GBP',
+          price: price.toFixed(2),
+          itemCondition: 'https://schema.org/NewCondition',
+          availability: product.stockOut
+            ? 'https://schema.org/OutOfStock'
+            : 'https://schema.org/InStock',
+          shippingDetails,
+          seller: {
+            '@type': 'GroceryStore',
+            name: STORE_NAME,
+            url: SITE_URL,
+          },
+        };
 
   const productSchema = {
-    "@context": "https://schema.org/",
-    "@type": "Product",
-    "name": product.name,
-    "image": product.imageUrl ? [product.imageUrl] : [],
-    "description": seoDescription,
-    "sku": product.barcode || product.id,
-    "brand": {
-      "@type": "Brand",
-      "name": product.brand || "Broxbourne Food Centre"
+    '@context': 'https://schema.org/',
+    '@type': 'Product',
+    name: product.name,
+    image: product.imageUrl ? [product.imageUrl] : [],
+    description: seo.metaDescription,
+    category: categoryName,
+    sku: product.barcode || product.id,
+    ...(product.barcode && /^\d{8,14}$/.test(product.barcode) ? { gtin: product.barcode } : {}),
+    brand: {
+      '@type': 'Brand',
+      name: product.brand || STORE_NAME,
     },
-    "offers": {
-      "@type": "Offer",
-      "url": `https://broxbournefoodcentre.com/product/${fullSlug}`,
-      "priceCurrency": "GBP",
-      "price": price.toFixed(2),
-      "itemCondition": "https://schema.org/NewCondition",
-      "availability": product.stockOut ? "https://schema.org/OutOfStock" : "https://schema.org/InStock",
-      "seller": {
-        "@type": "Organization",
-        "name": "Broxbourne Food Centre"
-      }
-    }
+    offers: offerSchema,
+  };
+
+  const breadcrumbSchema = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: `${SITE_URL}/`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: 'Shop',
+        item: `${SITE_URL}/shop`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: categoryName,
+        item: `${SITE_URL}/shop?category=${encodeURIComponent(categoryName)}`,
+      },
+      {
+        '@type': 'ListItem',
+        position: 4,
+        name: product.name,
+        item: productUrl,
+      },
+    ],
   };
 
   return (
@@ -113,26 +243,39 @@ export default async function ProductPage(props: Props) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(productSchema) }}
       />
-      
-      <div className="mb-6">
-        <Link href="/shop" className="inline-flex items-center text-sm font-medium text-emerald-600 hover:text-emerald-700">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(breadcrumbSchema) }}
+      />
+
+      <nav aria-label="Breadcrumb" className="mb-6 flex flex-wrap items-center gap-2 text-sm text-slate-500">
+        <Link href="/shop" className="inline-flex items-center font-medium text-emerald-600 hover:text-emerald-700">
           <ArrowLeft className="w-4 h-4 mr-1" />
-          Back to Shop
+          Shop
         </Link>
-      </div>
+        <ChevronRight className="w-4 h-4 text-slate-300" />
+        <Link
+          href={`/shop?category=${encodeURIComponent(categoryName)}`}
+          className="hover:text-emerald-600 transition-colors"
+        >
+          {categoryName}
+        </Link>
+        <ChevronRight className="w-4 h-4 text-slate-300" />
+        <span className="text-slate-800 font-medium truncate max-w-[260px] sm:max-w-md">{product.name}</span>
+      </nav>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
         <div className="bg-white p-6 rounded-3xl shadow-sm border border-gray-100 flex items-center justify-center min-h-[300px] relative">
-           {product.isPromoted && (
-              <div className="absolute top-4 left-4 z-10 bg-red-500 text-white text-xs font-black px-3 py-1.5 rounded-lg shadow-sm">
-                  PROMO
-              </div>
+          {product.isPromoted && (
+            <div className="absolute top-4 left-4 z-10 bg-red-500 text-white text-xs font-black px-3 py-1.5 rounded-lg shadow-sm">
+              PROMO
+            </div>
           )}
           {product.imageUrl ? (
             <div className="relative w-full h-[400px]">
-              <Image 
-                src={product.imageUrl} 
-                alt={product.name}
+              <Image
+                src={product.imageUrl}
+                alt={`${product.name} - ${categoryName} at ${STORE_NAME}`}
                 fill
                 className="object-contain"
               />
@@ -149,7 +292,7 @@ export default async function ProductPage(props: Props) {
           <h1 className="text-3xl sm:text-4xl font-black text-slate-900 mb-4">
             {product.name}
           </h1>
-          
+
           <div className="flex items-center gap-4 mb-6">
             <span className="text-3xl font-black text-slate-900">
               £{price.toFixed(2)}
@@ -162,33 +305,46 @@ export default async function ProductPage(props: Props) {
           </div>
 
           <div className="prose prose-emerald max-w-none mb-8 text-slate-600">
-            <p className="leading-relaxed text-lg mb-4">{seoDescription}</p>
+            <p className="leading-relaxed text-lg mb-4">{seo.pageDescription}</p>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-6 bg-slate-50 p-4 rounded-2xl border border-slate-100">
-              <div className="flex items-center gap-2 text-sm font-medium"><CheckCircle2 className="w-4 h-4 text-emerald-500"/> Fast Delivery (EN10, EN11, EN8, EN9)</div>
-              <div className="flex items-center gap-2 text-sm font-medium"><CheckCircle2 className="w-4 h-4 text-emerald-500"/> Local Supermarket in Broxbourne</div>
-              <div className="flex items-center gap-2 text-sm font-medium"><CheckCircle2 className="w-4 h-4 text-emerald-500"/> Pay on Delivery / Cash</div>
-              <div className="flex items-center gap-2 text-sm font-medium"><CheckCircle2 className="w-4 h-4 text-emerald-500"/> Same Day & Next Day Options</div>
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                Fast 24h Delivery ({seo.deliveryBadgeArea})
+              </div>
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                Local Supermarket in Broxbourne (EN10 7HY)
+              </div>
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                Free Delivery Over £50
+              </div>
+              <div className="flex items-center gap-2 text-sm font-medium">
+                <CheckCircle2 className="w-4 h-4 text-emerald-500 shrink-0" />
+                Pay Online, Card or Cash on Delivery
+              </div>
             </div>
           </div>
 
           <div className="w-full max-w-sm mt-4">
-            <h3 className="text-sm font-semibold text-slate-500 mb-3">Order Now</h3>
+            <h2 className="text-sm font-semibold text-slate-500 mb-3">Order Online for Local Delivery</h2>
             <div className="h-[300px]">
-              <ProductCard product={{
-                id: product.id,
-                name: product.name,
-                category: categoryName,
-                price: product.price,
-                promoPrice: product.promoPrice,
-                isPromoted: product.isPromoted,
-                imageUrl: product.imageUrl,
-                stockOut: product.stockOut,
-                sellType: product.sellType,
-                variants: product.variants
-              }} />
+              <ProductCard
+                product={{
+                  id: product.id,
+                  name: product.name,
+                  category: categoryName,
+                  price: product.price,
+                  promoPrice: product.promoPrice,
+                  isPromoted: product.isPromoted,
+                  imageUrl: product.imageUrl,
+                  stockOut: product.stockOut,
+                  sellType: product.sellType,
+                  variants: product.variants,
+                }}
+              />
             </div>
           </div>
-          
         </div>
       </div>
     </div>
