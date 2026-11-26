@@ -58,6 +58,7 @@ export default function RootLayout({
     "@type": "GroceryStore",
     "name": "Broxbourne Food Centre",
     "image": "https://broxbournefoodcentre.com/icon.png",
+    "logo": "https://broxbournefoodcentre.com/icon.png",
     "@id": "https://broxbournefoodcentre.com",
     "url": "https://broxbournefoodcentre.com",
     "telephone": "+447444474108",
